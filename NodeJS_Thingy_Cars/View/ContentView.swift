@@ -48,25 +48,6 @@ import SwiftUI
 //    }
 //}
 
-struct Response: Codable {
-    var status: String
-    var message: [Cars]
-}
-
-struct Cars: Codable {
-    var license_plate: String
-    var brand: String
-    var model: String
-    var codename: String?
-    var year: Int?
-    var comment: String?
-}
-
-struct Response_failed: Codable {
-    var status: String
-    var message: String
-}
-
 //struct Test {
 //    var name: String
 //    var id = UUID()
@@ -76,33 +57,35 @@ struct ContentView: View {
     @State private var results = [Cars]()
 
     var body: some View {
+        
         NavigationView {
+            
             List(results, id: \.license_plate) { car in
-                VStack(alignment: .leading) {
-                    Text(car.license_plate)
-                        .font(.headline)
-                    HStack {
-                        Text(car.brand)
-                        Text(car.model)
-                        Text(car.codename ?? "")
+                
+                NavigationLink {
+                    View2(car: car)
+                } label: {
+                    VStack(alignment: .leading) {
+                        Text(car.getLP())
+                            .font(.headline)
+                        HStack {
+                            Text(car.brand)
+                            Text(car.model)
+                            Text(car.codename ?? "")
+                        }
                     }
                     
                 }
             }
-            
             .task {
                 await loadData()
             }
+            .navigationTitle("Cars")
         }
-        .navigationTitle("Cars")
-        
     }
     
     func loadData() async {
-        guard let url = URL(string: "http://192.168.5.175/cars") else {
-            print("Invalid URL")
-            return
-        }
+        let url = getURL()
 //        print("URL: \(url)")
         
         do {
@@ -127,6 +110,9 @@ struct ContentView: View {
             if (decodedData.status == "success") {
                 print("status: \(decodedData.status)")
                 results = decodedData.message
+//                for result in results {
+//                    result.setLP(lp: result.license_plate)
+//                }
             } else {
                 print("Failed response: \(decodedData.message)")
             }
