@@ -8,46 +8,6 @@
 import SwiftUI
 //import Foundation
 
-//final class Car: Codable {
-//    enum CodingKeys: CodingKey {
-//        case license_plate
-//        case brand
-//        case model
-//        case codename
-//        case year
-//        case comment
-//    }
-//
-//    @Published var license_plate = "AAA111"
-//    @Published var brand = "Default Brand"
-//    @Published var model = "Default Model"
-//    @Published var codename = "Default Codename"
-//    @Published var year = 1900
-//    @Published var comment = "Default Comment"
-//
-//    init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//
-//        license_plate = try container.decode(String.self, forKey: .license_plate)
-//        brand = try container.decode(String.self, forKey: .brand)
-//        model = try container.decode(String.self, forKey: .model)
-//        codename = try container.decode(String.self, forKey: .codename)
-//        year = try container.decode(Int.self, forKey: .year)
-//        comment = try container.decode(String.self, forKey: .comment)
-//    }
-//
-//    func encode(to encoder: Encoder) throws {
-//        var container = encoder.container(keyedBy: CodingKeys.self)
-//
-//        try container.encode(license_plate, forKey: .license_plate)
-//        try container.encode(brand, forKey: .brand)
-//        try container.encode(model, forKey: .model)
-//        try container.encode(codename, forKey: .codename)
-//        try container.encode(year, forKey: .year)
-//        try container.encode(comment, forKey: .comment)
-//    }
-//}
-
 //struct Test {
 //    var name: String
 //    var id = UUID()
@@ -82,7 +42,11 @@ struct ContentView: View {
                         }
                     }
                 }
-//                .onDelete(perform: await deleteCar)
+                .onDelete { IndexSet in
+                    Task {
+                        await deleteData(at: IndexSet)
+                    }
+                }
             }
             .task {
                 await loadData()
@@ -172,6 +136,43 @@ struct ContentView: View {
             print(error)
         }
         self.isLoading = false
+    }
+    
+    func deleteData(at offsets: IndexSet) async {
+        
+//        print(offsets.first!)
+//        print(results)
+//        print(results[offsets.first!].license_plate)
+        
+        let url1 = getURLasString() + "/" + (results[offsets.first!].license_plate).uppercased()
+        let urlFormatted = URL(string: url1)
+        var request = URLRequest(url: urlFormatted!)
+        print(urlFormatted!)
+        request.httpMethod = "DELETE"
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                print("Error: error calling DELETE")
+                print(error!)
+                return
+            }
+            guard let data = data else {
+                print("Error: Did not receive data")
+                return
+            }
+//            print("data: \(data)")
+
+            do {
+                var decodedData: Response
+                decodedData = try JSONDecoder().decode(Response.self, from: data)
+                print(decodedData.message as Any)
+            } catch {
+                print("Error: Trying to convert JSON data to string")
+                print(error)
+                return
+            }
+            results.remove(atOffsets: offsets)
+        }.resume()
     }
 }
 

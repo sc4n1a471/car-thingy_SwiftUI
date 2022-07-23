@@ -56,6 +56,4 @@ struct Car: Codable {
         
         return formattedLicensePlate
     }
-    
-
 }
