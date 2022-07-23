@@ -69,7 +69,7 @@ struct CarDetails: View {
         Button (action: {
             isNewCarPresented.toggle()
         }, label: {
-            Image(systemName: "plus")
+            Image(systemName: "pencil")
         })
     }
 }
