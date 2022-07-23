@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct View2: View {
-    let car: Cars
+struct CarDetails: View {
+    let car: Car
     
     
     var body: some View {
@@ -19,15 +19,29 @@ struct View2: View {
 //                Text("License plate")
 //            }
             
-            Text(car.brand)
-            Text(car.model)
+            Section {
+                Text(String(car.brand))
+            } header: {
+                Text("Brand")
+            }
+            
+            Section {
+                Text(String(car.model))
+            } header: {
+                Text("Model")
+            }
+            
             if (car.hasCodename) {
-                Text(car.codename ?? "Default cuccli")
+                Section {
+                    Text(String(car.codename ?? "No codename was provided"))
+                } header: {
+                    Text("Model")
+                }
             }
             
             if (car.hasYear) {
                 Section {
-                    Text(String(car.year ?? 0))
+                    Text(String(car.year ?? 1901))
                 } header: {
                     Text("Year")
                 }
@@ -35,7 +49,7 @@ struct View2: View {
             
             if (car.hasComment) {
                 Section {
-                    Text(car.comment ?? "")
+                    Text(car.comment ?? "No comment was provided")
                 } header: {
                     Text("Comment")
                 }

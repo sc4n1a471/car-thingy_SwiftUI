@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct Cars: Codable {
+struct Car: Codable {
     
     var license_plate: String
     
-    
+
     var brand: String
     var model: String
     var codename: String?
@@ -35,7 +35,7 @@ struct Cars: Codable {
     }
     
     var hasComment: Bool {
-        if (comment != "") {
+        if (comment != "null") {
             return true
         } else {
             return false
@@ -43,7 +43,7 @@ struct Cars: Codable {
     }
     
     func getLP() -> String {
-        var formattedLicensePlate = self.license_plate
+        var formattedLicensePlate = self.license_plate.uppercased()
         var numOfLetters = 0
         
         for char in formattedLicensePlate {
@@ -57,37 +57,5 @@ struct Cars: Codable {
         return formattedLicensePlate
     }
     
-//    mutating func setLP(lp: String) {
-//        var formattedLicensePlate = lp
-////        var formattedLicensePlateArray: Array<String> = []
-////        for char in self.license_plate {
-////            formattedLicensePlateArray.append(String(char))
-////        }
-//        formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 3))
-//        license_plate = formattedLicensePlate
-//    }
-    
-//    init(license_plate_new: String, brand: String, model: String, codename: String? = nil, year: Int? = nil, comment: String? = nil) {
-//        self.license_plate = license_plate_new
-//
-//        self.license_plate.insert(contentsOf: "-", at: self.license_plate.index(self.license_plate.startIndex, offsetBy: 3))
-//
-//        self.brand = brand
-//        self.model = model
-//        self.codename = codename
-//        self.year = year
-//        self.comment = comment
-//    }
-}
 
-//struct Car: View {
-//    var body: some View {
-//        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-//    }
-//}
-//
-//struct Car_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Car()
-//    }
-//}
+}

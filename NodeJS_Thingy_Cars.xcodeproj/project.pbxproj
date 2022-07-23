@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5705C44C28821C63004CC324 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705C44B28821C63004CC324 /* TestView.swift */; };
 		5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */; };
 		5795FA97286E1288007E60DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA96286E1288007E60DF /* ContentView.swift */; };
 		5795FA99286E1289007E60DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5795FA98286E1289007E60DF /* Assets.xcassets */; };
@@ -15,9 +16,13 @@
 		57A49F312871EEA0006A2712 /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F302871EEA0006A2712 /* Car.swift */; };
 		57A49F332871EFE2006A2712 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F322871EFE2006A2712 /* Response.swift */; };
 		57A49F3A2872349B006A2712 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F392872349B006A2712 /* Database.swift */; };
+		57A9792C287762F80024EAA0 /* ContentView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9792B287762F80024EAA0 /* ContentView2.swift */; };
+		57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9792D287765DE0024EAA0 /* DetailView.swift */; };
+		57A979322878B2980024EAA0 /* NewCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5705C44B28821C63004CC324 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		5795FA91286E1288007E60DF /* NodeJS_Thingy_Cars.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NodeJS_Thingy_Cars.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeJS_Thingy_CarsApp.swift; sourceTree = "<group>"; };
 		5795FA96286E1288007E60DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -27,6 +32,10 @@
 		57A49F302871EEA0006A2712 /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		57A49F322871EFE2006A2712 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		57A49F392872349B006A2712 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		57A9792B287762F80024EAA0 /* ContentView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView2.swift; sourceTree = "<group>"; };
+		57A9792D287765DE0024EAA0 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		57A979312878B2980024EAA0 /* NewCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCar.swift; sourceTree = "<group>"; };
+		57F0F257288BEEFA0052D566 /* NodeJS_Thingy_Cars.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NodeJS_Thingy_Cars.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +68,7 @@
 		5795FA93286E1288007E60DF /* NodeJS_Thingy_Cars */ = {
 			isa = PBXGroup;
 			children = (
+				57F0F257288BEEFA0052D566 /* NodeJS_Thingy_Cars.entitlements */,
 				5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */,
 				57A49F342871EFF8006A2712 /* Model */,
 				57A49F352871F001006A2712 /* View */,
@@ -91,6 +101,10 @@
 			children = (
 				5795FA96286E1288007E60DF /* ContentView.swift */,
 				57A49F2E2871EC85006A2712 /* CarDetails.swift */,
+				57A9792D287765DE0024EAA0 /* DetailView.swift */,
+				57A979312878B2980024EAA0 /* NewCar.swift */,
+				57A9792B287762F80024EAA0 /* ContentView2.swift */,
+				5705C44B28821C63004CC324 /* TestView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -166,11 +180,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				57A49F3A2872349B006A2712 /* Database.swift in Sources */,
+				57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */,
 				5795FA97286E1288007E60DF /* ContentView.swift in Sources */,
 				57A49F2F2871EC85006A2712 /* CarDetails.swift in Sources */,
 				57A49F312871EEA0006A2712 /* Car.swift in Sources */,
+				57A9792C287762F80024EAA0 /* ContentView2.swift in Sources */,
+				5705C44C28821C63004CC324 /* TestView.swift in Sources */,
 				5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */,
 				57A49F332871EFE2006A2712 /* Response.swift in Sources */,
+				57A979322878B2980024EAA0 /* NewCar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +314,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NodeJS_Thingy_Cars/NodeJS_Thingy_Cars.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NodeJS_Thingy_Cars/Preview Content\"";
@@ -314,6 +333,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.NodeJS-Thingy-Cars";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -325,6 +347,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NodeJS_Thingy_Cars/NodeJS_Thingy_Cars.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NodeJS_Thingy_Cars/Preview Content\"";
@@ -343,6 +366,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.NodeJS-Thingy-Cars";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

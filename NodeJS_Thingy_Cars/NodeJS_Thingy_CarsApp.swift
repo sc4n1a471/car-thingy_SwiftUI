@@ -11,7 +11,11 @@ import SwiftUI
 struct NodeJS_Thingy_CarsApp: App {
     var body: some Scene {
         WindowGroup {
+            #if os(iOS)
             ContentView()
+            #elseif os(macOS)
+//            ContentView2()
+            #endif
         }
     }
 }

@@ -54,41 +54,92 @@ import SwiftUI
 //}
 
 struct ContentView: View {
-    @State private var results = [Cars]()
+    @State private var results = [Car]()
+    @State var isNewCarPresented = false
+    @State var isLoading = false
+    @State var searchCar = ""
+    
+    @State var newCar = Car(license_plate: "", brand: "", model: "")
 
     var body: some View {
         
         NavigationView {
             
-            List(results, id: \.license_plate) { car in
+            List {
                 
-                NavigationLink {
-                    View2(car: car)
-                } label: {
-                    VStack(alignment: .leading) {
-                        Text(car.getLP())
-                            .font(.headline)
-                        HStack {
-                            Text(car.brand)
-                            Text(car.model)
-                            Text(car.codename ?? "")
+                ForEach(results, id: \.license_plate) { result in
+                    NavigationLink {
+                        CarDetails(car: result)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(result.getLP())
+                                .font(.headline)
+                            HStack {
+    //                            Text(car.brand)
+                                Text(result.model)
+                                Text(result.codename ?? "")
+                            }
                         }
                     }
-                    
                 }
+//                .onDelete(perform: await deleteCar)
             }
             .task {
                 await loadData()
             }
             .navigationTitle("Cars")
+            
+#if os(iOS)
+            .navigationBarItems(trailing: plusButton)
+#endif
+            
+            .refreshable {
+                await loadData()
+            }
+            .searchable(text: $searchCar)
+            
+        }
+        .sheet(isPresented: $isNewCarPresented) {
+            NewCar(isPresented: isNewCarPresented, ezLenniCar: newCar)
+        }
+        if isLoading {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle())
         }
     }
+    
+    var plusButton: some View {
+        Button (action: {
+            isNewCarPresented.toggle()
+        }, label: {
+            Image(systemName: "plus")
+        })
+    }
+    
+//    var searchCars: [Cars] {
+//        if searchCar.isEmpty {
+//            return results
+//        } else {
+//            return results.filter {
+//                $0.contains(searchCars)
+//            }
+//        }
+//    }
+    
+    func deleteCar() async {
+        
+    }
+               
+//    func didDismiss() async {
+//        print(newCar)
+//    }
     
     func loadData() async {
         let url = getURL()
 //        print("URL: \(url)")
         
         do {
+            self.isLoading = true
             // (data, metadata)-ban metadata most nem kell, ezért lehet _
             let (data, _) = try await URLSession.shared.data(from: url)
             
@@ -109,7 +160,7 @@ struct ContentView: View {
                 
             if (decodedData.status == "success") {
                 print("status: \(decodedData.status)")
-                results = decodedData.message
+                results = decodedData.data!
 //                for result in results {
 //                    result.setLP(lp: result.license_plate)
 //                }
@@ -120,12 +171,12 @@ struct ContentView: View {
         } catch {
             print(error)
         }
-        
+        self.isLoading = false
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
