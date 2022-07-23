@@ -11,6 +11,8 @@ struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State var isPresented: Bool
+    @State var isUpdate: Bool
+    @State var isUpload: Bool
 //    @Binding var license_plate: String
 //    @Binding var brand: String
 //    @Binding var model: String
@@ -93,17 +95,17 @@ struct NewCar: View {
 //            .navigationBarItems(trailing: leading)
             
             #if os(iOS)
-                .navigationBarItems(trailing: leading)
-                .navigationBarItems(leading: otherLeading)
+                .navigationBarItems(trailing: save)
+                .navigationBarItems(leading: close)
             #endif
             }
     }
     
     
-    var leading: some View {
+    var save: some View {
         Button(action: {
             Task {
-                await save()
+                await saveData()
             }
             presentationMode.wrappedValue.dismiss()
             print(ezLenniCar)
@@ -112,7 +114,7 @@ struct NewCar: View {
         })
     }
     
-    var otherLeading: some View {
+    var close: some View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
         }, label: {
@@ -120,26 +122,39 @@ struct NewCar: View {
         })
     }
     
-    func save() async {
+    func saveData() async {
         guard let encoded = try? JSONEncoder().encode(ezLenniCar) else {
             print("Failed to encode order")
             return
         }
         
-        let url = getURL()
+        var url: URL
+        url = isUpload ? getURL() : URL(string: getURLasString() + "/" + ezLenniCar.license_plate.uppercased())!
+//        if isUpload {
+//            url = getURL()
+//        } else {
+//            url = URL(string: getURLasString() + "/" + ezLenniCar.license_plate.uppercased())!
+//        }
+        
         var request = URLRequest(url: url)
+                
+        request.httpMethod = isUpload ? "POST" : "PUT"
+        
+//        if isUpload {
+//            request.httpMethod = "POST"
+//        } else {
+//            request.httpMethod = "PUT"
+//        }
+        
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
         
         do {
             let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
-            print(data)
+            print(String(data: data, encoding: .utf8))
             isPresented = false
         } catch {
             print("Checkout failed.")
         }
-        
-        
     }
 }
 
