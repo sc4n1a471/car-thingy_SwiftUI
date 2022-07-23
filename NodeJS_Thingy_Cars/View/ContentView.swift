@@ -64,7 +64,7 @@ struct ContentView: View {
             
         }
         .sheet(isPresented: $isNewCarPresented) {
-            NewCar(isPresented: isNewCarPresented, ezLenniCar: newCar)
+            NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, ezLenniCar: newCar)
         }
         if isLoading {
             ProgressView()
