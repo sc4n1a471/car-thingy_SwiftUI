@@ -27,7 +27,7 @@ struct ContentView: View {
             
             List {
                 
-                ForEach(results, id: \.license_plate) { result in
+                ForEach(searchCars, id: \.license_plate) { result in
                     NavigationLink {
                         CarDetails(car: result)
                     } label: {
@@ -80,23 +80,17 @@ struct ContentView: View {
         })
     }
     
-//    var searchCars: [Cars] {
-//        if searchCar.isEmpty {
-//            return results
-//        } else {
-//            return results.filter {
-//                $0.contains(searchCars)
-//            }
-//        }
-//    }
-    
-    func deleteCar() async {
-        
+    var searchCars: [Car] {
+        if searchCar.isEmpty {
+            return results
+        } else {
+            return results.filter {
+                $0.license_plate.contains(self.searchCar.uppercased()) ||
+                $0.brand.localizedStandardContains(self.searchCar) ||
+                $0.model.localizedStandardContains(self.searchCar)
+            }
+        }
     }
-               
-//    func didDismiss() async {
-//        print(newCar)
-//    }
     
     func loadData() async {
         let url = getURL()
@@ -147,7 +141,7 @@ struct ContentView: View {
         let url1 = getURLasString() + "/" + (results[offsets.first!].license_plate).uppercased()
         let urlFormatted = URL(string: url1)
         var request = URLRequest(url: urlFormatted!)
-        print(urlFormatted!)
+//        print(urlFormatted!)
         request.httpMethod = "DELETE"
         
         URLSession.shared.dataTask(with: request) { data, response, error in
