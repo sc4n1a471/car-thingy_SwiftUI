@@ -17,7 +17,7 @@ struct NewCar: View {
 //    @Binding var brand: String
 //    @Binding var model: String
 //    @Binding var codename: String?
-//    @Binding var year: Int?
+    @State var year: String
 //    @Binding var comment: String?
     
     @State var ezLenniCar: Car
@@ -32,13 +32,13 @@ struct NewCar: View {
             })
     }
     
-    var textBindingYear: Binding<Int> {
-            Binding<Int>(
+    var textBindingYear: Binding<Int?> {
+            Binding<Int?>(
                 get: {
                     return self.ezLenniCar.year ?? 1901
             },
                 set: { newString in
-                    self.ezLenniCar.year = newString
+                    self.ezLenniCar.year = Int(newString ?? 1901)
             })
     }
     
@@ -77,13 +77,23 @@ struct NewCar: View {
                 Section {
                     TextField("Codename", text: textBindingCodename)
                 } header: {
-                    Text("Model")
+                    Text("Codename")
+                }
+                
+                Section {
+//                    TextField("Year", text: textBindingYear)
+//                    TextField("Year", text: $ezLenniCar.year)
+                    TextField("Year", text: $year)
+                        .keyboardType(.decimalPad)
+                } header: {
+                    Text("Year")
                 }
                 
 //                Section {
-//                    TextField("Year", number: textBindingYear)
+//                    TextField("Codename", number: textBindingCodename)
+//                        .keyboardType(.decimalPad)
 //                } header: {
-//                    Text("Year")
+//                    Text("Codename")
 //                }
                 
                 Section {
@@ -95,8 +105,8 @@ struct NewCar: View {
 //            .navigationBarItems(trailing: leading)
             
             #if os(iOS)
-                .navigationBarItems(trailing: save)
-                .navigationBarItems(leading: close)
+            .navigationBarItems(trailing: save)
+            .navigationBarItems(leading: close)
             #endif
             }
     }
@@ -105,6 +115,7 @@ struct NewCar: View {
     var save: some View {
         Button(action: {
             Task {
+                ezLenniCar.year = Int(year)
                 await saveData()
             }
             presentationMode.wrappedValue.dismiss()

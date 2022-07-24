@@ -61,7 +61,7 @@ struct CarDetails: View {
         .navigationBarItems(trailing: editButton)
 #endif
         .sheet(isPresented: $isNewCarPresented) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: true, isUpload: false, ezLenniCar: car)
+            NewCar(isPresented: isNewCarPresented, isUpdate: true, isUpload: false, year: String(car.year ?? 0), ezLenniCar: car)
         }
     }
     
