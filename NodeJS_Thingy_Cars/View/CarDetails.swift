@@ -35,7 +35,7 @@ struct CarDetails: View {
                 Section {
                     Text(String(car.codename ?? "No codename was provided"))
                 } header: {
-                    Text("Model")
+                    Text("Codename")
                 }
             }
             
