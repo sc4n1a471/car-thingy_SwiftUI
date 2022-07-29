@@ -101,8 +101,8 @@
 			children = (
 				5795FA96286E1288007E60DF /* ContentView.swift */,
 				57A49F2E2871EC85006A2712 /* CarDetails.swift */,
-				57A9792D287765DE0024EAA0 /* DetailView.swift */,
 				57A979312878B2980024EAA0 /* NewCar.swift */,
+				57A9792D287765DE0024EAA0 /* DetailView.swift */,
 				57A9792B287762F80024EAA0 /* ContentView2.swift */,
 				5705C44B28821C63004CC324 /* TestView.swift */,
 			);

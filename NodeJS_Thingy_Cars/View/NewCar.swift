@@ -14,7 +14,9 @@ struct NewCar: View {
     @State var isUpdate: Bool
     @State var isUpload: Bool
     @State var year: String
+    @State var is_new: Bool = true
     @State var ezLenniCar: Car
+//    @State var is_new = true
     
     let removableCharacters: Set<Character> = ["-"]
     
@@ -110,35 +112,38 @@ struct NewCar: View {
                     Text("License Plate")
                 }
                 
-                Section {
-                    TextField("Brand", text: textBindingBrand)
-                } header: {
-                    Text("Brand")
-                }
-                
-                Section {
-                    TextField("Model", text: textBindingModel)
-                } header: {
-                    Text("Model")
-                }
-                
-                Section {
-                    TextField("Codename", text: textBindingCodename)
-                } header: {
-                    Text("Codename")
-                }
-                
-                Section {
-                    TextField("Year", text: textBindingYear)
-                        .keyboardType(.decimalPad)
-                } header: {
-                    Text("Year")
-                }
-                
-                Section {
-                    TextField("Comment", text: textBindingComment)
-                } header: {
-                    Text("Comment")
+                Toggle("Unknown car", isOn: $is_new)
+                if !is_new {
+                    Section {
+                        TextField("Brand", text: textBindingBrand)
+                    } header: {
+                        Text("Brand")
+                    }
+                    
+                    Section {
+                        TextField("Model", text: textBindingModel)
+                    } header: {
+                        Text("Model")
+                    }
+                    
+                    Section {
+                        TextField("Codename", text: textBindingCodename)
+                    } header: {
+                        Text("Codename")
+                    }
+                    
+                    Section {
+                        TextField("Year", text: textBindingYear)
+                            .keyboardType(.decimalPad)
+                    } header: {
+                        Text("Year")
+                    }
+                    
+                    Section {
+                        TextField("Comment", text: textBindingComment)
+                    } header: {
+                        Text("Comment")
+                    }
                 }
             }
 //            .navigationBarItems(trailing: leading)
@@ -155,10 +160,11 @@ struct NewCar: View {
         Button(action: {
             Task {
                 ezLenniCar.year = Int(year) ?? 1901
-//                ezLenniCar.license_plate = ezLenniCar.license_plate.uppercased()
-//                ezLenniCar.license_plate.removeAll(where: {
-//                    removableCharacters.contains($0)
-//                })
+                if (is_new) {
+                    ezLenniCar.is_new = 1
+                } else {
+                    ezLenniCar.is_new = 0
+                }
                 await saveData()
             }
             presentationMode.wrappedValue.dismiss()

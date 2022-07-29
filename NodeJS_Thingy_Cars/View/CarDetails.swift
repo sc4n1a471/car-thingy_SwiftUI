@@ -9,7 +9,8 @@ import SwiftUI
 
 struct CarDetails: View {
     let car: Car
-    @State var isNewCarPresented = false
+    @State var isEditCarPresented = false
+    @State var isNew: Bool?
     
     var body: some View {
         List {
@@ -58,18 +59,20 @@ struct CarDetails: View {
 #if os(iOS)
         .navigationBarItems(trailing: editButton)
 #endif
-        .sheet(isPresented: $isNewCarPresented) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: true, isUpload: false, year: String(car.year), ezLenniCar: car)
+        .sheet(isPresented: $isEditCarPresented) {
+            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: car)
         }
     }
     
     var editButton: some View {
         Button (action: {
-            isNewCarPresented.toggle()
+            isEditCarPresented.toggle()
         }, label: {
             Image(systemName: "pencil")
         })
     }
+    
+    
 }
 
 //struct View2_Previews: PreviewProvider {
