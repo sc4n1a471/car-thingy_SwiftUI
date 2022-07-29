@@ -12,7 +12,11 @@ struct DetailView: View {
     
     var body: some View {
         if let car = selectedCar {
-            CarDetails(car: car)
+            if (car.is_new == 1) {
+                CarDetails(car: car, isNew: true)
+            } else {
+                CarDetails(car: car, isNew: false)
+            }            
         } else {
             Text("Select a car?")
         }

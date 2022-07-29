@@ -62,7 +62,7 @@ struct ContentView: View {
             .searchable(text: $searchCar)
         }
         .sheet(isPresented: $isNewCarPresented) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", ezLenniCar: newCar)
+            NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar)
         }
         
         if isLoading {

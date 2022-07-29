@@ -73,4 +73,12 @@ struct Car: Codable {
         
         return formattedLicensePlate
     }
+    
+    func isNew() -> Bool {
+        if (is_new == 1) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
