@@ -26,7 +26,7 @@ struct NewCar: View {
                     
             },
                 set: { newString in
-                    self.ezLenniCar.codename = newString
+                    self.ezLenniCar.brand = newString
             })
     }
     
@@ -40,7 +40,7 @@ struct NewCar: View {
                     
             },
                 set: { newString in
-                    self.ezLenniCar.codename = newString
+                    self.ezLenniCar.model = newString
             })
     }
     
