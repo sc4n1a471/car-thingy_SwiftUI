@@ -6,12 +6,6 @@
 //
 
 import SwiftUI
-//import Foundation
-
-//struct Test {
-//    var name: String
-//    var id = UUID()
-//}
 
 struct ContentView: View {
     @State private var results = [Car]()
@@ -19,7 +13,7 @@ struct ContentView: View {
     @State var isLoading = false
     @State var searchCar = ""
     
-    @State var newCar = Car(license_plate: "", brand: "", model: "")
+    @State var newCar = Car(license_plate: "", brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
 
     var body: some View {
         
@@ -35,9 +29,14 @@ struct ContentView: View {
                             Text(result.getLP())
                                 .font(.headline)
                             HStack {
-    //                            Text(car.brand)
-                                Text(result.model)
-                                Text(result.codename ?? "")
+                                if (result.is_new == 1) {
+                                    Text("New car!")
+                                } else {
+                                    Text(result.model)
+                                    if result.hasCodename {
+                                        Text(result.codename)
+                                    }
+                                }
                             }
                         }
                     }
@@ -61,11 +60,11 @@ struct ContentView: View {
                 await loadData()
             }
             .searchable(text: $searchCar)
-            
         }
         .sheet(isPresented: $isNewCarPresented) {
             NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", ezLenniCar: newCar)
         }
+        
         if isLoading {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle())
@@ -94,14 +93,11 @@ struct ContentView: View {
     
     func loadData() async {
         let url = getURL()
-//        print("URL: \(url)")
         
         do {
             self.isLoading = true
             // (data, metadata)-ban metadata most nem kell, ezért lehet _
             let (data, _) = try await URLSession.shared.data(from: url)
-            
-//            print("data: \(String(describing: String(data: data, encoding: .utf8)))")
             
             initData(dataCuccli: data)
         } catch {
@@ -114,14 +110,9 @@ struct ContentView: View {
         do {
             decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
                 
-//            print("decodedData: \(decodedData)")
-                
             if (decodedData.status == "success") {
                 print("status: \(decodedData.status)")
                 results = decodedData.data!
-//                for result in results {
-//                    result.setLP(lp: result.license_plate)
-//                }
             } else {
                 print("Failed response: \(decodedData.message)")
             }
@@ -134,14 +125,9 @@ struct ContentView: View {
     
     func deleteData(at offsets: IndexSet) async {
         
-//        print(offsets.first!)
-//        print(results)
-//        print(results[offsets.first!].license_plate)
-        
         let url1 = getURLasString() + "/" + (results[offsets.first!].license_plate).uppercased()
         let urlFormatted = URL(string: url1)
         var request = URLRequest(url: urlFormatted!)
-//        print(urlFormatted!)
         request.httpMethod = "DELETE"
         
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -154,7 +140,6 @@ struct ContentView: View {
                 print("Error: Did not receive data")
                 return
             }
-//            print("data: \(data)")
 
             do {
                 var decodedData: Response

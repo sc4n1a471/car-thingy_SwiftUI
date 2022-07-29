@@ -11,7 +11,7 @@ struct ContentView2: View {
     @State private var results = [Car]()
     @State private var selectedCar: Car? = nil
     
-    @State var newCar = Car(license_plate: "", brand: "", model: "")
+    @State var newCar = Car(license_plate: "", brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
     
     var body: some View {
         NavigationSplitView {
@@ -27,7 +27,7 @@ struct ContentView2: View {
                         HStack {
                             Text(car.brand)
                             Text(car.model)
-                            Text(car.codename ?? "")
+                            Text(car.codename)
                         }
                     }
                     

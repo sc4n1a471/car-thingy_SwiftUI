@@ -13,39 +13,71 @@ struct NewCar: View {
     @State var isPresented: Bool
     @State var isUpdate: Bool
     @State var isUpload: Bool
-//    @Binding var license_plate: String
-//    @Binding var brand: String
-//    @Binding var model: String
-//    @Binding var codename: String?
     @State var year: String
-//    @Binding var comment: String?
-    
     @State var ezLenniCar: Car
     
-    var textBindingCodename: Binding<String> {
+    var textBindingBrand: Binding<String> {
             Binding<String>(
                 get: {
-                    return self.ezLenniCar.codename ?? ""
+                    if (self.ezLenniCar.brand == "DEFAULT_VALUE") {
+                        return ""
+                    }
+                    return self.ezLenniCar.brand
+                    
             },
                 set: { newString in
                     self.ezLenniCar.codename = newString
             })
     }
     
-    var textBindingYear: Binding<Int?> {
-            Binding<Int?>(
+    var textBindingModel: Binding<String> {
+            Binding<String>(
                 get: {
-                    return self.ezLenniCar.year ?? 1901
+                    if (self.ezLenniCar.model == "DEFAULT_VALUE") {
+                        return ""
+                    }
+                    return self.ezLenniCar.model
+                    
             },
                 set: { newString in
-                    self.ezLenniCar.year = Int(newString ?? 1901)
+                    self.ezLenniCar.codename = newString
+            })
+    }
+    
+    var textBindingCodename: Binding<String> {
+            Binding<String>(
+                get: {
+                    if (self.ezLenniCar.codename == "DEFAULT_VALUE") {
+                        return ""
+                    }
+                    return self.ezLenniCar.codename
+                    
+            },
+                set: { newString in
+                    self.ezLenniCar.codename = newString
+            })
+    }
+    
+    var textBindingYear: Binding<String> {
+            Binding<String>(
+                get: {
+                    if Int(self.year) == 1901 {
+                        return ""
+                    }
+                    return self.year
+            },
+                set: { newString in
+                    self.year = newString
             })
     }
     
     var textBindingComment: Binding<String> {
             Binding<String>(
                 get: {
-                    return self.ezLenniCar.comment ?? ""
+                    if self.ezLenniCar.comment == "DEFAULT_VALUE" {
+                        return ""
+                    }
+                    return self.ezLenniCar.comment
             },
                 set: { newString in
                     self.ezLenniCar.comment = newString
@@ -63,13 +95,13 @@ struct NewCar: View {
                 }
                 
                 Section {
-                    TextField("Brand", text: $ezLenniCar.brand)
+                    TextField("Brand", text: textBindingBrand)
                 } header: {
                     Text("Brand")
                 }
                 
                 Section {
-                    TextField("Model", text: $ezLenniCar.model)
+                    TextField("Model", text: textBindingModel)
                 } header: {
                     Text("Model")
                 }
@@ -81,20 +113,11 @@ struct NewCar: View {
                 }
                 
                 Section {
-//                    TextField("Year", text: textBindingYear)
-//                    TextField("Year", text: $ezLenniCar.year)
-                    TextField("Year", text: $year)
+                    TextField("Year", text: textBindingYear)
                         .keyboardType(.decimalPad)
                 } header: {
                     Text("Year")
                 }
-                
-//                Section {
-//                    TextField("Codename", number: textBindingCodename)
-//                        .keyboardType(.decimalPad)
-//                } header: {
-//                    Text("Codename")
-//                }
                 
                 Section {
                     TextField("Comment", text: textBindingComment)
@@ -115,7 +138,8 @@ struct NewCar: View {
     var save: some View {
         Button(action: {
             Task {
-                ezLenniCar.year = Int(year)
+                ezLenniCar.year = Int(year) ?? 1901
+                ezLenniCar.license_plate = ezLenniCar.license_plate.uppercased()
                 await saveData()
             }
             presentationMode.wrappedValue.dismiss()
@@ -141,22 +165,10 @@ struct NewCar: View {
         
         var url: URL
         url = isUpload ? getURL() : URL(string: getURLasString() + "/" + ezLenniCar.license_plate.uppercased())!
-//        if isUpload {
-//            url = getURL()
-//        } else {
-//            url = URL(string: getURLasString() + "/" + ezLenniCar.license_plate.uppercased())!
-//        }
         
         var request = URLRequest(url: url)
                 
         request.httpMethod = isUpload ? "POST" : "PUT"
-        
-//        if isUpload {
-//            request.httpMethod = "POST"
-//        } else {
-//            request.httpMethod = "PUT"
-//        }
-        
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do {

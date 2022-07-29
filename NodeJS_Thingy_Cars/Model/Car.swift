@@ -14,12 +14,29 @@ struct Car: Codable {
 
     var brand: String
     var model: String
-    var codename: String?
-    var year: Int?
-    var comment: String?
+    var codename: String
+    var year: Int
+    var comment: String
+    var is_new: Int
+    
+    var hasBrand: Bool {
+        if (brand == "DEFAULT_VALUE") {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    var hasModel: Bool {
+        if (model == "DEFAULT_VALUE") {
+            return false
+        } else {
+            return true
+        }
+    }
     
     var hasCodename: Bool {
-        if (codename == "") {
+        if (codename == "DEFAULT_VALUE") {
             return false
         } else {
             return true
@@ -27,7 +44,7 @@ struct Car: Codable {
     }
     
     var hasYear: Bool {
-        if (year != 0) {
+        if (year != 1901) {
             return true
         } else {
             return false
@@ -35,7 +52,7 @@ struct Car: Codable {
     }
     
     var hasComment: Bool {
-        if (comment != "null") {
+        if (comment != "DEFAULT_VALUE") {
             return true
         } else {
             return false
