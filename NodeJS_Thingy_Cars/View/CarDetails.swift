@@ -13,55 +13,53 @@ struct CarDetails: View {
     
     var body: some View {
         List {
-//            Section {
-//                Text(car.getLP())
-//            } header: {
-//                Text("License plate")
-//            }
-            
-            Section {
-                Text(String(car.brand))
-            } header: {
-                Text("Brand")
-            }
-            
-            Section {
-                Text(String(car.model))
-            } header: {
-                Text("Model")
-            }
-            
-            if (car.hasCodename) {
+            if car.hasBrand {
                 Section {
-                    Text(String(car.codename ?? "No codename was provided"))
+                    Text(String(car.brand))
+                } header: {
+                    Text("Brand")
+                }
+            }
+            
+            if car.hasModel {
+                Section {
+                    Text(String(car.model))
+                } header: {
+                    Text("Model")
+                }
+            }
+            
+            
+            if car.hasCodename {
+                Section {
+                    Text(String(car.codename))
                 } header: {
                     Text("Codename")
                 }
             }
             
-            if (car.hasYear) {
+            if car.hasYear {
                 Section {
-                    Text(String(car.year ?? 1901))
+                    Text(String(car.year))
                 } header: {
                     Text("Year")
                 }
             }
             
-            if (car.hasComment) {
+            if car.hasComment {
                 Section {
-                    Text(car.comment ?? "No comment was provided")
+                    Text(car.comment)
                 } header: {
                     Text("Comment")
                 }
             }
-            
         }
         .navigationTitle(car.getLP())
 #if os(iOS)
         .navigationBarItems(trailing: editButton)
 #endif
         .sheet(isPresented: $isNewCarPresented) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: true, isUpload: false, year: String(car.year ?? 0), ezLenniCar: car)
+            NewCar(isPresented: isNewCarPresented, isUpdate: true, isUpload: false, year: String(car.year), ezLenniCar: car)
         }
     }
     
