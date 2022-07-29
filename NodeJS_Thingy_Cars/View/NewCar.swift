@@ -16,6 +16,22 @@ struct NewCar: View {
     @State var year: String
     @State var ezLenniCar: Car
     
+    let removableCharacters: Set<Character> = ["-"]
+    
+    var textBindingLicensePlate: Binding<String> {
+            Binding<String>(
+                get: {
+                    return self.ezLenniCar.license_plate
+                    
+            },
+                set: { newString in
+                    self.ezLenniCar.license_plate = newString.uppercased()
+                    self.ezLenniCar.license_plate.removeAll(where: {
+                        removableCharacters.contains($0)
+                    })
+            })
+    }
+    
     var textBindingBrand: Binding<String> {
             Binding<String>(
                 get: {
@@ -89,7 +105,7 @@ struct NewCar: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("License Plate", text: $ezLenniCar.license_plate)
+                    TextField("License Plate", text: textBindingLicensePlate)
                 } header: {
                     Text("License Plate")
                 }
@@ -139,7 +155,10 @@ struct NewCar: View {
         Button(action: {
             Task {
                 ezLenniCar.year = Int(year) ?? 1901
-                ezLenniCar.license_plate = ezLenniCar.license_plate.uppercased()
+//                ezLenniCar.license_plate = ezLenniCar.license_plate.uppercased()
+//                ezLenniCar.license_plate.removeAll(where: {
+//                    removableCharacters.contains($0)
+//                })
                 await saveData()
             }
             presentationMode.wrappedValue.dismiss()
