@@ -19,7 +19,7 @@ struct ContentView2: View {
             List(results, id: \.license_plate) { car in
                 
                 NavigationLink {
-                    CarDetails(car: car, isNew: true)
+//                    CarDetails(car: car, isNew: true)
                 } label: {
                     VStack(alignment: .leading) {
                         Text(car.getLP())

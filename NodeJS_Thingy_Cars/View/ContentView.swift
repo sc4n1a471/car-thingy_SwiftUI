@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var results = [Car]()
+    @State var results = [Car]()
     @State var isNewCarPresented = false
     @State var isLoading = false
     @State var searchCar = ""
@@ -43,12 +43,12 @@ struct ContentView: View {
                 }
                 .onDelete { IndexSet in
                     Task {
-                        await deleteData(at: IndexSet)
+                        results = await deleteData(at: IndexSet, cars: results)
                     }
                 }
             }
             .task {
-                await loadData()
+                results = await loadData()
             }
             .navigationTitle("Cars")
             
@@ -57,11 +57,15 @@ struct ContentView: View {
 #endif
             
             .refreshable {
-                await loadData()
+                results = await loadData()
             }
             .searchable(text: $searchCar)
         }
-        .sheet(isPresented: $isNewCarPresented) {
+        .sheet(isPresented: $isNewCarPresented, onDismiss: {
+            Task {
+                results = await loadData()
+            }
+        }) {
             NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar)
         }
         
@@ -91,68 +95,6 @@ struct ContentView: View {
         }
     }
     
-    func loadData() async {
-        let url = getURL()
-        
-        do {
-            self.isLoading = true
-            // (data, metadata)-ban metadata most nem kell, ezért lehet _
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-            initData(dataCuccli: data)
-        } catch {
-            print("Invalid data")
-        }
-    }
-    
-    func initData(dataCuccli: Data) {
-        var decodedData: Response
-        do {
-            decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
-                
-            if (decodedData.status == "success") {
-                print("status: \(decodedData.status)")
-                results = decodedData.data!
-            } else {
-                print("Failed response: \(decodedData.message)")
-            }
-    
-        } catch {
-            print(error)
-        }
-        self.isLoading = false
-    }
-    
-    func deleteData(at offsets: IndexSet) async {
-        
-        let url1 = getURLasString() + "/" + (results[offsets.first!].license_plate).uppercased()
-        let urlFormatted = URL(string: url1)
-        var request = URLRequest(url: urlFormatted!)
-        request.httpMethod = "DELETE"
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {
-                print("Error: error calling DELETE")
-                print(error!)
-                return
-            }
-            guard let data = data else {
-                print("Error: Did not receive data")
-                return
-            }
-
-            do {
-                var decodedData: Response
-                decodedData = try JSONDecoder().decode(Response.self, from: data)
-                print(decodedData.message as Any)
-            } catch {
-                print("Error: Trying to convert JSON data to string")
-                print(error)
-                return
-            }
-            results.remove(atOffsets: offsets)
-        }.resume()
-    }
 }
 
 //struct ContentView_Previews: PreviewProvider {

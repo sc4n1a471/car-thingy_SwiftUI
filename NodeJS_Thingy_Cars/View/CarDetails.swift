@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CarDetails: View {
-    let car: Car
+    @State var car: Car
+    @State var result = [Car]()
     @State var isEditCarPresented = false
     @State var isNew: Bool?
     
@@ -55,11 +56,18 @@ struct CarDetails: View {
                 }
             }
         }
+        .task {
+            car = await loadCar(license_plate: car.license_plate)[0]
+        }
         .navigationTitle(car.getLP())
 #if os(iOS)
         .navigationBarItems(trailing: editButton)
 #endif
-        .sheet(isPresented: $isEditCarPresented) {
+        .sheet(isPresented: $isEditCarPresented, onDismiss: {
+            Task {
+                car = await loadCar(license_plate: car.license_plate)[0]
+            }
+        }) {
             NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: car)
         }
     }
@@ -71,8 +79,6 @@ struct CarDetails: View {
             Image(systemName: "pencil")
         })
     }
-    
-    
 }
 
 //struct View2_Previews: PreviewProvider {
