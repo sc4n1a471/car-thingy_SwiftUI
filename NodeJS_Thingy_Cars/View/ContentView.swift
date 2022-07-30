@@ -17,61 +17,61 @@ struct ContentView: View {
 
     var body: some View {
         
-        NavigationView {
-            
-            List {
+        if isLoading {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle())
+        } else {
+            NavigationView {
                 
-                ForEach(searchCars, id: \.license_plate) { result in
-                    NavigationLink {
-                        CarDetails(car: result)
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(result.getLP())
-                                .font(.headline)
-                            HStack {
-                                if (result.is_new == 1) {
-                                    Text("New car!")
-                                } else {
-                                    Text(result.model)
-                                    if result.hasCodename {
-                                        Text(result.codename)
+                List {
+                    
+                    ForEach(searchCars, id: \.license_plate) { result in
+                        NavigationLink {
+                            CarDetails(car: result)
+                        } label: {
+                            VStack(alignment: .leading) {
+                                Text(result.getLP())
+                                    .font(.headline)
+                                HStack {
+                                    if (result.is_new == 1) {
+                                        Text("New car!")
+                                    } else {
+                                        Text(result.model)
+                                        if result.hasCodename {
+                                            Text(result.codename)
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                .onDelete { IndexSet in
-                    Task {
-                        results = await deleteData(at: IndexSet, cars: results)
+                    .onDelete { IndexSet in
+                        Task {
+                            results = await deleteData(at: IndexSet, cars: results)
+                        }
                     }
                 }
+                .task {
+                    results = await loadData()
+                }
+                .navigationTitle("Cars")
+                
+    #if os(iOS)
+                .navigationBarItems(trailing: plusButton)
+    #endif
+                
+                .refreshable {
+                    results = await loadData()
+                }
+                .searchable(text: $searchCar)
             }
-            .task {
-                results = await loadData()
+            .sheet(isPresented: $isNewCarPresented, onDismiss: {
+                Task {
+                    results = await loadData()
+                }
+            }) {
+                NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar)
             }
-            .navigationTitle("Cars")
-            
-#if os(iOS)
-            .navigationBarItems(trailing: plusButton)
-#endif
-            
-            .refreshable {
-                results = await loadData()
-            }
-            .searchable(text: $searchCar)
-        }
-        .sheet(isPresented: $isNewCarPresented, onDismiss: {
-            Task {
-                results = await loadData()
-            }
-        }) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar)
-        }
-        
-        if isLoading {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
         }
     }
     
@@ -102,8 +102,8 @@ struct ContentView: View {
     
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView()
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
