@@ -58,9 +58,21 @@ struct ContentView: View {
                 
                 #if os(iOS)
                 .navigationBarItems(trailing: plusButton)
-                .navigationBarItems(leading: Link(destination: URL(string: "https://magyarorszag.hu/jszp_szuf")!) {
-                    Image(systemName: "link")
-                })
+                .navigationBarItems(leading:
+                    Link(destination:
+                        URL(string:"https://magyarorszag.hu/jszp_szuf")!) {
+                            Image(systemName: "link")
+                        }
+                )
+                .navigationBarItems(leading:
+                    Button(action: {
+                        Task {
+                            results = await loadData()
+                        }
+                    }, label: {
+                    Image(systemName: "arrow.clockwise")
+                    })
+                )
                 #endif
                 
                 .refreshable {
