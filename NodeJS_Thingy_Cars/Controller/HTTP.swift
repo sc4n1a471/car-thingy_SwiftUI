@@ -21,58 +21,6 @@ func loadData() async -> [Car] {
     return [Car(license_plate: "ERROR", brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
 
-func initData(dataCuccli: Data) -> [Car] {
-    var decodedData: Response
-    do {
-        decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
-            
-        if (decodedData.status == "success") {
-            print("status: \(decodedData.status)")
-            return decodedData.data!
-        } else {
-            print("Failed response: \(decodedData.message)")
-        }
-
-    } catch {
-        print(error)
-    }
-    return [Car(license_plate: "ERROR", brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
-}
-
-func deleteData(at offsets: IndexSet, cars: [Car]) async -> [Car] {
-    
-    var cars = cars
-    
-    let url1 = getURLasString() + "/" + (cars[offsets.first!].license_plate).uppercased()
-    let urlFormatted = URL(string: url1)
-    var request = URLRequest(url: urlFormatted!)
-    request.httpMethod = "DELETE"
-    
-    URLSession.shared.dataTask(with: request) { data, response, error in
-        guard error == nil else {
-            print("Error: error calling DELETE")
-            print(error!)
-            return
-        }
-        guard let data = data else {
-            print("Error: Did not receive data")
-            return
-        }
-
-        do {
-            var decodedData: Response
-            decodedData = try JSONDecoder().decode(Response.self, from: data)
-            print(decodedData.message as Any)
-        } catch {
-            print("Error: Trying to convert JSON data to string")
-            print(error)
-            return
-        }
-        cars.remove(atOffsets: offsets)
-    }.resume()
-    return cars
-}
-
 func loadCar(license_plate: String) async -> [Car] {
     let url = URL(string: getURLasString() + "/" + license_plate.uppercased())!
     print(url)
@@ -111,19 +59,54 @@ func saveData(uploadableCar: Car, isUpload: Bool, isUpdate: Bool) async -> Bool 
     }
 }
 
-//func initData(dataCuccli: Data) -> Car {
-//    var decodedData: Response
-//    do {
-//        decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
-//
-//        if (decodedData.status == "success") {
-//            print("status: \(decodedData.status)")
-//            return decodedData.data!
-//        } else {
-//            print("Failed response: \(decodedData.message)")
-//        }
-//
-//    } catch {
-//        print(error)
-//    }
-//}
+func deleteData(at offsets: IndexSet, cars: [Car]) async -> [Car] {
+    
+    var cars = cars
+    
+    let url1 = getURLasString() + "/" + (cars[offsets.first!].license_plate).uppercased()
+    let urlFormatted = URL(string: url1)
+    var request = URLRequest(url: urlFormatted!)
+    request.httpMethod = "DELETE"
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        guard error == nil else {
+            print("Error: error calling DELETE")
+            print(error!)
+            return
+        }
+        guard let data = data else {
+            print("Error: Did not receive data")
+            return
+        }
+
+        do {
+            var decodedData: Response
+            decodedData = try JSONDecoder().decode(Response.self, from: data)
+            print(decodedData.message as Any)
+        } catch {
+            print("Error: Trying to convert JSON data to string")
+            print(error)
+            return
+        }
+        cars.remove(atOffsets: offsets)
+    }.resume()
+    return cars
+}
+
+func initData(dataCuccli: Data) -> [Car] {
+    var decodedData: Response
+    do {
+        decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
+            
+        if (decodedData.status == "success") {
+            print("status: \(decodedData.status)")
+            return decodedData.data!
+        } else {
+            print("Failed response: \(decodedData.message)")
+        }
+
+    } catch {
+        print(error)
+    }
+    return [Car(license_plate: "ERROR", brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+}

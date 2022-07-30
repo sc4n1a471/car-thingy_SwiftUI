@@ -165,7 +165,9 @@ struct NewCar: View {
                 } else {
                     ezLenniCar.is_new = 0
                 }
+                
                 let successfullyUploaded = await saveData(uploadableCar: ezLenniCar, isUpload: isUpload, isUpdate: isUpdate)
+                
                 if successfullyUploaded {
                     isPresented = false
                 } else {
