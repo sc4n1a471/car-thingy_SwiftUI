@@ -83,6 +83,11 @@ struct ContentView: View {
         if searchCar.isEmpty {
             return results
         } else {
+            if self.searchCar.localizedStandardContains("new") {
+                return results.filter {
+                    $0.is_new == 1
+                }
+            }
             return results.filter {
                 $0.license_plate.contains(self.searchCar.uppercased()) ||
                 $0.brand.localizedStandardContains(self.searchCar) ||
