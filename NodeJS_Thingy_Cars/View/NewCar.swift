@@ -16,7 +16,7 @@ struct NewCar: View {
     @State var year: String
     @State var is_new: Bool = true
     @State var ezLenniCar: Car
-//    @State var is_new = true
+    @State var showAlert = false
     
     let removableCharacters: Set<Character> = ["-"]
     
@@ -165,13 +165,21 @@ struct NewCar: View {
                 } else {
                     ezLenniCar.is_new = 0
                 }
-                await saveData()
+                let successfullyUploaded = await saveData(uploadableCar: ezLenniCar, isUpload: isUpload, isUpdate: isUpdate)
+                if successfullyUploaded {
+                    isPresented = false
+                } else {
+                    showAlert = true
+                }
             }
             presentationMode.wrappedValue.dismiss()
             print(ezLenniCar)
         }, label: {
             Text("Save")
         })
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Error"), message: Text("Could not upload!"))
+        }
     }
     
     var close: some View {
@@ -180,29 +188,6 @@ struct NewCar: View {
         }, label: {
             Text("Close")
         })
-    }
-    
-    func saveData() async {
-        guard let encoded = try? JSONEncoder().encode(ezLenniCar) else {
-            print("Failed to encode order")
-            return
-        }
-        
-        var url: URL
-        url = isUpload ? getURL() : URL(string: getURLasString() + "/" + ezLenniCar.license_plate.uppercased())!
-        
-        var request = URLRequest(url: url)
-                
-        request.httpMethod = isUpload ? "POST" : "PUT"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
-            print(String(data: data, encoding: .utf8))
-            isPresented = false
-        } catch {
-            print("Checkout failed.")
-        }
     }
 }
 
