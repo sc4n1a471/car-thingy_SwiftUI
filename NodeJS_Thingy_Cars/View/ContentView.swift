@@ -56,9 +56,12 @@ struct ContentView: View {
                 }
                 .navigationTitle("Cars")
                 
-    #if os(iOS)
+                #if os(iOS)
                 .navigationBarItems(trailing: plusButton)
-    #endif
+                .navigationBarItems(leading: Link(destination: URL(string: "https://magyarorszag.hu/jszp_szuf")!) {
+                    Image(systemName: "link")
+                })
+                #endif
                 
                 .refreshable {
                     results = await loadData()
