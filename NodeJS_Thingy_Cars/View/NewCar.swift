@@ -145,7 +145,13 @@ struct NewCar: View {
                         Text("Comment")
                     }
                 }
-            }
+            }.alert("Error", isPresented: $showAlert, actions: {
+                Button("Got it") {
+                    showAlert = false
+                }
+            }, message: {
+                Text("Could not connect to server!")
+            })
 //            .navigationBarItems(trailing: leading)
             
             #if os(iOS)
@@ -170,18 +176,17 @@ struct NewCar: View {
                 
                 if successfullyUploaded {
                     isPresented = false
+                    presentationMode.wrappedValue.dismiss()
+                    print("Success: Upload")
                 } else {
                     showAlert = true
+                    print("Failed: Upload")
                 }
             }
-            presentationMode.wrappedValue.dismiss()
             print(ezLenniCar)
         }, label: {
             Text("Save")
         })
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Error"), message: Text("Could not upload!"))
-        }
     }
     
     var close: some View {

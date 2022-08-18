@@ -12,6 +12,8 @@ struct ContentView: View {
     @State var isNewCarPresented = false
     @State var isLoading = false
     @State var searchCar = ""
+    @State var showAlert = false
+    @State var errorMessage = "No error"
     
     @State var newCar = Car(license_plate: "", brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
 
@@ -53,10 +55,14 @@ struct ContentView: View {
                 }
                 .task {
                     results = await loadData()
+                    if results[0].license_plate == "ERROR" {
+                        showAlert = true
+                    }
                 }
                 .navigationTitle("Cars")
                 
                 #if os(iOS)
+                 
                 .navigationBarItems(trailing: plusButton)
                 .navigationBarItems(leading:
                     Link(destination:
@@ -87,6 +93,14 @@ struct ContentView: View {
             }) {
                 NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar)
             }
+            .alert("Error", isPresented: $showAlert, actions: {
+                Button("Got it") {
+                    showAlert = false
+                }
+            }, message: {
+                Text("Server error!")
+                Text(errorMessage)
+            })
         }
     }
     
