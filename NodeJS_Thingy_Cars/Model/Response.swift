@@ -10,7 +10,8 @@ import Foundation
 struct Response: Codable {
     var status: String
     var message: String?
-    var data: [Car]?
+    var cars: [Car]?
+    var brands: [Brand]?
 }
 
 //struct Response_failed: Codable {

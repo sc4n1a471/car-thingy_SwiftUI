@@ -18,6 +18,11 @@ struct NewCar: View {
     @State var ezLenniCar: Car
     @State var showAlert = false
     
+//    @State var brands = [Brand]()
+    @State var brands: [Brand]
+    @State var selectedBrand: Int
+    @State var isNewBrand = false
+    
     let removableCharacters: Set<Character> = ["-"]
     
     var textBindingLicensePlate: Binding<String> {
@@ -115,7 +120,16 @@ struct NewCar: View {
                 Toggle("Unknown car", isOn: $is_new)
                 if !is_new {
                     Section {
-                        TextField("Brand", text: textBindingBrand)
+                        Toggle("Unknown brand", isOn: $isNewBrand)
+                        if isNewBrand {
+                            TextField("Brand", text: textBindingBrand)
+                        } else {
+                            Picker("Brand", selection: $selectedBrand) {
+                                ForEach(brands, id: \.brand_id) { brand in
+                                    Text(brand.brand)
+                                }
+                            }
+                        }
                     } header: {
                         Text("Brand")
                     }
@@ -159,6 +173,15 @@ struct NewCar: View {
     var save: some View {
         Button(action: {
             Task {
+                if (!isNewBrand) {
+                    for brand in brands {
+                        if (brand.brand_id == selectedBrand) {
+                            ezLenniCar.brand = brand.brand
+                        }
+                    }
+                }
+                print(ezLenniCar.brand)
+                
                 ezLenniCar.year = Int(year) ?? 1901
                 if (is_new) {
                     ezLenniCar.is_new = 1
