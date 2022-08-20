@@ -8,7 +8,7 @@
 import Foundation
 
 func loadData() async -> [Car] {
-    let url = getURL()
+    let url = getURL(whichUrl: "cars")
     
     do {
         // (data, metadata)-ban metadata most nem kell, ezért lehet _
@@ -18,11 +18,11 @@ func loadData() async -> [Car] {
     } catch {
         print("Invalid data")
     }
-    return [Car(license_plate: "ERROR", brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+    return [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
 
 func loadCar(license_plate: String) async -> [Car] {
-    let url = URL(string: getURLasString() + "/" + license_plate.uppercased())!
+    let url = URL(string: getURLasString(whichUrl: "cars") + "/" + license_plate.uppercased())!
     print(url)
     
     do {
@@ -32,7 +32,7 @@ func loadCar(license_plate: String) async -> [Car] {
     } catch {
         print("Invalid data")
     }
-    return [Car(license_plate: "ERROR", brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+    return [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
 
 func saveData(uploadableCar: Car, isUpload: Bool, isUpdate: Bool) async -> Bool {
@@ -42,7 +42,7 @@ func saveData(uploadableCar: Car, isUpload: Bool, isUpdate: Bool) async -> Bool 
     }
     
     var url: URL
-    url = isUpload ? getURL() : URL(string: getURLasString() + "/" + uploadableCar.license_plate.uppercased())!
+    url = isUpload ? getURL(whichUrl: "cars") : URL(string: getURLasString(whichUrl: "cars") + "/" + uploadableCar.license_plate.uppercased())!
     
     var request = URLRequest(url: url)
             
@@ -63,7 +63,7 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async -> [Car] {
     
     var cars = cars
     
-    let url1 = getURLasString() + "/" + (cars[offsets.first!].license_plate).uppercased()
+    let url1 = getURLasString(whichUrl: "cars") + "/" + (cars[offsets.first!].license_plate).uppercased()
     let urlFormatted = URL(string: url1)
     var request = URLRequest(url: urlFormatted!)
     request.httpMethod = "DELETE"
@@ -99,8 +99,8 @@ func initData(dataCuccli: Data) -> [Car] {
         decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
             
         if (decodedData.status == "success") {
-            print("status: \(decodedData.status)")
-            return decodedData.data!
+            print("status (Cars): \(decodedData.status)")
+            return decodedData.cars!
         } else {
             print("Failed response: \(decodedData.message)")
         }
@@ -108,5 +108,53 @@ func initData(dataCuccli: Data) -> [Car] {
     } catch {
         print(error)
     }
-    return [Car(license_plate: "ERROR", brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+    return [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
+
+
+func loadBrands() async -> [Brand] {
+    let url = getURL(whichUrl: "brands")
+    
+    do {
+        // (data, metadata)-ban metadata most nem kell, ezért lehet _
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        return initBrand(dataCuccli: data)
+    } catch {
+        print("Invalid data")
+    }
+    return [Brand(brand_id: 1, brand: "ERROR")]
+}
+
+//func loadBrand(license_plate: String) async -> [Brand] {
+//    let url = URL(string: getURLasString(whichUrl: "brands") + "/" + license_plate.uppercased())!
+//    print(url)
+//
+//    do {
+//        let (data, _) = try await URLSession.shared.data(from: url)
+//
+//        return initBrand(dataCuccli: data)
+//    } catch {
+//        print("Invalid data")
+//    }
+//    return [Brand(brand_id: 1, brand: "ERROR")]
+//}
+
+func initBrand(dataCuccli: Data) -> [Brand] {
+    var decodedData: Response
+    do {
+        decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
+            
+        if (decodedData.status == "success") {
+            print("status (Brand): \(decodedData.status)")
+            return decodedData.brands!
+        } else {
+            print("Failed response: \(decodedData.message)")
+        }
+
+    } catch {
+        print(error)
+    }
+    return [Brand(brand_id: 1, brand: "ERROR")]
+}
+

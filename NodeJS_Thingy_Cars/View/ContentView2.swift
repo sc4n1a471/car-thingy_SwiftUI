@@ -11,7 +11,7 @@ struct ContentView2: View {
     @State private var results = [Car]()
     @State private var selectedCar: Car? = nil
     
-    @State var newCar = Car(license_plate: "", brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
+    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
     
     var body: some View {
         NavigationSplitView {
@@ -53,7 +53,7 @@ struct ContentView2: View {
     }
     
     func loadData() async {
-        let url = getURL()
+        let url = getURL(whichUrl: "cars")
 //        print("URL: \(url)")
         
         do {

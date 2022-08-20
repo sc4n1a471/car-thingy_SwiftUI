@@ -12,10 +12,9 @@ struct ContentView: View {
     @State var isNewCarPresented = false
     @State var isLoading = false
     @State var searchCar = ""
-    @State var showAlert = false
-    @State var errorMessage = "No error"
+    @State var brands = [Brand]()
     
-    @State var newCar = Car(license_plate: "", brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
+    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
 
     var body: some View {
         
@@ -29,7 +28,7 @@ struct ContentView: View {
                     
                     ForEach(searchCars, id: \.license_plate) { result in
                         NavigationLink {
-                            CarDetails(car: result)
+                            CarDetails(car: result, brands: brands)
                         } label: {
                             VStack(alignment: .leading) {
                                 Text(result.getLP())
@@ -55,9 +54,7 @@ struct ContentView: View {
                 }
                 .task {
                     results = await loadData()
-                    if results[0].license_plate == "ERROR" {
-                        showAlert = true
-                    }
+                    brands = await loadBrands()
                 }
                 .navigationTitle("Cars")
                 
@@ -74,6 +71,7 @@ struct ContentView: View {
                     Button(action: {
                         Task {
                             results = await loadData()
+                            brands = await loadBrands()
                         }
                     }, label: {
                     Image(systemName: "arrow.clockwise")
@@ -83,15 +81,17 @@ struct ContentView: View {
                 
                 .refreshable {
                     results = await loadData()
+                    brands = await loadBrands()
                 }
                 .searchable(text: $searchCar)
             }
             .sheet(isPresented: $isNewCarPresented, onDismiss: {
                 Task {
                     results = await loadData()
+                    brands = await loadBrands()
                 }
             }) {
-                NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar)
+                NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar, brands: brands, selectedBrand: 1)
             }
             .alert("Error", isPresented: $showAlert, actions: {
                 Button("Got it") {
@@ -131,8 +131,8 @@ struct ContentView: View {
     
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
