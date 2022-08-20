@@ -59,6 +59,7 @@ struct ContentView: View {
                 .navigationTitle("Cars")
                 
                 #if os(iOS)
+                 
                 .navigationBarItems(trailing: plusButton)
                 .navigationBarItems(leading:
                     Link(destination:
@@ -92,6 +93,14 @@ struct ContentView: View {
             }) {
                 NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar, brands: brands, selectedBrand: 1)
             }
+            .alert("Error", isPresented: $showAlert, actions: {
+                Button("Got it") {
+                    showAlert = false
+                }
+            }, message: {
+                Text("Server error!")
+                Text(errorMessage)
+            })
         }
     }
     
