@@ -196,9 +196,9 @@ struct NewCar: View {
                 } else {
                     showAlert = true
                 }
+                presentationMode.wrappedValue.dismiss()
+                print(ezLenniCar)
             }
-            presentationMode.wrappedValue.dismiss()
-            print(ezLenniCar)
         }, label: {
             Text("Save")
         })
