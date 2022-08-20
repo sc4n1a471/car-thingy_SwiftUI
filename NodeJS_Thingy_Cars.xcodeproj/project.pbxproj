@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5705C44C28821C63004CC324 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705C44B28821C63004CC324 /* TestView.swift */; };
-		577C65442895958500397961 /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTP.swift */; };
+		5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5724D1A928B0F9A7004768B8 /* Brand.swift */; };
+		577C65442895958500397961 /* HTTPController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTPController.swift */; };
 		5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */; };
 		5795FA97286E1288007E60DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA96286E1288007E60DF /* ContentView.swift */; };
 		5795FA99286E1289007E60DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5795FA98286E1289007E60DF /* Assets.xcassets */; };
@@ -24,7 +25,8 @@
 
 /* Begin PBXFileReference section */
 		5705C44B28821C63004CC324 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
-		577C65432895958500397961 /* HTTP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTP.swift; sourceTree = "<group>"; };
+		5724D1A928B0F9A7004768B8 /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
+		577C65432895958500397961 /* HTTPController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPController.swift; sourceTree = "<group>"; };
 		5795FA91286E1288007E60DF /* NodeJS_Thingy_Cars.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NodeJS_Thingy_Cars.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeJS_Thingy_CarsApp.swift; sourceTree = "<group>"; };
 		5795FA96286E1288007E60DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -54,7 +56,7 @@
 		577C6546289595A300397961 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				577C65432895958500397961 /* HTTP.swift */,
+				577C65432895958500397961 /* HTTPController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -103,6 +105,7 @@
 			children = (
 				57A49F302871EEA0006A2712 /* Car.swift */,
 				57A49F322871EFE2006A2712 /* Response.swift */,
+				5724D1A928B0F9A7004768B8 /* Brand.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -191,10 +194,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				57A49F3A2872349B006A2712 /* Database.swift in Sources */,
+				5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */,
 				57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */,
 				5795FA97286E1288007E60DF /* ContentView.swift in Sources */,
 				57A49F2F2871EC85006A2712 /* CarDetails.swift in Sources */,
-				577C65442895958500397961 /* HTTP.swift in Sources */,
+				577C65442895958500397961 /* HTTPController.swift in Sources */,
 				57A49F312871EEA0006A2712 /* Car.swift in Sources */,
 				57A9792C287762F80024EAA0 /* ContentView2.swift in Sources */,
 				5705C44C28821C63004CC324 /* TestView.swift in Sources */,

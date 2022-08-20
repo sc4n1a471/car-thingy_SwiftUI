@@ -11,7 +11,7 @@ struct Car: Codable {
     
     var license_plate: String
     
-
+    var brand_id: Int
     var brand: String
     var model: String
     var codename: String

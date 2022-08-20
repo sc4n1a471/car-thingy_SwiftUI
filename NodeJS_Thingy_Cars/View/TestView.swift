@@ -73,7 +73,7 @@ struct TestView: View {
             return
         }
         
-        let url = getURL()
+        let url = getURL(whichUrl: "cars")
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"

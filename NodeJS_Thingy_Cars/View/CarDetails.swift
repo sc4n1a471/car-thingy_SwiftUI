@@ -12,6 +12,7 @@ struct CarDetails: View {
     @State var result = [Car]()
     @State var isEditCarPresented = false
     @State var isNew: Bool?
+    @State var brands: [Brand]
     
     var body: some View {
         List {
@@ -66,9 +67,10 @@ struct CarDetails: View {
         .sheet(isPresented: $isEditCarPresented, onDismiss: {
             Task {
                 car = await loadCar(license_plate: car.license_plate)[0]
+                brands = await loadBrands()
             }
         }) {
-            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: car)
+            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: car, brands: brands, selectedBrand: car.brand_id)
         }
     }
     
