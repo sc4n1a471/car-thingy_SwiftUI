@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var results = [Car]()
+    @State var results = ReturnCar()
     @State var isNewCarPresented = false
     @State var isLoading = false
     @State var searchCar = ""
@@ -16,6 +16,8 @@ struct ContentView: View {
     
     @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
 
+    @State var showAlert = false
+    
     var body: some View {
         
         if isLoading {
@@ -48,12 +50,25 @@ struct ContentView: View {
                     }
                     .onDelete { IndexSet in
                         Task {
-                            results = await deleteData(at: IndexSet, cars: results)
+                            print(0)
+//                            DispatchQueue.main.async {
+//                                print(0.1)
+//                                results = await deleteData(at: IndexSet, cars: results.cars)
+//                            }
+                            results = try await deleteData(at: IndexSet, cars: results.cars)
+//                            print(results)
+                            if (results.error != "DEFAULT_VALUE") {
+                                print("error delete")
+                                showAlert = true
+                            }
                         }
                     }
                 }
                 .task {
                     results = await loadData()
+                    if (results.error != "DEFAULT_VALUE") {
+                        showAlert = true
+                    }
                     brands = await loadBrands()
                 }
                 .navigationTitle("Cars")
@@ -71,6 +86,9 @@ struct ContentView: View {
                     Button(action: {
                         Task {
                             results = await loadData()
+                            if (results.error != "DEFAULT_VALUE") {
+                                showAlert = true
+                            }
                             brands = await loadBrands()
                         }
                     }, label: {
@@ -81,26 +99,29 @@ struct ContentView: View {
                 
                 .refreshable {
                     results = await loadData()
+                    if (results.error != "DEFAULT_VALUE") {
+                        showAlert = true
+                    }
                     brands = await loadBrands()
                 }
                 .searchable(text: $searchCar)
             }
+            .alert(results.error, isPresented: $showAlert, actions: {
+                Button("Got it") {
+                    print("alert confirmed")
+                }
+            })
             .sheet(isPresented: $isNewCarPresented, onDismiss: {
                 Task {
                     results = await loadData()
+                    if (results.error != "DEFAULT_VALUE") {
+                        showAlert = true
+                    }
                     brands = await loadBrands()
                 }
             }) {
                 NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar, brands: brands, selectedBrand: 1)
             }
-            .alert("Error", isPresented: $showAlert, actions: {
-                Button("Got it") {
-                    showAlert = false
-                }
-            }, message: {
-                Text("Server error!")
-                Text(errorMessage)
-            })
         }
     }
     
@@ -114,14 +135,14 @@ struct ContentView: View {
     
     var searchCars: [Car] {
         if searchCar.isEmpty {
-            return results
+            return results.cars
         } else {
             if self.searchCar.localizedStandardContains("new") {
-                return results.filter {
+                return results.cars.filter {
                     $0.is_new == 1
                 }
             }
-            return results.filter {
+            return results.cars.filter {
                 $0.license_plate.contains(self.searchCar.uppercased()) ||
                 $0.brand.localizedStandardContains(self.searchCar) ||
                 $0.model.localizedStandardContains(self.searchCar)

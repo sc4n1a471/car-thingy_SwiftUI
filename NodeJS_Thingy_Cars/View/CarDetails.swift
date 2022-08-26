@@ -58,7 +58,7 @@ struct CarDetails: View {
             }
         }
         .task {
-            car = await loadCar(license_plate: car.license_plate)[0]
+            car = await loadCar(license_plate: car.license_plate).cars[0]
         }
         .navigationTitle(car.getLP())
 #if os(iOS)
@@ -66,7 +66,7 @@ struct CarDetails: View {
 #endif
         .sheet(isPresented: $isEditCarPresented, onDismiss: {
             Task {
-                car = await loadCar(license_plate: car.license_plate)[0]
+                car = await loadCar(license_plate: car.license_plate).cars[0]
                 brands = await loadBrands()
             }
         }) {
