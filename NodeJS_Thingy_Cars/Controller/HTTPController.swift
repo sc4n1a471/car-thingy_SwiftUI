@@ -7,32 +7,55 @@
 
 import Foundation
 
-func loadData() async -> [Car] {
+struct ReturnCar {
+    var cars: [Car] = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+    var error: String = "DEFAULT_VALUE"
+}
+
+func loadData() async -> ReturnCar {
     let url = getURL(whichUrl: "cars")
+    var returnedData = ReturnCar()
     
     do {
         // (data, metadata)-ban metadata most nem kell, ezért lehet _
         let (data, _) = try await URLSession.shared.data(from: url)
+//        print(String(data: data, encoding: .utf8))
         
+        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+            returnedData.error = "Could not reach API (502)"
+            returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+            return returnedData
+        }
         return initData(dataCuccli: data)
     } catch {
         print("Invalid data")
+        returnedData.error = error.localizedDescription
+        returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+        return returnedData
     }
-    return [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
 
-func loadCar(license_plate: String) async -> [Car] {
+func loadCar(license_plate: String) async -> ReturnCar {
     let url = URL(string: getURLasString(whichUrl: "cars") + "/" + license_plate.uppercased())!
-    print(url)
+//    print(url)
+    var returnedData = ReturnCar()
     
     do {
         let (data, _) = try await URLSession.shared.data(from: url)
         
+        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+            returnedData.error = "Could not reach API (502)"
+            returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+            return returnedData
+        }
+        
         return initData(dataCuccli: data)
     } catch {
         print("Invalid data")
+        returnedData.error = error.localizedDescription
+        returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+        return returnedData
     }
-    return [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
 
 func saveData(uploadableCar: Car, isUpload: Bool, isUpdate: Bool) async -> Bool {
@@ -59,56 +82,97 @@ func saveData(uploadableCar: Car, isUpload: Bool, isUpdate: Bool) async -> Bool 
     }
 }
 
-func deleteData(at offsets: IndexSet, cars: [Car]) async -> [Car] {
+func deleteHelper (
+    request: inout URLRequest,
+    cars: inout [Car],
+    returnedData: inout ReturnCar,
+    offsets: IndexSet,
+    completionHandler: @escaping (_ returnedDataHe: ReturnCar?) -> Void
+    ) {
     
+    var request = request
     var cars = cars
-    
-    let url1 = getURLasString(whichUrl: "cars") + "/" + (cars[offsets.first!].license_plate).uppercased()
-    let urlFormatted = URL(string: url1)
-    var request = URLRequest(url: urlFormatted!)
-    request.httpMethod = "DELETE"
+    var returnedData = returnedData
+//    var offsets = offsets
     
     URLSession.shared.dataTask(with: request) { data, response, error in
+        print(2)
         guard error == nil else {
             print("Error: error calling DELETE")
-            print(error!)
+            print("deleteData error: \(error)")
+            returnedData.error = "Error calling DELETE \n \(error)"
+            completionHandler(returnedData)
             return
         }
         guard let data = data else {
             print("Error: Did not receive data")
+            returnedData.error = "Did not receive data in deleteData"
+            completionHandler(returnedData)
             return
         }
-
+        
         do {
+            print(3)
             var decodedData: Response
             decodedData = try JSONDecoder().decode(Response.self, from: data)
             print(decodedData.message as Any)
         } catch {
             print("Error: Trying to convert JSON data to string")
-            print(error)
+            print("Error during decoding in deleteData. Error: \(error)")
+            returnedData.error = "Error during decoding in deleteData \n \(error)"
+            returnedData.cars = cars
+            completionHandler(returnedData)
             return
         }
-        cars.remove(atOffsets: offsets)
+        returnedData.cars.remove(atOffsets: offsets)
+        completionHandler(returnedData)
+        print(4)
     }.resume()
-    return cars
 }
 
-func initData(dataCuccli: Data) -> [Car] {
+func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> ReturnCar {
+    
+    var cars = cars
+    var returnedData = ReturnCar()
+    returnedData.cars = cars
+    
+    let url1 = getURLasString(whichUrl: "cars") + "/" + (cars[offsets.first!].license_plate).uppercased()
+    let urlFormatted = URL(string: url1)
+    var request = URLRequest(url: urlFormatted!)
+    request.httpMethod = "DELETE"
+        
+    return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
+        deleteHelper(request: &request, cars: &cars, returnedData: &returnedData, offsets: offsets) { returnedDataHe in
+            if let returnedDataHe {
+                continuation.resume(returning: returnedDataHe)
+            }
+        }
+    })
+}
+
+func initData(dataCuccli: Data) -> ReturnCar {
     var decodedData: Response
+    var returnedData = ReturnCar()
+    
     do {
         decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
             
         if (decodedData.status == "success") {
             print("status (Cars): \(decodedData.status)")
-            return decodedData.cars!
+            returnedData.cars = decodedData.cars!
+            return returnedData
         } else {
-            print("Failed response: \(decodedData.message)")
+            print("Failed response: \(decodedData.message!)")
+            returnedData.error = decodedData.message!
+            return returnedData
         }
 
     } catch {
-        print(error)
+        print("initData error: \(error)")
+        returnedData.error = error.localizedDescription
+        returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+        return returnedData
     }
-    return [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
 }
 
 

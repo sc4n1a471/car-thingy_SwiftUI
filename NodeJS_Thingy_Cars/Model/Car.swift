@@ -26,7 +26,6 @@ struct Car: Codable {
             return true
         }
     }
-    
     var hasModel: Bool {
         if (model == "DEFAULT_VALUE") {
             return false
@@ -34,7 +33,6 @@ struct Car: Codable {
             return true
         }
     }
-    
     var hasCodename: Bool {
         if (codename == "DEFAULT_VALUE") {
             return false
@@ -42,7 +40,6 @@ struct Car: Codable {
             return true
         }
     }
-    
     var hasYear: Bool {
         if (year != 1901) {
             return true
@@ -50,7 +47,6 @@ struct Car: Codable {
             return false
         }
     }
-    
     var hasComment: Bool {
         if (comment != "DEFAULT_VALUE") {
             return true
@@ -58,22 +54,23 @@ struct Car: Codable {
             return false
         }
     }
-    
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.uppercased()
-        var numOfLetters = 0
         
-        for char in formattedLicensePlate {
-            if (char.isLetter) {
-                numOfLetters += 1
+        if (formattedLicensePlate != "ERROR") {
+            var numOfLetters = 0
+            
+            for char in formattedLicensePlate {
+                if (char.isLetter) {
+                    numOfLetters += 1
+                }
             }
+            
+            formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
         }
-        
-        formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
         
         return formattedLicensePlate
     }
-    
     func isNew() -> Bool {
         if (is_new == 1) {
             return true
