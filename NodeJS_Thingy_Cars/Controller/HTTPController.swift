@@ -140,9 +140,7 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> ReturnCar {
     let urlFormatted = URL(string: url1)
     var request = URLRequest(url: urlFormatted!)
     request.httpMethod = "DELETE"
-    
-    print(1)
-    
+        
     return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
         deleteHelper(request: &request, cars: &cars, returnedData: &returnedData, offsets: offsets) { returnedDataHe in
             if let returnedDataHe {
@@ -150,9 +148,6 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> ReturnCar {
             }
         }
     })
-//    print(6)
-//    print("delete before return")
-//    return returnedData
 }
 
 func initData(dataCuccli: Data) -> ReturnCar {
