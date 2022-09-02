@@ -35,7 +35,7 @@ struct ContentView2: View {
                 .navigationSplitViewColumnWidth(min: 200, ideal: 200)
             }
             .task {
-                await loadData()
+//                await loadData()
             }
             .navigationTitle("Cars")
             .toolbar {
@@ -52,44 +52,44 @@ struct ContentView2: View {
         }
     }
     
-    func loadData() async {
-        let url = getURL(whichUrl: "cars")
-//        print("URL: \(url)")
-        
-        do {
-            // (data, metadata)-ban metadata most nem kell, ezért lehet _
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-//            print("data: \(String(describing: String(data: data, encoding: .utf8)))")
-            
-            initData(dataCuccli: data)
-        } catch {
-            print("Invalid data")
-        }
-    }
+//    func loadData() async {
+//        let url = getURL(whichUrl: "cars")
+////        print("URL: \(url)")
+//
+//        do {
+//            // (data, metadata)-ban metadata most nem kell, ezért lehet _
+//            let (data, _) = try await URLSession.shared.data(from: url)
+//
+////            print("data: \(String(describing: String(data: data, encoding: .utf8)))")
+//
+//            initData(dataCuccli: data)
+//        } catch {
+//            print("Invalid data")
+//        }
+//    }
     
-    func initData(dataCuccli: Data) {
-        var decodedData: Response
-        do {
-            decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
-                
-//            print("decodedData: \(decodedData)")
-                
-            if (decodedData.status == "success") {
-                print("status: \(decodedData.status)")
-//                results = decodedData.message
-//                for result in results {
-//                    result.setLP(lp: result.license_plate)
-//                }
-            } else {
-                print("Failed response: \(decodedData.message)")
-            }
-    
-        } catch {
-            print(error)
-        }
-        
-    }
+//    func initData(dataCuccli: Data) {
+//        var decodedData: Response
+//        do {
+//            decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
+//
+////            print("decodedData: \(decodedData)")
+//
+//            if (decodedData.status == "success") {
+//                print("status: \(decodedData.status)")
+////                results = decodedData.message
+////                for result in results {
+////                    result.setLP(lp: result.license_plate)
+////                }
+//            } else {
+//                print("Failed response: \(decodedData.message)")
+//            }
+//
+//        } catch {
+//            print(error)
+//        }
+//
+//    }
 }
 
 struct ContentView2_Previews: PreviewProvider {
