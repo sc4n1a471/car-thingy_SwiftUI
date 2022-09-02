@@ -58,14 +58,14 @@ func loadCar(license_plate: String) async -> ReturnCar {
     }
 }
 
-func saveData(uploadableCar: Car, isUpload: Bool, isUpdate: Bool) async -> Bool {
-    guard let encoded = try? JSONEncoder().encode(uploadableCar) else {
+func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async -> Bool {
+    guard let encoded = try? JSONEncoder().encode(uploadableCarData.car) else {
         print("Failed to encode order")
         return false
     }
     
     var url: URL
-    url = isUpload ? getURL(whichUrl: "cars") : URL(string: getURLasString(whichUrl: "cars") + "/" + uploadableCar.license_plate.uppercased())!
+    url = isUpload ? getURL(whichUrl: "cars") : URL(string: getURLasString(whichUrl: "cars") + "/" + uploadableCarData.oldLicensePlate.uppercased())!
     
     var request = URLRequest(url: url)
             
@@ -162,8 +162,8 @@ func initData(dataCuccli: Data) -> ReturnCar {
             returnedData.cars = decodedData.cars!
             return returnedData
         } else {
-            print("Failed response: \(decodedData.message!)")
-            returnedData.error = decodedData.message!
+            print("Failed response: \(decodedData.message ?? "No error message from server (?)")")
+            returnedData.error = decodedData.message ?? "No error message from server (?)"
             return returnedData
         }
 

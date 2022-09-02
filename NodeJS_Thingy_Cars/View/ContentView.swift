@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var results = ReturnCar()
-    @State var isNewCarPresented = false
-    @State var isLoading = false
-    @State var searchCar = ""
-    @State var brands = [Brand]()
+    @State private var results = ReturnCar()
+    @State private var isNewCarPresented = false
+    @State private var isLoading = false
+    @State private var searchCar = ""
+    @State private var brands = [Brand]()
     
     @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
 
@@ -120,7 +120,7 @@ struct ContentView: View {
                     brands = await loadBrands()
                 }
             }) {
-                NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: newCar, brands: brands, selectedBrand: 1)
+                NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: self.$newCar, brands: brands, selectedBrand: 1)
             }
         }
     }

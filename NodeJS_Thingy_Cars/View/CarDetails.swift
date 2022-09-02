@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CarDetails: View {
     @State var car: Car
-    @State var result = [Car]()
     @State var isEditCarPresented = false
     @State var isNew: Bool?
     @State var brands: [Brand]
@@ -70,7 +69,7 @@ struct CarDetails: View {
                 brands = await loadBrands()
             }
         }) {
-            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: car, brands: brands, selectedBrand: car.brand_id)
+            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: self.$car, brands: brands, selectedBrand: car.brand_id, oldLicensePlate: car.license_plate)
         }
     }
     

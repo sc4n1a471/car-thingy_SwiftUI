@@ -15,13 +15,14 @@ struct NewCar: View {
     @State var isUpload: Bool
     @State var year: String
     @State var is_new: Bool = true
-    @State var ezLenniCar: Car
+    @Binding var ezLenniCar: Car
     @State var showAlert = false
     
 //    @State var brands = [Brand]()
     @State var brands: [Brand]
     @State var selectedBrand: Int
     @State var isNewBrand = false
+    @State var oldLicensePlate = ""
     
     let removableCharacters: Set<Character> = ["-"]
     
@@ -186,7 +187,7 @@ struct NewCar: View {
                         }
                     }
                 }
-                print(ezLenniCar.brand)
+//                print(ezLenniCar.brand)
                 
                 ezLenniCar.year = Int(year) ?? 1901
                 if (is_new) {
@@ -195,7 +196,18 @@ struct NewCar: View {
                     ezLenniCar.is_new = 0
                 }
                 
-                let successfullyUploaded = await saveData(uploadableCar: ezLenniCar, isUpload: isUpload, isUpdate: isUpdate)
+                oldLicensePlate = oldLicensePlate.uppercased()
+                oldLicensePlate.removeAll(where: {
+                    removableCharacters.contains($0)
+                })
+                
+                var ezLenniCarData = CarData(car: ezLenniCar, oldLicensePlate: ezLenniCar.license_plate)
+                
+                if (oldLicensePlate != ezLenniCar.license_plate) {
+                    ezLenniCarData.oldLicensePlate = oldLicensePlate
+                }
+                                
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isUpdate: isUpdate)
                 
                 if successfullyUploaded {
                     isPresented = false
@@ -206,7 +218,7 @@ struct NewCar: View {
                     print("Failed: Upload")
                 }
                 presentationMode.wrappedValue.dismiss()
-                print(ezLenniCar)
+                
             }
         }, label: {
             Text("Save")
