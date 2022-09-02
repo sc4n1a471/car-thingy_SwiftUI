@@ -157,8 +157,8 @@ func initData(dataCuccli: Data) -> ReturnCar {
     do {
         decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
             
-        if (decodedData.status == "success") {
-            print("status (Cars): \(decodedData.status)")
+        if (decodedData.success) {
+            print("status (Cars): \(decodedData.success)")
             returnedData.cars = decodedData.cars!
             return returnedData
         } else {
@@ -209,8 +209,8 @@ func initBrand(dataCuccli: Data) -> [Brand] {
     do {
         decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
             
-        if (decodedData.status == "success") {
-            print("status (Brand): \(decodedData.status)")
+        if (decodedData.success) {
+            print("status (Brand): \(decodedData.success)")
             return decodedData.brands!
         } else {
             print("Failed response: \(decodedData.message)")

@@ -8,7 +8,7 @@
 import Foundation
 
 struct Response: Codable {
-    var status: String
+    var success: Bool
     var message: String?
     var cars: [Car]?
     var brands: [Brand]?
