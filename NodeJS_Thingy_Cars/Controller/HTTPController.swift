@@ -11,7 +11,7 @@ struct ReturnCar {
     var cars: [Car] = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
     var error: String = "DEFAULT_VALUE"
 }
-
+// MARK: loadData
 func loadData() async -> ReturnCar {
     let url = getURL(whichUrl: "cars")
     var returnedData = ReturnCar()
@@ -35,6 +35,7 @@ func loadData() async -> ReturnCar {
     }
 }
 
+// MARK: loadCar
 func loadCar(license_plate: String) async -> ReturnCar {
     let url = URL(string: getURLasString(whichUrl: "cars") + "/" + license_plate.uppercased())!
 //    print(url)
@@ -58,7 +59,9 @@ func loadCar(license_plate: String) async -> ReturnCar {
     }
 }
 
+// MARK: saveData
 func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async -> Bool {
+    print(uploadableCarData.car)
     guard let encoded = try? JSONEncoder().encode(uploadableCarData.car) else {
         print("Failed to encode order")
         return false
@@ -74,7 +77,8 @@ func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async 
     
     do {
         let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
-        print(String(data: data, encoding: .utf8))
+//        print(String(decoding: request.httpBody ?? Data(), as: UTF8.self))
+//        print(String(data: data, encoding: .utf8))
         return true
     } catch {
         print("Checkout failed.")
@@ -82,6 +86,7 @@ func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async 
     }
 }
 
+// MARK: deleteHelper
 func deleteHelper (
     request: inout URLRequest,
     cars: inout [Car],
@@ -130,6 +135,7 @@ func deleteHelper (
     }.resume()
 }
 
+// MARK: deleteData
 func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> ReturnCar {
     
     var cars = cars
@@ -150,6 +156,7 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> ReturnCar {
     })
 }
 
+// MARK: initData
 func initData(dataCuccli: Data) -> ReturnCar {
     var decodedData: Response
     var returnedData = ReturnCar()
@@ -175,7 +182,7 @@ func initData(dataCuccli: Data) -> ReturnCar {
     }
 }
 
-
+//MARK: loadBrands
 func loadBrands() async -> [Brand] {
     let url = getURL(whichUrl: "brands")
     
@@ -204,6 +211,7 @@ func loadBrands() async -> [Brand] {
 //    return [Brand(brand_id: 1, brand: "ERROR")]
 //}
 
+// MARK: initBrand
 func initBrand(dataCuccli: Data) -> [Brand] {
     var decodedData: Response
     do {
