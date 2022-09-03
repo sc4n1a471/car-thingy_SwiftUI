@@ -118,6 +118,7 @@ struct ContentView: View {
                         showAlert = true
                     }
                     brands = await loadBrands()
+                    newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
                 }
             }) {
                 NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: self.$newCar, brands: brands, selectedBrand: 1)
