@@ -20,35 +20,35 @@ struct Car: Codable {
     var is_new: Int
     
     var hasBrand: Bool {
-        if (brand == "DEFAULT_VALUE") {
-            return false
-        } else {
+        if (brand != "DEFAULT_VALUE" && brand != "") {
             return true
+        } else {
+            return false
         }
     }
     var hasModel: Bool {
-        if (model == "DEFAULT_VALUE") {
-            return false
-        } else {
+        if (model != "DEFAULT_VALUE" && model != "") {
             return true
+        } else {
+            return false
         }
     }
     var hasCodename: Bool {
-        if (codename == "DEFAULT_VALUE") {
-            return false
-        } else {
+        if (codename != "DEFAULT_VALUE" && codename != "") {
             return true
+        } else {
+            return false
         }
     }
     var hasYear: Bool {
-        if (year != 1901) {
+        if (year != 1901 && year != Int("")) {
             return true
         } else {
             return false
         }
     }
     var hasComment: Bool {
-        if (comment != "DEFAULT_VALUE") {
+        if (comment != "DEFAULT_VALUE" && comment != "") {
             return true
         } else {
             return false
@@ -67,6 +67,11 @@ struct Car: Codable {
             }
             
             formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
+            
+            // if it's the new license plate
+            if (self.license_plate.count > 6) {
+                formattedLicensePlate.insert(contentsOf: " ", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 2))
+            }
         }
         
         return formattedLicensePlate
