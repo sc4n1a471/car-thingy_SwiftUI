@@ -127,7 +127,9 @@ struct NewCar: View {
                         } else {
                             Picker("Brand", selection: $selectedBrand) {
                                 ForEach(brands, id: \.brand_id) { brand in
-                                    Text(brand.brand)
+                                    if (brand.brand != "DEFAULT_VALUE" && brand.brand != "ERROR") {
+                                        Text(brand.brand)
+                                    }
                                 }
                             }
                         }
