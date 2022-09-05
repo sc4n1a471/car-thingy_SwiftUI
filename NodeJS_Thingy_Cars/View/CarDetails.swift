@@ -12,6 +12,7 @@ struct CarDetails: View {
     @State var isEditCarPresented = false
     @State var isNew: Bool?
     @State var brands: [Brand]
+    @State var isLoading = false
     
     var body: some View {
         List {
@@ -57,16 +58,24 @@ struct CarDetails: View {
             }
         }
         .task {
+            isLoading = true
             car = await loadCar(license_plate: car.license_plate).cars[0]
+            isLoading = false
         }
         .navigationTitle(car.getLP())
 #if os(iOS)
-        .navigationBarItems(trailing: editButton)
+        .navigationBarItems(trailing: editButton
+                                        .isHidden(isLoading))
+        .navigationBarItems(trailing: ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .isHidden(!isLoading))
 #endif
         .sheet(isPresented: $isEditCarPresented, onDismiss: {
             Task {
+                isLoading = true
                 car = await loadCar(license_plate: car.license_plate).cars[0]
                 brands = await loadBrands()
+                isLoading = false
             }
         }) {
             NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: self.$car, brands: brands, selectedBrand: car.brand_id, oldLicensePlate: car.license_plate)
