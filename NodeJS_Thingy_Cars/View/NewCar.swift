@@ -17,6 +17,7 @@ struct NewCar: View {
     @State var is_new: Bool = true
     @Binding var ezLenniCar: Car
     @State var showAlert = false
+    @State var isLoading = false
     
 //    @State var brands = [Brand]()
     @State var brands: [Brand]
@@ -173,6 +174,9 @@ struct NewCar: View {
             
             #if os(iOS)
             .navigationBarItems(trailing: save)
+            .navigationBarItems(trailing: ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle())
+                                            .isHidden(!isLoading))
             .navigationBarItems(leading: close)
             #endif
             }
@@ -182,6 +186,7 @@ struct NewCar: View {
     var save: some View {
         Button(action: {
             Task {
+                isLoading = true
                 if (!isNewBrand) {
                     for brand in brands {
                         if (brand.brand_id == selectedBrand) {
@@ -208,9 +213,9 @@ struct NewCar: View {
                 if (oldLicensePlate != ezLenniCar.license_plate) {
                     ezLenniCarData.oldLicensePlate = oldLicensePlate
                 }
-                                
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isUpdate: isUpdate)
                 
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isUpdate: isUpdate)
+                isLoading = false
                 if successfullyUploaded {
                     isPresented = false
                     presentationMode.wrappedValue.dismiss()
