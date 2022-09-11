@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+import CoreLocation
+import CoreLocationUI
+import MapKit
 
 struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
@@ -25,8 +28,20 @@ struct NewCar: View {
     @State var isNewBrand = false
     @State var oldLicensePlate = ""
     
-    let removableCharacters: Set<Character> = ["-"]
+    @State var region = MKCoordinateRegion(
+        center:  CLLocationCoordinate2D(
+          latitude: 37.789467,
+          longitude: -122.416772
+        ),
+        span: MKCoordinateSpan(
+          latitudeDelta: 0.1,
+          longitudeDelta: 0.1
+       )
+    )
+    @State var isTracking: MapUserTrackingMode = .none
+    @StateObject var locationManager = LocationManager()
     
+    let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
                 get: {
@@ -40,7 +55,6 @@ struct NewCar: View {
                     })
             })
     }
-    
     var textBindingBrand: Binding<String> {
             Binding<String>(
                 get: {
@@ -54,7 +68,6 @@ struct NewCar: View {
                     self.ezLenniCar.brand = newString
             })
     }
-    
     var textBindingModel: Binding<String> {
             Binding<String>(
                 get: {
@@ -68,7 +81,6 @@ struct NewCar: View {
                     self.ezLenniCar.model = newString
             })
     }
-    
     var textBindingCodename: Binding<String> {
             Binding<String>(
                 get: {
@@ -82,7 +94,6 @@ struct NewCar: View {
                     self.ezLenniCar.codename = newString
             })
     }
-    
     var textBindingYear: Binding<String> {
             Binding<String>(
                 get: {
@@ -95,7 +106,6 @@ struct NewCar: View {
                     self.year = newString
             })
     }
-    
     var textBindingComment: Binding<String> {
             Binding<String>(
                 get: {
@@ -117,6 +127,16 @@ struct NewCar: View {
                     TextField("License Plate", text: textBindingLicensePlate)
                 } header: {
                     Text("License Plate")
+                }
+                
+                Section {
+                    Map(
+                        coordinateRegion: $locationManager.region,
+                        interactionModes: MapInteractionModes.all,
+                        showsUserLocation: true,
+                        userTrackingMode: $isTracking
+                    )
+                        .frame(height: 200)
                 }
                 
                 Toggle("Unknown car", isOn: $is_new)
@@ -170,23 +190,34 @@ struct NewCar: View {
             }, message: {
                 Text("Could not connect to server!")
             })
-//            .navigationBarItems(trailing: leading)
             
-            #if os(iOS)
-            .navigationBarItems(trailing: save)
-            .navigationBarItems(trailing: ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle())
-                                            .isHidden(!isLoading))
-            .navigationBarItems(leading: close)
-            #endif
+            // MARK: Toolbar items
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading, content: {
+                    close
+                })
+                ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .isHidden(!isLoading)
+                    
+                    save
+                        .disabled(isLoading)
+                })
             }
+        }
     }
     
     
+    // MARK: Button functions
     var save: some View {
         Button(action: {
             Task {
                 isLoading = true
+                
+                print(locationManager.region.center.longitude)
+                print(locationManager.region.center.latitude)
+                
                 if (!isNewBrand) {
                     for brand in brands {
                         if (brand.brand_id == selectedBrand) {
@@ -194,7 +225,6 @@ struct NewCar: View {
                         }
                     }
                 }
-//                print(ezLenniCar.brand)
                 
                 ezLenniCar.year = Int(year) ?? 1901
                 if (is_new) {
@@ -241,8 +271,20 @@ struct NewCar: View {
     }
 }
 
-//struct NewCar_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NewCar(isPresented: false, license_plate: "AAA111", brand: "BMW", model: "M5", codename: "E60", year: 2007, comment: "Nice")
-//    }
-//}
+struct NewCar_Previews: PreviewProvider {
+    static var previews: some View {
+        NewCar(
+            isPresented: true,
+            isUpdate: false,
+            isUpload: true,
+            year: "",
+            is_new: false,
+            ezLenniCar:
+                    .constant(
+                        Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
+                    ),
+            brands: [Brand(brand_id: 1, brand: "he"), Brand(brand_id: 2, brand: "hehe")],
+            selectedBrand: 1
+        )
+    }
+}

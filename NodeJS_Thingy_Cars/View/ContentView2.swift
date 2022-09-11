@@ -11,45 +11,10 @@ struct ContentView2: View {
     @State private var results = [Car]()
     @State private var selectedCar: Car? = nil
     
-    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
+    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
     
     var body: some View {
-        NavigationSplitView {
-            
-            List(results, id: \.license_plate) { car in
-                
-                NavigationLink {
-//                    CarDetails(car: car, isNew: true)
-                } label: {
-                    VStack(alignment: .leading) {
-                        Text(car.getLP())
-                            .font(.headline)
-                        HStack {
-                            Text(car.brand)
-                            Text(car.model)
-                            Text(car.codename)
-                        }
-                    }
-                    
-                }
-                .navigationSplitViewColumnWidth(min: 200, ideal: 200)
-            }
-            .task {
-//                await loadData()
-            }
-            .navigationTitle("Cars")
-            .toolbar {
-                ToolbarItem {
-                    Button {
-                        TestView(ezLenniCar: newCar)
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-        } detail: {
-            DetailView(selectedCar: $selectedCar)
-        }
+        Text("he")
     }
     
 //    func loadData() async {

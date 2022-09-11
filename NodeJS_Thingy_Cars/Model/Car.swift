@@ -18,6 +18,7 @@ struct Car: Codable {
     var year: Int
     var comment: String
     var is_new: Int
+    var car_location: CarLocation
     
     var hasBrand: Bool {
         if (brand != "DEFAULT_VALUE" && brand != "") {

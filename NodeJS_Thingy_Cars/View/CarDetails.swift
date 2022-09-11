@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import CoreLocation
+import MapKit
 
 struct CarDetails: View {
     @State var car: Car
@@ -13,6 +15,19 @@ struct CarDetails: View {
     @State var isNew: Bool?
     @State var brands: [Brand]
     @State var isLoading = false
+    
+    @State var region = MKCoordinateRegion(
+        center:  CLLocationCoordinate2D(
+          latitude: 37.789467,
+          longitude: -122.416772
+        ),
+        span: MKCoordinateSpan(
+          latitudeDelta: 0.1,
+          longitudeDelta: 0.1
+       )
+    )
+    @State var isTracking: MapUserTrackingMode = .none
+    @StateObject var locationManager = LocationManager()
     
     var body: some View {
         List {
@@ -23,7 +38,6 @@ struct CarDetails: View {
                     Text("Brand")
                 }
             }
-            
             if car.hasModel {
                 Section {
                     Text(String(car.model))
@@ -31,8 +45,6 @@ struct CarDetails: View {
                     Text("Model")
                 }
             }
-            
-            
             if car.hasCodename {
                 Section {
                     Text(String(car.codename))
@@ -40,7 +52,6 @@ struct CarDetails: View {
                     Text("Codename")
                 }
             }
-            
             if car.hasYear {
                 Section {
                     Text(String(car.year))
@@ -48,7 +59,6 @@ struct CarDetails: View {
                     Text("Year")
                 }
             }
-            
             if car.hasComment {
                 Section {
                     Text(car.comment)
@@ -56,6 +66,13 @@ struct CarDetails: View {
                     Text("Comment")
                 }
             }
+            Map(
+                coordinateRegion: $locationManager.region,
+                interactionModes: MapInteractionModes.all,
+                showsUserLocation: true,
+                userTrackingMode: $isTracking
+            )
+                .frame(height: 200)
         }
         .task {
             isLoading = true
@@ -64,11 +81,16 @@ struct CarDetails: View {
         }
         .navigationTitle(car.getLP())
 #if os(iOS)
-        .navigationBarItems(trailing: editButton
-                                        .isHidden(isLoading))
-        .navigationBarItems(trailing: ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle())
-                                        .isHidden(!isLoading))
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .isHidden(!isLoading)
+                
+                editButton
+                    .disabled(isLoading)
+            })
+        }
 #endif
         .sheet(isPresented: $isEditCarPresented, onDismiss: {
             Task {
@@ -91,9 +113,8 @@ struct CarDetails: View {
     }
 }
 
-//struct View2_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let test_car = Cars(license_plate: "AAA111", brand: "BMW", model: "M2")
-//        View2(car: test_car)
-//    }
-//}
+struct View2_Previews: PreviewProvider {
+    static var previews: some View {
+        CarDetails(car: Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015)), brands: [Brand(brand_id: 1, brand: "he")])
+    }
+}
