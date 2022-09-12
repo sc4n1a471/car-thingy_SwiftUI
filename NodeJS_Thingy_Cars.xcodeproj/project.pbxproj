@@ -18,7 +18,6 @@
 		57A49F312871EEA0006A2712 /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F302871EEA0006A2712 /* Car.swift */; };
 		57A49F332871EFE2006A2712 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F322871EFE2006A2712 /* Response.swift */; };
 		57A49F3A2872349B006A2712 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F392872349B006A2712 /* Database.swift */; };
-		57A9792C287762F80024EAA0 /* ContentView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9792B287762F80024EAA0 /* ContentView2.swift */; };
 		57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9792D287765DE0024EAA0 /* DetailView.swift */; };
 		57A979322878B2980024EAA0 /* NewCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCar.swift */; };
 		57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BA28CE2C2700837E0F /* LocationManager.swift */; };
@@ -39,7 +38,6 @@
 		57A49F302871EEA0006A2712 /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		57A49F322871EFE2006A2712 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		57A49F392872349B006A2712 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
-		57A9792B287762F80024EAA0 /* ContentView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView2.swift; sourceTree = "<group>"; };
 		57A9792D287765DE0024EAA0 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		57A979312878B2980024EAA0 /* NewCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCar.swift; sourceTree = "<group>"; };
 		57AFE3BA28CE2C2700837E0F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -128,7 +126,6 @@
 				57A49F2E2871EC85006A2712 /* CarDetails.swift */,
 				57A979312878B2980024EAA0 /* NewCar.swift */,
 				57A9792D287765DE0024EAA0 /* DetailView.swift */,
-				57A9792B287762F80024EAA0 /* ContentView2.swift */,
 				5705C44B28821C63004CC324 /* TestView.swift */,
 			);
 			path = View;
@@ -211,7 +208,6 @@
 				57A49F2F2871EC85006A2712 /* CarDetails.swift in Sources */,
 				577C65442895958500397961 /* HTTPController.swift in Sources */,
 				57A49F312871EEA0006A2712 /* Car.swift in Sources */,
-				57A9792C287762F80024EAA0 /* ContentView2.swift in Sources */,
 				57D9B0F828BFCF1B001DFB09 /* CarData.swift in Sources */,
 				5705C44C28821C63004CC324 /* TestView.swift in Sources */,
 				57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */,
@@ -361,7 +357,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.3;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.NodeJS-Thingy-Cars";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -395,7 +391,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.3;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.NodeJS-Thingy-Cars";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

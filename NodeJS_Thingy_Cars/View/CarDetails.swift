@@ -26,8 +26,8 @@ struct CarDetails: View {
           longitudeDelta: 0.1
        )
     )
-    @State var isTracking: MapUserTrackingMode = .none
-    @StateObject var locationManager = LocationManager()
+//    @State var isTracking: MapUserTrackingMode = .none
+//    @StateObject var locationManager = LocationManager()
     
     var body: some View {
         List {
@@ -67,10 +67,8 @@ struct CarDetails: View {
                 }
             }
             Map(
-                coordinateRegion: $locationManager.region,
-                interactionModes: MapInteractionModes.all,
-                showsUserLocation: true,
-                userTrackingMode: $isTracking
+                coordinateRegion: $region,
+                interactionModes: MapInteractionModes.all
             )
                 .frame(height: 200)
         }
@@ -100,7 +98,7 @@ struct CarDetails: View {
                 isLoading = false
             }
         }) {
-            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: self.$car, brands: brands, selectedBrand: car.brand_id, oldLicensePlate: car.license_plate)
+            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: self.$car, brands: brands, selectedBrand: car.brand_id, oldLicensePlate: car.license_plate, region: car.getLocation())
         }
     }
     
@@ -115,6 +113,6 @@ struct CarDetails: View {
 
 struct View2_Previews: PreviewProvider {
     static var previews: some View {
-        CarDetails(car: Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015)), brands: [Brand(brand_id: 1, brand: "he")])
+        CarDetails(car: Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677), brands: [Brand(brand_id: 1, brand: "he")])
     }
 }

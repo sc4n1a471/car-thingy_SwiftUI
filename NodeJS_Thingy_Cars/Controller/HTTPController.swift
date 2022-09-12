@@ -7,7 +7,7 @@
 
 import Foundation
 
-let errorCar = Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
+let errorCar = Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1, latitude: 37.332914, longitude: -122.005202)
 let errorBrand = Brand(brand_id: 1, brand: "ERROR")
 
 struct ReturnCar {

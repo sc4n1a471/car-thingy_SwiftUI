@@ -40,6 +40,7 @@ struct NewCar: View {
     )
     @State var isTracking: MapUserTrackingMode = .none
     @StateObject var locationManager = LocationManager()
+//    @State var hasLocation = false
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -130,13 +131,21 @@ struct NewCar: View {
                 }
                 
                 Section {
-                    Map(
-                        coordinateRegion: $locationManager.region,
-                        interactionModes: MapInteractionModes.all,
-                        showsUserLocation: true,
-                        userTrackingMode: $isTracking
-                    )
-                        .frame(height: 200)
+                    if isUpdate {
+                        Map(
+                            coordinateRegion: $region,
+                            interactionModes: MapInteractionModes.all
+                        )
+                            .frame(height: 200)
+                    } else {
+                        Map(
+                            coordinateRegion: $locationManager.region,
+                            interactionModes: MapInteractionModes.all,
+                            showsUserLocation: true,
+                            userTrackingMode: $isTracking
+                        )
+                            .frame(height: 200)
+                    }
                 }
                 
                 Toggle("Unknown car", isOn: $is_new)
@@ -217,6 +226,8 @@ struct NewCar: View {
                 
                 print(locationManager.region.center.longitude)
                 print(locationManager.region.center.latitude)
+                ezLenniCar.latitude = locationManager.region.center.latitude
+                ezLenniCar.longitude = locationManager.region.center.longitude
                 
                 if (!isNewBrand) {
                     for brand in brands {
@@ -281,7 +292,7 @@ struct NewCar_Previews: PreviewProvider {
             is_new: false,
             ezLenniCar:
                     .constant(
-                        Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
+                        Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
                     ),
             brands: [Brand(brand_id: 1, brand: "he"), Brand(brand_id: 2, brand: "hehe")],
             selectedBrand: 1

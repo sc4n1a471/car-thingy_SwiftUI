@@ -35,7 +35,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             locations.last.map {
                 region = MKCoordinateRegion(
                     center: CLLocationCoordinate2D(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude),
-                    span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+                    span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
                 )
             }
         }

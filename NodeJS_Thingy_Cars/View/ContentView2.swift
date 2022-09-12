@@ -11,7 +11,7 @@ struct ContentView2: View {
     @State private var results = [Car]()
     @State private var selectedCar: Car? = nil
     
-    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
+    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(latitude: 46.229014679521015, longitude: 20.186523048482677))
     
     var body: some View {
         Text("he")

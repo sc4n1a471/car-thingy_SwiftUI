@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var searchCar = ""
     @State private var brands = [Brand]()
     
-    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
+    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
 
     @State var showAlert = false
     
@@ -24,7 +24,7 @@ struct ContentView: View {
             List {
                 ForEach(searchCars, id: \.license_plate) { result in
                     NavigationLink {
-                        CarDetails(car: result, brands: brands)
+                        CarDetails(car: result, brands: brands, region: result.getLocation())
                     } label: {
                         VStack(alignment: .leading) {
                             Text(result.getLP())
@@ -103,7 +103,7 @@ struct ContentView: View {
         .sheet(isPresented: $isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
-                newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, car_location: CarLocation(lo: 20.186523048482677, la: 46.229014679521015))
+                newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
             }
         }) {
             NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: self.$newCar, brands: brands, selectedBrand: 1)
