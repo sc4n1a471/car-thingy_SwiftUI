@@ -21,7 +21,6 @@
 		57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9792D287765DE0024EAA0 /* DetailView.swift */; };
 		57A979322878B2980024EAA0 /* NewCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCar.swift */; };
 		57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BA28CE2C2700837E0F /* LocationManager.swift */; };
-		57AFE3BD28CE70F700837E0F /* CarLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BC28CE70F700837E0F /* CarLocation.swift */; };
 		57D9B0F828BFCF1B001DFB09 /* CarData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D9B0F728BFCF1B001DFB09 /* CarData.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,7 +40,6 @@
 		57A9792D287765DE0024EAA0 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		57A979312878B2980024EAA0 /* NewCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCar.swift; sourceTree = "<group>"; };
 		57AFE3BA28CE2C2700837E0F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		57AFE3BC28CE70F700837E0F /* CarLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarLocation.swift; sourceTree = "<group>"; };
 		57D9B0F728BFCF1B001DFB09 /* CarData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarData.swift; sourceTree = "<group>"; };
 		57F0F257288BEEFA0052D566 /* NodeJS_Thingy_Cars.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NodeJS_Thingy_Cars.entitlements; sourceTree = "<group>"; };
 		57F6F70128CBA1F7008983FF /* NodeJS-Thingy-Cars-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "NodeJS-Thingy-Cars-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -114,7 +112,6 @@
 				57A49F322871EFE2006A2712 /* Response.swift */,
 				5724D1A928B0F9A7004768B8 /* Brand.swift */,
 				57D9B0F728BFCF1B001DFB09 /* CarData.swift */,
-				57AFE3BC28CE70F700837E0F /* CarLocation.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -212,7 +209,6 @@
 				5705C44C28821C63004CC324 /* TestView.swift in Sources */,
 				57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */,
 				5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */,
-				57AFE3BD28CE70F700837E0F /* CarLocation.swift in Sources */,
 				57A49F332871EFE2006A2712 /* Response.swift in Sources */,
 				57A979322878B2980024EAA0 /* NewCar.swift in Sources */,
 			);

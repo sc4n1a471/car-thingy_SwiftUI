@@ -8,8 +8,10 @@
 import Foundation
 import MapKit
 
-struct Car: Codable {
-    
+struct Car: Codable, Identifiable {
+    var id: String {
+        license_plate
+    }
     var license_plate: String
     
     var brand_id: Int
@@ -19,7 +21,6 @@ struct Car: Codable {
     var year: Int
     var comment: String
     var is_new: Int
-//    var car_location: CarLocation
     var latitude: Double
     var longitude: Double
     

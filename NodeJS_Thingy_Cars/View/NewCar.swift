@@ -134,8 +134,11 @@ struct NewCar: View {
                     if isUpdate {
                         Map(
                             coordinateRegion: $region,
-                            interactionModes: MapInteractionModes.all
-                        )
+                            interactionModes: MapInteractionModes.all,
+                            annotationItems: [ezLenniCar]
+                        ) {
+                            MapMarker(coordinate: $0.getLocation().center)
+                        }
                             .frame(height: 200)
                     } else {
                         Map(

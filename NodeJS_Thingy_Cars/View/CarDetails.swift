@@ -68,8 +68,11 @@ struct CarDetails: View {
             }
             Map(
                 coordinateRegion: $region,
-                interactionModes: MapInteractionModes.all
-            )
+                interactionModes: MapInteractionModes.all,
+                annotationItems: [car]
+            ) {
+                MapMarker(coordinate: $0.getLocation().center)
+            }
                 .frame(height: 200)
         }
         .task {
