@@ -14,9 +14,9 @@ struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State var isPresented: Bool
-    @State var isUpdate: Bool
+    @State var isUpdate: Bool   // TODO: Figure out why I have isUpdate/isUpload seperate
     @State var isUpload: Bool
-    @State var year: String
+    @State var year: String     // TODO: Figure out why I have textYearBinding for year
     @State var is_new: Bool = true
     @Binding var ezLenniCar: Car
     @State var showAlert = false
@@ -40,7 +40,9 @@ struct NewCar: View {
     )
     @State var isTracking: MapUserTrackingMode = .none
     @StateObject var locationManager = LocationManager()
-//    @State var hasLocation = false
+    @State var customCoordinates = false
+    @State var customLatitude: String = ""
+    @State var customLongitude: String = ""
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -132,14 +134,23 @@ struct NewCar: View {
                 
                 Section {
                     if isUpdate {
-                        Map(
-                            coordinateRegion: $region,
-                            interactionModes: MapInteractionModes.all,
-                            annotationItems: [ezLenniCar]
-                        ) {
-                            MapMarker(coordinate: $0.getLocation().center)
+                        Toggle("Custom coordinates", isOn: $customCoordinates)
+                        // TODO: Make interactive map with fix marker on screen to select coordinates
+                        if customCoordinates {
+                            TextField("Custom latitude", text: $customLatitude)
+                                .keyboardType(.decimalPad)
+                            TextField("Custom longitude", text: $customLongitude)
+                                .keyboardType(.decimalPad)
+                        } else {
+                            Map(
+                                coordinateRegion: $region,
+                                interactionModes: MapInteractionModes.all,
+                                annotationItems: [ezLenniCar]
+                            ) {
+                                MapMarker(coordinate: $0.getLocation().center)
+                            }
+                                .frame(height: 200)
                         }
-                            .frame(height: 200)
                     } else {
                         Map(
                             coordinateRegion: $locationManager.region,
@@ -227,10 +238,15 @@ struct NewCar: View {
             Task {
                 isLoading = true
                 
-                print(locationManager.region.center.longitude)
-                print(locationManager.region.center.latitude)
-                ezLenniCar.latitude = locationManager.region.center.latitude
-                ezLenniCar.longitude = locationManager.region.center.longitude
+                if customCoordinates {
+                    ezLenniCar.latitude = Double(customLatitude) ?? 37.789467
+                    ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
+                } else {
+                    print(locationManager.region.center.longitude)
+                    print(locationManager.region.center.latitude)
+                    ezLenniCar.latitude = locationManager.region.center.latitude
+                    ezLenniCar.longitude = locationManager.region.center.longitude
+                }
                 
                 if (!isNewBrand) {
                     for brand in brands {
@@ -289,8 +305,8 @@ struct NewCar_Previews: PreviewProvider {
     static var previews: some View {
         NewCar(
             isPresented: true,
-            isUpdate: false,
-            isUpload: true,
+            isUpdate: true,
+            isUpload: false,
             year: "",
             is_new: false,
             ezLenniCar:
