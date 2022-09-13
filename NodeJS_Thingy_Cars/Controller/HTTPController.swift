@@ -72,7 +72,6 @@ func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async 
     
     var url: URL
     url = isUpload ? getURL(whichUrl: "cars") : URL(string: getURLasString(whichUrl: "cars") + "/" + uploadableCarData.oldLicensePlate.uppercased())!
-    
     var request = URLRequest(url: url)
             
     request.httpMethod = isUpload ? "POST" : "PUT"

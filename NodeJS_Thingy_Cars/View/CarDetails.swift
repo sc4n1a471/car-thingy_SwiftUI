@@ -22,8 +22,8 @@ struct CarDetails: View {
           longitude: -122.416772
         ),
         span: MKCoordinateSpan(
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01
        )
     )
 //    @State var isTracking: MapUserTrackingMode = .none
@@ -101,7 +101,7 @@ struct CarDetails: View {
                 isLoading = false
             }
         }) {
-            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: self.$car, brands: brands, selectedBrand: car.brand_id, oldLicensePlate: car.license_plate, region: car.getLocation())
+            NewCar(isPresented: _isEditCarPresented, isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(car.year)), is_new: State(initialValue: car.isNew()), ezLenniCar: self.$car, brands: _brands, selectedBrand: State(initialValue: car.brand_id), oldLicensePlate: State(initialValue: car.license_plate), region: State(initialValue: car.getLocation()))
         }
     }
     

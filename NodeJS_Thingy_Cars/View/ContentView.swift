@@ -106,7 +106,7 @@ struct ContentView: View {
                 newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
             }
         }) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: self.$newCar, brands: brands, selectedBrand: 1)
+            NewCar(isPresented: _isNewCarPresented, isUpdate: State(initialValue: false), isUpload: State(initialValue: true), year: State(initialValue: ""), is_new: State(initialValue: true), ezLenniCar: self.$newCar, brands: _brands, selectedBrand: State(initialValue: 1))
         }
     }
     

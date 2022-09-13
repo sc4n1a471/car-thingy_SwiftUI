@@ -40,9 +40,51 @@ struct NewCar: View {
     )
     @State var isTracking: MapUserTrackingMode = .none
     @StateObject var locationManager = LocationManager()
-    @State var customCoordinates = false
+//    @State var customCoordinates = false
     @State var customLatitude: String = ""
     @State var customLongitude: String = ""
+    @State var selectedMap = "currentMap"
+    
+    init(isPresented: State<Bool>, isUpdate: State<Bool>, isUpload: State<Bool>, year: State<String>, is_new: State<Bool>, ezLenniCar: Binding<Car>, showAlert: State<Bool> = State(initialValue: false), isLoading: State<Bool> = State(initialValue: false), brands: State<[Brand]>, selectedBrand: State<Int>, isNewBrand: State<Bool> = State(initialValue: false), oldLicensePlate: State<String> = State(initialValue: ""), region: State<MKCoordinateRegion> = State(initialValue: MKCoordinateRegion(
+        center:  CLLocationCoordinate2D(
+            latitude: 37.789467,
+            longitude: -122.416772
+        ),
+        span: MKCoordinateSpan(
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01
+        ))
+    )) {
+//        self.presentationMode = presentationMode
+        self._isPresented = isPresented
+        self._isUpdate = isUpdate
+        self._isUpload = isUpload
+        self._year = year
+        self._is_new = is_new
+        self._ezLenniCar = ezLenniCar
+//        self.showAlert = showAlert
+        self._isLoading = isLoading
+        self._brands = brands
+        self._selectedBrand = selectedBrand
+        self._isNewBrand = isNewBrand
+        self._oldLicensePlate = oldLicensePlate
+        self._region = region
+//        self.isTracking = isTracking
+//        self.locationManager = locationManager
+//        self.customCoordinates = customCoordinates
+//        self.customLatitude = customLatitude
+//        self.customLongitude = customLongitude
+        self._selectedMap = {
+            if (isUpload.wrappedValue) {
+                return State(initialValue: "currentMap")
+            } else if (!isUpload.wrappedValue) {
+                return  State(initialValue: "existingMap")
+            } else {
+                return  State(initialValue: "customMap")
+            }
+        }()
+        print(region)
+    }
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -133,31 +175,35 @@ struct NewCar: View {
                 }
                 
                 Section {
-                    if isUpdate {
-                        Toggle("Custom coordinates", isOn: $customCoordinates)
-                        // TODO: Make interactive map with fix marker on screen to select coordinates
-                        if customCoordinates {
-                            TextField("Custom latitude", text: $customLatitude)
-                                .keyboardType(.decimalPad)
-                            TextField("Custom longitude", text: $customLongitude)
-                                .keyboardType(.decimalPad)
-                        } else {
-                            Map(
-                                coordinateRegion: $region,
-                                interactionModes: MapInteractionModes.all,
-                                annotationItems: [ezLenniCar]
-                            ) {
-                                MapMarker(coordinate: $0.getLocation().center)
-                            }
-                                .frame(height: 200)
-                        }
-                    } else {
+                    // TODO: Create enum for map types
+                    Picker("Flavor", selection: $selectedMap) {
+                        Text("Current Map").tag("currentMap")
+                        Text("Custom Map").tag("customMap")
+                        Text("Existing Map").tag("existingMap")
+                    }
+                    .pickerStyle(.segmented)
+                    
+                    if selectedMap == "customMap" {
+                        TextField("Custom latitude", text: $customLatitude)
+                            .keyboardType(.decimalPad)
+                        TextField("Custom longitude", text: $customLongitude)
+                            .keyboardType(.decimalPad)
+                    } else if (selectedMap == "currentMap" || isUpload) {
                         Map(
                             coordinateRegion: $locationManager.region,
                             interactionModes: MapInteractionModes.all,
                             showsUserLocation: true,
                             userTrackingMode: $isTracking
                         )
+                            .frame(height: 200)
+                    } else if (selectedMap == "existingMap" || !isUpload) {
+                        Map(
+                            coordinateRegion: $region,
+                            interactionModes: MapInteractionModes.all,
+                            annotationItems: [ezLenniCar]
+                        ) {
+                            MapMarker(coordinate: $0.getLocation().center)
+                        }
                             .frame(height: 200)
                     }
                 }
@@ -238,15 +284,16 @@ struct NewCar: View {
             Task {
                 isLoading = true
                 
-                if customCoordinates {
+                if (selectedMap == "customMap") {
+                    print("customMap")
                     ezLenniCar.latitude = Double(customLatitude) ?? 37.789467
                     ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
-                } else {
-                    print(locationManager.region.center.longitude)
-                    print(locationManager.region.center.latitude)
+                } else if (selectedMap == "currentMap") {
+                    print("currentMap")
                     ezLenniCar.latitude = locationManager.region.center.latitude
                     ezLenniCar.longitude = locationManager.region.center.longitude
                 }
+                print(ezLenniCar)
                 
                 if (!isNewBrand) {
                     for brand in brands {
@@ -267,12 +314,15 @@ struct NewCar: View {
                 oldLicensePlate.removeAll(where: {
                     removableCharacters.contains($0)
                 })
+                print("oldLicensePlate: \(oldLicensePlate)")
                 
                 var ezLenniCarData = CarData(car: ezLenniCar, oldLicensePlate: ezLenniCar.license_plate)
+                print("ezLenniCarData1: \(ezLenniCarData)")
                 
                 if (oldLicensePlate != ezLenniCar.license_plate) {
                     ezLenniCarData.oldLicensePlate = oldLicensePlate
                 }
+                print("ezLenniCarData2: \(ezLenniCarData)")
                 
                 let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isUpdate: isUpdate)
                 isLoading = false
@@ -304,17 +354,17 @@ struct NewCar: View {
 struct NewCar_Previews: PreviewProvider {
     static var previews: some View {
         NewCar(
-            isPresented: true,
-            isUpdate: true,
-            isUpload: false,
-            year: "",
-            is_new: false,
+            isPresented: State(initialValue: true),
+            isUpdate: State(initialValue: true),
+            isUpload: State(initialValue: false),
+            year: State(initialValue: ""),
+            is_new: State(initialValue: false),
             ezLenniCar:
                     .constant(
                         Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
                     ),
-            brands: [Brand(brand_id: 1, brand: "he"), Brand(brand_id: 2, brand: "hehe")],
-            selectedBrand: 1
+            brands: State(initialValue: [Brand(brand_id: 1, brand: "he"), Brand(brand_id: 2, brand: "hehe")]),
+            selectedBrand: State(initialValue: 1)
         )
     }
 }
