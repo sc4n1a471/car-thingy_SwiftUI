@@ -19,6 +19,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
+        manager.stopUpdatingLocation()      // in theory, stops immediately after it starts updating location to prevent location updates more than once
     }
 
 //    func requestLocation() {

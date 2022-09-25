@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var searchCar = ""
     @State private var brands = [Brand]()
     
-    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+    @State private var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
 
     @State var showAlert = false
     
@@ -106,7 +106,7 @@ struct ContentView: View {
                 newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
             }
         }) {
-            NewCar(isPresented: _isNewCarPresented, isUpdate: State(initialValue: false), isUpload: State(initialValue: true), year: State(initialValue: ""), is_new: State(initialValue: true), ezLenniCar: self.$newCar, brands: _brands, selectedBrand: State(initialValue: 1))
+            NewCar(isPresented: _isNewCarPresented, isUpdate: State(initialValue: false), isUpload: State(initialValue: true), year: State(initialValue: ""), is_new: State(initialValue: true), ezLenniCar: self._newCar, brands: _brands)
         }
     }
     

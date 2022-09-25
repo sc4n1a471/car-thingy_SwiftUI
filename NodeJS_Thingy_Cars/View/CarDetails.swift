@@ -101,7 +101,7 @@ struct CarDetails: View {
                 isLoading = false
             }
         }) {
-            NewCar(isPresented: _isEditCarPresented, isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(car.year)), is_new: State(initialValue: car.isNew()), ezLenniCar: self.$car, brands: _brands, selectedBrand: State(initialValue: car.brand_id), oldLicensePlate: State(initialValue: car.license_plate), region: State(initialValue: car.getLocation()))
+            NewCar(isPresented: _isEditCarPresented, isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(car.year)), is_new: State(initialValue: car.isNew()), ezLenniCar: self._car, brands: _brands, oldLicensePlate: State(initialValue: car.license_plate), region: State(initialValue: car.getLocation()))
         }
     }
     
