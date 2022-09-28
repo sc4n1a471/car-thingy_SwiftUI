@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import CoreLocation
+import MapKit
 
 struct CarDetails: View {
     @State var car: Car
@@ -13,6 +15,19 @@ struct CarDetails: View {
     @State var isNew: Bool?
     @State var brands: [Brand]
     @State var isLoading = false
+    
+    @State var region = MKCoordinateRegion(
+        center:  CLLocationCoordinate2D(
+          latitude: 37.789467,
+          longitude: -122.416772
+        ),
+        span: MKCoordinateSpan(
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01
+       )
+    )
+//    @State var isTracking: MapUserTrackingMode = .none
+//    @StateObject var locationManager = LocationManager()
     
     var body: some View {
         List {
@@ -23,7 +38,6 @@ struct CarDetails: View {
                     Text("Brand")
                 }
             }
-            
             if car.hasModel {
                 Section {
                     Text(String(car.model))
@@ -31,8 +45,6 @@ struct CarDetails: View {
                     Text("Model")
                 }
             }
-            
-            
             if car.hasCodename {
                 Section {
                     Text(String(car.codename))
@@ -40,7 +52,6 @@ struct CarDetails: View {
                     Text("Codename")
                 }
             }
-            
             if car.hasYear {
                 Section {
                     Text(String(car.year))
@@ -48,7 +59,6 @@ struct CarDetails: View {
                     Text("Year")
                 }
             }
-            
             if car.hasComment {
                 Section {
                     Text(car.comment)
@@ -56,6 +66,14 @@ struct CarDetails: View {
                     Text("Comment")
                 }
             }
+            Map(
+                coordinateRegion: $region,
+                interactionModes: MapInteractionModes.all,
+                annotationItems: [car]
+            ) {
+                MapMarker(coordinate: $0.getLocation().center)
+            }
+                .frame(height: 200)
         }
         .task {
             isLoading = true
@@ -64,11 +82,16 @@ struct CarDetails: View {
         }
         .navigationTitle(car.getLP())
 #if os(iOS)
-        .navigationBarItems(trailing: editButton
-                                        .isHidden(isLoading))
-        .navigationBarItems(trailing: ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle())
-                                        .isHidden(!isLoading))
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .isHidden(!isLoading)
+                
+                editButton
+                    .disabled(isLoading)
+            })
+        }
 #endif
         .sheet(isPresented: $isEditCarPresented, onDismiss: {
             Task {
@@ -78,7 +101,7 @@ struct CarDetails: View {
                 isLoading = false
             }
         }) {
-            NewCar(isPresented: isEditCarPresented, isUpdate: true, isUpload: false, year: String(car.year), is_new: car.isNew(), ezLenniCar: self.$car, brands: brands, selectedBrand: car.brand_id, oldLicensePlate: car.license_plate)
+            NewCar(isPresented: _isEditCarPresented, isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(car.year)), is_new: State(initialValue: car.isNew()), ezLenniCar: self._car, brands: _brands, oldLicensePlate: State(initialValue: car.license_plate), region: State(initialValue: car.getLocation()))
         }
     }
     
@@ -91,9 +114,8 @@ struct CarDetails: View {
     }
 }
 
-//struct View2_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let test_car = Cars(license_plate: "AAA111", brand: "BMW", model: "M2")
-//        View2(car: test_car)
-//    }
-//}
+struct View2_Previews: PreviewProvider {
+    static var previews: some View {
+        CarDetails(car: Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677), brands: [Brand(brand_id: 1, brand: "he")])
+    }
+}

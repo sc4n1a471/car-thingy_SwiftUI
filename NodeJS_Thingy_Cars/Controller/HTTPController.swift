@@ -7,10 +7,14 @@
 
 import Foundation
 
+let errorCar = Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+let errorBrand = Brand(brand_id: 1, brand: "ERROR")
+
 struct ReturnCar {
-    var cars: [Car] = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+    var cars: [Car] = [errorCar]
     var error: String = "DEFAULT_VALUE"
 }
+
 // MARK: loadData
 func loadData() async -> ReturnCar {
     let url = getURL(whichUrl: "cars")
@@ -19,18 +23,17 @@ func loadData() async -> ReturnCar {
     do {
         // (data, metadata)-ban metadata most nem kell, ezért lehet _
         let (data, _) = try await URLSession.shared.data(from: url)
-//        print(String(data: data, encoding: .utf8))
         
         if (String(data: data, encoding: .utf8)?.contains("502") == true) {
             returnedData.error = "Could not reach API (502)"
-            returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+            returnedData.cars = [errorCar]
             return returnedData
         }
         return initData(dataCuccli: data)
     } catch {
         print("Invalid data")
         returnedData.error = error.localizedDescription
-        returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+        returnedData.cars = [errorCar]
         return returnedData
     }
 }
@@ -38,7 +41,7 @@ func loadData() async -> ReturnCar {
 // MARK: loadCar
 func loadCar(license_plate: String) async -> ReturnCar {
     let url = URL(string: getURLasString(whichUrl: "cars") + "/" + license_plate.uppercased())!
-//    print(url)
+
     var returnedData = ReturnCar()
     
     do {
@@ -46,7 +49,7 @@ func loadCar(license_plate: String) async -> ReturnCar {
         
         if (String(data: data, encoding: .utf8)?.contains("502") == true) {
             returnedData.error = "Could not reach API (502)"
-            returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+            returnedData.cars = [errorCar]
             return returnedData
         }
         
@@ -54,7 +57,7 @@ func loadCar(license_plate: String) async -> ReturnCar {
     } catch {
         print("Invalid data")
         returnedData.error = error.localizedDescription
-        returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+        returnedData.cars = [errorCar]
         return returnedData
     }
 }
@@ -69,7 +72,6 @@ func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async 
     
     var url: URL
     url = isUpload ? getURL(whichUrl: "cars") : URL(string: getURLasString(whichUrl: "cars") + "/" + uploadableCarData.oldLicensePlate.uppercased())!
-    
     var request = URLRequest(url: url)
             
     request.httpMethod = isUpload ? "POST" : "PUT"
@@ -98,10 +100,8 @@ func deleteHelper (
     var request = request
     var cars = cars
     var returnedData = returnedData
-//    var offsets = offsets
     
     URLSession.shared.dataTask(with: request) { data, response, error in
-        print(2)
         guard error == nil else {
             print("Error: error calling DELETE")
             print("deleteData error: \(error)")
@@ -117,7 +117,6 @@ func deleteHelper (
         }
         
         do {
-            print(3)
             var decodedData: Response
             decodedData = try JSONDecoder().decode(Response.self, from: data)
             print(decodedData.message as Any)
@@ -129,9 +128,10 @@ func deleteHelper (
             completionHandler(returnedData)
             return
         }
+        
         returnedData.cars.remove(atOffsets: offsets)
+        
         completionHandler(returnedData)
-        print(4)
     }.resume()
 }
 
@@ -177,7 +177,7 @@ func initData(dataCuccli: Data) -> ReturnCar {
     } catch {
         print("initData error: \(error)")
         returnedData.error = error.localizedDescription
-        returnedData.cars = [Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1)]
+        returnedData.cars = [errorCar]
         return returnedData
     }
 }
@@ -194,7 +194,7 @@ func loadBrands() async -> [Brand] {
     } catch {
         print("Invalid data")
     }
-    return [Brand(brand_id: 1, brand: "ERROR")]
+    return [errorBrand]
 }
 
 //func loadBrand(license_plate: String) async -> [Brand] {
@@ -227,6 +227,6 @@ func initBrand(dataCuccli: Data) -> [Brand] {
     } catch {
         print(error)
     }
-    return [Brand(brand_id: 1, brand: "ERROR")]
+    return [errorBrand]
 }
 

@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import MapKit
 
-struct Car: Codable {
-    
+struct Car: Codable, Identifiable {
+    var id: String {
+        license_plate
+    }
     var license_plate: String
     
     var brand_id: Int
@@ -18,6 +21,8 @@ struct Car: Codable {
     var year: Int
     var comment: String
     var is_new: Int
+    var latitude: Double
+    var longitude: Double
     
     var hasBrand: Bool {
         if (brand != "DEFAULT_VALUE" && brand != "") {
@@ -54,6 +59,7 @@ struct Car: Codable {
             return false
         }
     }
+    
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.uppercased()
         
@@ -82,5 +88,11 @@ struct Car: Codable {
         } else {
             return false
         }
+    }
+    func getLocation() -> MKCoordinateRegion {
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude),
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        )
     }
 }

@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var searchCar = ""
     @State private var brands = [Brand]()
     
-    @State var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
+    @State private var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
 
     @State var showAlert = false
     
@@ -24,7 +24,7 @@ struct ContentView: View {
             List {
                 ForEach(searchCars, id: \.license_plate) { result in
                     NavigationLink {
-                        CarDetails(car: result, brands: brands)
+                        CarDetails(car: result, brands: brands, region: result.getLocation())
                     } label: {
                         VStack(alignment: .leading) {
                             Text(result.getLP())
@@ -44,13 +44,11 @@ struct ContentView: View {
                 }
                 .onDelete { IndexSet in
                     Task {
-                        print(0)
 //                            DispatchQueue.main.async {
 //                                print(0.1)
 //                                results = await deleteData(at: IndexSet, cars: results.cars)
 //                            }
                         results = try await deleteData(at: IndexSet, cars: results.cars)
-//                            print(results)
                         if (results.error != "DEFAULT_VALUE") {
                             print("error delete")
                             showAlert = true
@@ -59,40 +57,37 @@ struct ContentView: View {
                 }
             }
             .task {
-//                isLoading = true
-//                results = await loadData()
-//                brands = await loadBrands()
-//                isLoading = false
-//                if (results.error != "DEFAULT_VALUE") {
-//                    showAlert = true
-//                }
                 await loadViewData()
             }
             .navigationTitle("Cars")
             
             #if os(iOS)
-            .navigationBarItems(trailing: plusButton.isHidden(isLoading))
-                        
-                            
-            .navigationBarItems(trailing:
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle())
-                                        .isHidden(!isLoading))
-            .navigationBarItems(leading:
-                Link(destination:
-                    URL(string:"https://magyarorszag.hu/jszp_szuf")!) {
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading, content: {
+                    
+                    Link(destination:
+                        URL(string:"https://magyarorszag.hu/jszp_szuf")!
+                    ) {
                         Image(systemName: "link")
                     }
-            )
-            .navigationBarItems(leading:
-                Button(action: {
-                    Task {
-                        await loadViewData()
-                    }
-                }, label: {
-                Image(systemName: "arrow.clockwise")
+                    
+                    Button(action: {
+                        Task {
+                            await loadViewData()
+                        }
+                    }, label: {
+                        Image(systemName: "arrow.clockwise")
+                    })
                 })
-            )
+                
+                ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .isHidden(!isLoading)
+                    
+                    plusButton.disabled(isLoading)
+                })
+            }
             #endif
             
             .refreshable {
@@ -108,10 +103,10 @@ struct ContentView: View {
         .sheet(isPresented: $isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
-                newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1)
+                newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
             }
         }) {
-            NewCar(isPresented: isNewCarPresented, isUpdate: false, isUpload: true, year: "", is_new: true, ezLenniCar: self.$newCar, brands: brands, selectedBrand: 1)
+            NewCar(isPresented: _isNewCarPresented, isUpdate: State(initialValue: false), isUpload: State(initialValue: true), year: State(initialValue: ""), is_new: State(initialValue: true), ezLenniCar: self._newCar, brands: _brands)
         }
     }
     
@@ -161,8 +156,8 @@ extension View {
     }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView()
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
