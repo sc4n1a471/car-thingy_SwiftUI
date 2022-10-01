@@ -19,63 +19,58 @@ enum MapType: String {
 struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
-    @State var isPresented: Bool
-    @State var isUpdate: Bool   // TODO: Figure out why I have isUpdate/isUpload seperate
-    @State var isUpload: Bool
-    @State var year: String     // TODO: Figure out why I have textYearBinding for year
-    @State var is_new: Bool = true
-    @State private var ezLenniCar: Car
-    @State var showAlert = false
-    @State var isLoading = false
+    @EnvironmentObject var sharedViewData: SharedViewData
+//    @EnvironmentObject var sharedCarDetails: SharedCarDetails
+    
+//    @State private var isPresented: Bool
+    @State private var isUpdate: Bool   // TODO: Figure out why I have isUpdate/isUpload seperate
+    @State private var isUpload: Bool
+    @State private var year: String     // TODO: Figure out why I have textYearBinding for year
+//    @State private var is_new: Bool = true
+    @State private var ezLenniCar = Car(license_plate: "aaaaaa", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+//    @State private var showAlert = false
+//    @State private var isLoading = false
     
 //    @State var brands = [Brand]()
-    @State var brands: [Brand]
-    @State private var selectedBrand = 1
-    @State var isNewBrand = false
-    @State var oldLicensePlate = ""
+//    @State var brands: [Brand]
+//    @State private var selectedBrand = 1
+    @State private var isNewBrand = false
+    @State private var oldLicensePlate = ""
     
-    @State var region = MKCoordinateRegion(
-        center:  CLLocationCoordinate2D(
-          latitude: 37.789467,
-          longitude: -122.416772
-        ),
-        span: MKCoordinateSpan(
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01
-       )
-    )
-    @State var isTracking: MapUserTrackingMode = .none
+//    @State private var region = MKCoordinateRegion(
+//        center:  CLLocationCoordinate2D(
+//          latitude: 37.789467,
+//          longitude: -122.416772
+//        ),
+//        span: MKCoordinateSpan(
+//          latitudeDelta: 0.01,
+//          longitudeDelta: 0.01
+//       )
+//    )
+    @State private var isTracking: MapUserTrackingMode = .none
     @StateObject var locationManager = LocationManager()
-    @State var customLatitude: String = ""
-    @State var customLongitude: String = ""
-    @State var selectedMap = MapType.custom
+    @State private var customLatitude: String = ""
+    @State private var customLongitude: String = ""
+    @State private var selectedMap = MapType.custom
     
-    init(isPresented: State<Bool>, isUpdate: State<Bool>, isUpload: State<Bool>, year: State<String>, is_new: State<Bool>, ezLenniCar: State<Car>, showAlert: State<Bool> = State(initialValue: false), isLoading: State<Bool> = State(initialValue: false), brands: State<[Brand]>, isNewBrand: State<Bool> = State(initialValue: false), oldLicensePlate: State<String> = State(initialValue: ""), region: State<MKCoordinateRegion> = State(initialValue: MKCoordinateRegion(
-        center:  CLLocationCoordinate2D(
-            latitude: 37.789467,
-            longitude: -122.416772
-        ),
-        span: MKCoordinateSpan(
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01
-        ))
-    )) {
+    init(isUpdate: State<Bool>, isUpload: State<Bool>, year: State<String>,
+         isNewBrand: State<Bool> = State(initialValue: false), oldLicensePlate: State<String> = State(initialValue: "")) {
 //        self.presentationMode = presentationMode
-        self._isPresented = isPresented
+//        self._isPresented = isPresented
         self._isUpdate = isUpdate
         self._isUpload = isUpload
         self._year = year
-        self._is_new = is_new
-        self._ezLenniCar = ezLenniCar
+//        self._is_new = is_new
+//        self._ezLenniCar = ezLenniCar
 //        self.showAlert = showAlert
-        self._isLoading = isLoading
-        self._brands = brands
-        self._selectedBrand = {
-            return State(initialValue: ezLenniCar.wrappedValue.brand_id)
-        }()
+//        self._isLoading = isLoading
+//        self._brands = brands
+//        self._selectedBrand = {
+//            return State(initialValue: sharedCarDetails.car.brand_id)
+//        }()
         self._isNewBrand = isNewBrand
         self._oldLicensePlate = oldLicensePlate
-        self._region = region
+//        self._region = region
 //        self.isTracking = isTracking
 //        self.locationManager = locationManager
 //        self.customCoordinates = customCoordinates
@@ -90,13 +85,14 @@ struct NewCar: View {
                 return  State(initialValue: MapType.custom)
             }
         }()
+//        self.sharedViewData = sharedViewData
     }
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
                 get: {
-                    return self.ezLenniCar.license_plate
+                    return ezLenniCar.license_plate
                     
             },
                 set: { newString in
@@ -203,7 +199,7 @@ struct NewCar: View {
                             .frame(height: 200)
                     } else if (selectedMap == MapType.existing || !isUpload) {
                         Map(
-                            coordinateRegion: $region,
+                            coordinateRegion: $sharedViewData.region,
                             interactionModes: MapInteractionModes.all,
                             annotationItems: [ezLenniCar]
                         ) {
@@ -213,15 +209,15 @@ struct NewCar: View {
                     }
                 }
                 
-                Toggle("Unknown car", isOn: $is_new)
-                if !is_new {
+                Toggle("Unknown car", isOn: $sharedViewData.is_new)
+                if !sharedViewData.is_new {
                     Section {
                         Toggle("Unknown brand", isOn: $isNewBrand)
                         if isNewBrand {
                             TextField("Brand", text: textBindingBrand)
                         } else {
-                            Picker("Brand", selection: $selectedBrand) {
-                                ForEach(brands, id: \.brand_id) { brand in
+                            Picker("Brand", selection: $sharedViewData.selectedBrand) {
+                                ForEach(sharedViewData.brands, id: \.brand_id) { brand in
                                     if (brand.brand != "DEFAULT_VALUE" && brand.brand != "ERROR") {
                                         Text(brand.brand)
                                     }
@@ -260,9 +256,9 @@ struct NewCar: View {
                         Text("Comment")
                     }
                 }
-            }.alert("Error", isPresented: $showAlert, actions: {
+            }.alert("Error", isPresented: $sharedViewData.showAlert, actions: {
                 Button("Got it") {
-                    showAlert = false
+                    sharedViewData.showAlert = false
                 }
             }, message: {
                 Text("Could not connect to server!")
@@ -276,11 +272,18 @@ struct NewCar: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!isLoading)
+                        .isHidden(!sharedViewData.isLoading)
                     
                     save
-                        .disabled(isLoading)
+                        .disabled(sharedViewData.isLoading)
                 })
+            }
+        }
+        .onAppear() {
+            if (sharedViewData.isEditCarPresented) {
+                self.ezLenniCar = sharedViewData.existingCar
+            } else {
+                self.ezLenniCar = sharedViewData.newCar
             }
         }
     }
@@ -290,7 +293,7 @@ struct NewCar: View {
     var save: some View {
         Button(action: {
             Task {
-                isLoading = true
+                sharedViewData.isLoading = true
                 
                 if (selectedMap == MapType.custom) {
                     print("customMap")
@@ -304,15 +307,15 @@ struct NewCar: View {
                 print(ezLenniCar)
                 
                 if (!isNewBrand) {
-                    for brand in brands {
-                        if (brand.brand_id == selectedBrand) {
+                    for brand in sharedViewData.brands {
+                        if (brand.brand_id == sharedViewData.selectedBrand) {
                             ezLenniCar.brand = brand.brand
                         }
                     }
                 }
                 
                 ezLenniCar.year = Int(year) ?? 1901
-                if (is_new) {
+                if (sharedViewData.is_new) {
                     ezLenniCar.is_new = 1
                 } else {
                     ezLenniCar.is_new = 0
@@ -333,13 +336,13 @@ struct NewCar: View {
                 print("ezLenniCarData2: \(ezLenniCarData)")
                 
                 let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isUpdate: isUpdate)
-                isLoading = false
+                sharedViewData.isLoading = false
                 if successfullyUploaded {
-                    isPresented = false
+                    sharedViewData.isEditCarPresented = false
                     presentationMode.wrappedValue.dismiss()
                     print("Success: Upload")
                 } else {
-                    showAlert = true
+                    sharedViewData.showAlert = true
                     print("Failed: Upload")
                 }
                 presentationMode.wrappedValue.dismiss()

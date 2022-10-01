@@ -9,113 +9,140 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
+//class SharedCarDetails: ObservableObject {
+//    @Published var car = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+//    @Published var isEditCarPresented = false
+//    @Published var region = MKCoordinateRegion(
+//        center:  CLLocationCoordinate2D(
+//          latitude: 37.789467,
+//          longitude: -122.416772
+//        ),
+//        span: MKCoordinateSpan(
+//          latitudeDelta: 0.01,
+//          longitudeDelta: 0.01
+//       )
+//    )
+//    @Published var selectedBrand = 1
+//}
+
 struct CarDetails: View {
-    @State var car: Car
-    @State var isEditCarPresented = false
-    @State var isNew: Bool?
-    @State var brands: [Brand]
-    @State var isLoading = false
+    @EnvironmentObject var sharedViewData: SharedViewData
+//    @StateObject var sharedCarDetails: SharedCarDetails
     
-    @State var region = MKCoordinateRegion(
-        center:  CLLocationCoordinate2D(
-          latitude: 37.789467,
-          longitude: -122.416772
-        ),
-        span: MKCoordinateSpan(
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01
-       )
-    )
+    @State private var selectedCar: Car
+//    @State private var isEditCarPresented = false
+//    @State private var isNew: Bool?
+//    @State var brands: [Brand]
+//    @State var isLoading = false
+    
+    @State var region: MKCoordinateRegion
+    
 //    @State var isTracking: MapUserTrackingMode = .none
 //    @StateObject var locationManager = LocationManager()
     
+    init(selectedCar: Car, region: MKCoordinateRegion) {
+////        self.sharedViewData = sharedViewData
+////        self.sharedCarDetails = sharedCarDetails
+////        self.isEditCarPresented = isEditCarPresented
+////        self.isNew = isNew
+////        self.region = region
+        self.selectedCar = selectedCar
+        self.region = region
+    }
+    
     var body: some View {
         List {
-            if car.hasBrand {
+            if selectedCar.hasBrand {
                 Section {
-                    Text(String(car.brand))
+                    Text(String(selectedCar.brand))
                 } header: {
                     Text("Brand")
                 }
             }
-            if car.hasModel {
+            if selectedCar.hasModel {
                 Section {
-                    Text(String(car.model))
+                    Text(String(selectedCar.model))
                 } header: {
                     Text("Model")
                 }
             }
-            if car.hasCodename {
+            if selectedCar.hasCodename {
                 Section {
-                    Text(String(car.codename))
+                    Text(String(selectedCar.codename))
                 } header: {
                     Text("Codename")
                 }
             }
-            if car.hasYear {
+            if selectedCar.hasYear {
                 Section {
-                    Text(String(car.year))
+                    Text(String(selectedCar.year))
                 } header: {
                     Text("Year")
                 }
             }
-            if car.hasComment {
+            if selectedCar.hasComment {
                 Section {
-                    Text(car.comment)
+                    Text(selectedCar.comment)
                 } header: {
                     Text("Comment")
                 }
             }
             Map(
-                coordinateRegion: $region,
+                coordinateRegion: $sharedViewData.region,
                 interactionModes: MapInteractionModes.all,
-                annotationItems: [car]
+                annotationItems: [selectedCar]
             ) {
                 MapMarker(coordinate: $0.getLocation().center)
             }
                 .frame(height: 200)
         }
         .task {
-            isLoading = true
-            car = await loadCar(license_plate: car.license_plate).cars[0]
-            isLoading = false
+            sharedViewData.isLoading = true
+            sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
+            sharedViewData.isLoading = false
         }
-        .navigationTitle(car.getLP())
+        .navigationTitle(selectedCar.getLP())
 #if os(iOS)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing, content: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!isLoading)
+                    .isHidden(!sharedViewData.isLoading)
                 
                 editButton
-                    .disabled(isLoading)
+                    .disabled(sharedViewData.isLoading)
             })
         }
 #endif
-        .sheet(isPresented: $isEditCarPresented, onDismiss: {
+        .sheet(isPresented: $sharedViewData.isEditCarPresented, onDismiss: {
             Task {
-                isLoading = true
-                car = await loadCar(license_plate: car.license_plate).cars[0]
-                brands = await loadBrands()
-                isLoading = false
+                sharedViewData.isLoading = true
+                sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
+                sharedViewData.brands = await loadBrands()
+                sharedViewData.isLoading = false
             }
         }) {
-            NewCar(isPresented: _isEditCarPresented, isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(car.year)), is_new: State(initialValue: car.isNew()), ezLenniCar: self._car, brands: _brands, oldLicensePlate: State(initialValue: car.license_plate), region: State(initialValue: car.getLocation()))
+            NewCar(isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(sharedViewData.existingCar.year)), oldLicensePlate: State(initialValue: sharedViewData.existingCar.license_plate))
+        }
+        .onAppear() {
+            sharedViewData.existingCar = selectedCar
+            sharedViewData.region = region
+            sharedViewData.existingCar.isNew() ? (sharedViewData.is_new = true) : (sharedViewData.is_new = false)
+            sharedViewData.selectedBrand = sharedViewData.existingCar.brand_id
         }
     }
     
     var editButton: some View {
         Button (action: {
-            isEditCarPresented.toggle()
+            sharedViewData.isEditCarPresented.toggle()
         }, label: {
             Image(systemName: "pencil")
         })
     }
 }
 
-struct View2_Previews: PreviewProvider {
-    static var previews: some View {
-        CarDetails(car: Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677), brands: [Brand(brand_id: 1, brand: "he")])
-    }
-}
+//struct View2_Previews: PreviewProvider {
+//    static var previews: some View {
+//
+//    }
+//}
