@@ -9,43 +9,13 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
-//class SharedCarDetails: ObservableObject {
-//    @Published var car = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
-//    @Published var isEditCarPresented = false
-//    @Published var region = MKCoordinateRegion(
-//        center:  CLLocationCoordinate2D(
-//          latitude: 37.789467,
-//          longitude: -122.416772
-//        ),
-//        span: MKCoordinateSpan(
-//          latitudeDelta: 0.01,
-//          longitudeDelta: 0.01
-//       )
-//    )
-//    @Published var selectedBrand = 1
-//}
-
 struct CarDetails: View {
     @EnvironmentObject var sharedViewData: SharedViewData
-//    @StateObject var sharedCarDetails: SharedCarDetails
     
     @State private var selectedCar: Car
-//    @State private var isEditCarPresented = false
-//    @State private var isNew: Bool?
-//    @State var brands: [Brand]
-//    @State var isLoading = false
-    
-    @State var region: MKCoordinateRegion
-    
-//    @State var isTracking: MapUserTrackingMode = .none
-//    @StateObject var locationManager = LocationManager()
-    
+    @State private var region: MKCoordinateRegion
+        
     init(selectedCar: Car, region: MKCoordinateRegion) {
-////        self.sharedViewData = sharedViewData
-////        self.sharedCarDetails = sharedCarDetails
-////        self.isEditCarPresented = isEditCarPresented
-////        self.isNew = isNew
-////        self.region = region
         self.selectedCar = selectedCar
         self.region = region
     }
@@ -88,7 +58,7 @@ struct CarDetails: View {
                 }
             }
             Map(
-                coordinateRegion: $sharedViewData.region,
+                coordinateRegion: $region,
                 interactionModes: MapInteractionModes.all,
                 annotationItems: [selectedCar]
             ) {
@@ -122,7 +92,7 @@ struct CarDetails: View {
                 sharedViewData.isLoading = false
             }
         }) {
-            NewCar(isUpdate: State(initialValue: true), isUpload: State(initialValue: false), year: State(initialValue: String(sharedViewData.existingCar.year)), oldLicensePlate: State(initialValue: sharedViewData.existingCar.license_plate))
+            NewCar(isUpload: false)
         }
         .onAppear() {
             sharedViewData.existingCar = selectedCar
@@ -141,8 +111,18 @@ struct CarDetails: View {
     }
 }
 
-//struct View2_Previews: PreviewProvider {
-//    static var previews: some View {
-//
-//    }
-//}
+struct View2_Previews: PreviewProvider {
+    static var previews: some View {
+        CarDetails(selectedCar: Car(license_plate: "AAA111", brand_id: 3, brand: "BMW", model: "M5", codename: "E60", year: 2008, comment: "Heee", is_new: 0, latitude: 39, longitude: -122), region: MKCoordinateRegion(
+            center:  CLLocationCoordinate2D(
+              latitude: 37.789467,
+              longitude: -122.416772
+            ),
+            span: MKCoordinateSpan(
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01
+           )
+        ))
+        .environmentObject(SharedViewData())
+    }
+}

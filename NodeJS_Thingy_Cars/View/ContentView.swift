@@ -8,9 +8,7 @@
 import SwiftUI
 import MapKit
 
-class SharedViewData: ObservableObject {
-//    var didChange = PassthroughSubject<Void, Never>()
-    
+class SharedViewData: ObservableObject {    
     @Published var results = ReturnCar()
     @Published var brands = [Brand]()
     
@@ -20,7 +18,7 @@ class SharedViewData: ObservableObject {
     @Published var isEditCarPresented = false
     
     @Published var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
-    @Published var existingCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+    @Published var existingCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 10.332914, longitude: -122.005202)
     
     @Published var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
@@ -34,20 +32,14 @@ class SharedViewData: ObservableObject {
     )
     @Published var selectedBrand = 1
     @Published var is_new: Bool = true
+    var oldLicensePlate = ""
+    var yearAsString = ""
 }
 
 struct ContentView: View {
     @StateObject var sharedViewData = SharedViewData()
-//    @StateObject var sharedCarDetails = SharedCarDetails()
-//    @State private var results = ReturnCar()
-//    @State private var isNewCarPresented = false
-//    @State private var isLoading = false
-    @State private var searchCar = ""
-//    @State private var brands = [Brand]()
-    
-//    @State private var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
 
-//    @State var showAlert = false
+    @State private var searchCar = ""
     
     var body: some View {
     
@@ -75,11 +67,8 @@ struct ContentView: View {
                 }
                 .onDelete { IndexSet in
                     Task {
-//                            DispatchQueue.main.async {
-//                                print(0.1)
-//                                results = await deleteData(at: IndexSet, cars: results.cars)
-//                            }
                         sharedViewData.results = try await deleteData(at: IndexSet, cars: sharedViewData.results.cars)
+                        
                         if (sharedViewData.results.error != "DEFAULT_VALUE") {
                             print("error delete")
                             sharedViewData.showAlert = true
@@ -135,12 +124,12 @@ struct ContentView: View {
             Task {
                 await loadViewData()
                 sharedViewData.newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+                sharedViewData.selectedBrand = 1
             }
         }) {
-            NewCar(isUpdate: State(initialValue: false), isUpload: State(initialValue: true), year: State(initialValue: ""))
+            NewCar(isUpload: true)
         }
         .environmentObject(sharedViewData)
-//        .environmentObject(sharedCarDetails)
     }
     
     var plusButton: some View {
@@ -189,8 +178,8 @@ extension View {
     }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView()
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}

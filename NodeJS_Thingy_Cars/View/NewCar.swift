@@ -20,72 +20,30 @@ struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
     @EnvironmentObject var sharedViewData: SharedViewData
-//    @EnvironmentObject var sharedCarDetails: SharedCarDetails
     
-//    @State private var isPresented: Bool
-    @State private var isUpdate: Bool   // TODO: Figure out why I have isUpdate/isUpload seperate
-    @State private var isUpload: Bool
-    @State private var year: String     // TODO: Figure out why I have textYearBinding for year
-//    @State private var is_new: Bool = true
+    private var isUpload: Bool
+    @State private var year: String = ""     // TODO: Figure out why I have textYearBinding for year
     @State private var ezLenniCar = Car(license_plate: "aaaaaa", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
-//    @State private var showAlert = false
-//    @State private var isLoading = false
-    
-//    @State var brands = [Brand]()
-//    @State var brands: [Brand]
-//    @State private var selectedBrand = 1
     @State private var isNewBrand = false
     @State private var oldLicensePlate = ""
     
-//    @State private var region = MKCoordinateRegion(
-//        center:  CLLocationCoordinate2D(
-//          latitude: 37.789467,
-//          longitude: -122.416772
-//        ),
-//        span: MKCoordinateSpan(
-//          latitudeDelta: 0.01,
-//          longitudeDelta: 0.01
-//       )
-//    )
-    @State private var isTracking: MapUserTrackingMode = .none
     @StateObject var locationManager = LocationManager()
     @State private var customLatitude: String = ""
     @State private var customLongitude: String = ""
     @State private var selectedMap = MapType.custom
     
-    init(isUpdate: State<Bool>, isUpload: State<Bool>, year: State<String>,
-         isNewBrand: State<Bool> = State(initialValue: false), oldLicensePlate: State<String> = State(initialValue: "")) {
-//        self.presentationMode = presentationMode
-//        self._isPresented = isPresented
-        self._isUpdate = isUpdate
-        self._isUpload = isUpload
-        self._year = year
-//        self._is_new = is_new
-//        self._ezLenniCar = ezLenniCar
-//        self.showAlert = showAlert
-//        self._isLoading = isLoading
-//        self._brands = brands
-//        self._selectedBrand = {
-//            return State(initialValue: sharedCarDetails.car.brand_id)
-//        }()
+    init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
+        self.isUpload = isUpload
         self._isNewBrand = isNewBrand
-        self._oldLicensePlate = oldLicensePlate
-//        self._region = region
-//        self.isTracking = isTracking
-//        self.locationManager = locationManager
-//        self.customCoordinates = customCoordinates
-//        self.customLatitude = customLatitude
-//        self.customLongitude = customLongitude
         self._selectedMap = {
-            if (isUpload.wrappedValue) {
+            if (isUpload) {
                 return State(initialValue: MapType.current)
-            } else if (!isUpload.wrappedValue) {
+            } else if (!isUpload) {
                 return  State(initialValue: MapType.existing)
             } else {
                 return  State(initialValue: MapType.custom)
             }
         }()
-//        self.sharedViewData = sharedViewData
     }
     
     let removableCharacters: Set<Character> = ["-"]
@@ -194,7 +152,7 @@ struct NewCar: View {
                             coordinateRegion: $locationManager.region,
                             interactionModes: MapInteractionModes.all,
                             showsUserLocation: true,
-                            userTrackingMode: $isTracking
+                            userTrackingMode: .none
                         )
                             .frame(height: 200)
                     } else if (selectedMap == MapType.existing || !isUpload) {
@@ -256,7 +214,8 @@ struct NewCar: View {
                         Text("Comment")
                     }
                 }
-            }.alert("Error", isPresented: $sharedViewData.showAlert, actions: {
+            }
+            .alert("Error", isPresented: $sharedViewData.showAlert, actions: {
                 Button("Got it") {
                     sharedViewData.showAlert = false
                 }
@@ -282,9 +241,13 @@ struct NewCar: View {
         .onAppear() {
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
+                self.year = String(sharedViewData.existingCar.year)
             } else {
                 self.ezLenniCar = sharedViewData.newCar
+                sharedViewData.selectedBrand = 1
+                sharedViewData.is_new = true
             }
+            oldLicensePlate = sharedViewData.existingCar.license_plate
         }
     }
     
@@ -335,7 +298,7 @@ struct NewCar: View {
                 }
                 print("ezLenniCarData2: \(ezLenniCarData)")
                 
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isUpdate: isUpdate)
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload)
                 sharedViewData.isLoading = false
                 if successfullyUploaded {
                     sharedViewData.isEditCarPresented = false
@@ -362,20 +325,9 @@ struct NewCar: View {
     }
 }
 
-//struct NewCar_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NewCar(
-//            isPresented: State(initialValue: true),
-//            isUpdate: State(initialValue: true),
-//            isUpload: State(initialValue: false),
-//            year: State(initialValue: ""),
-//            is_new: State(initialValue: false),
-//            ezLenniCar:
-//                    .constant(
-//                        Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
-//                    ),
-//            brands: State(initialValue: [Brand(brand_id: 1, brand: "he"), Brand(brand_id: 2, brand: "hehe"), Brand(brand_id: 3, brand: "hehehe"), Brand(brand_id: 4, brand: "hehehehe"), Brand(brand_id: 5, brand: "hehehehehe"), Brand(brand_id: 5, brand: "hehehehe"), Brand(brand_id: 6, brand: "hehehehe"), Brand(brand_id: 7, brand: "hehehehe"), Brand(brand_id: 8, brand: "hehehehe"), Brand(brand_id: 9, brand: "hehehehe"), Brand(brand_id: 10, brand: "hehehehe"), Brand(brand_id: 11, brand: "hehehehe"), Brand(brand_id: 12, brand: "hehehehe"), Brand(brand_id: 13, brand: "hehehehe")]),
-//            selectedBrand: State(initialValue: 1)
-//        )
-//    }
-//}
+struct NewCar_Previews: PreviewProvider {
+    static var previews: some View {
+        NewCar(isUpload: false)
+            .environmentObject(SharedViewData())
+    }
+}
