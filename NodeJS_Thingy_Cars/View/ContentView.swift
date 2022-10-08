@@ -6,17 +6,40 @@
 //
 
 import SwiftUI
+import MapKit
+
+class SharedViewData: ObservableObject {    
+    @Published var results = ReturnCar()
+    @Published var brands = [Brand]()
+    
+    @Published var showAlert = false
+    @Published var isLoading = false
+    @Published var isNewCarPresented = false
+    @Published var isEditCarPresented = false
+    
+    @Published var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+    @Published var existingCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 10.332914, longitude: -122.005202)
+    
+    @Published var region = MKCoordinateRegion(
+        center:  CLLocationCoordinate2D(
+          latitude: 37.789467,
+          longitude: -122.416772
+        ),
+        span: MKCoordinateSpan(
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01
+       )
+    )
+    @Published var selectedBrand = 1
+    @Published var is_new: Bool = true
+    var oldLicensePlate = ""
+    var yearAsString = ""
+}
 
 struct ContentView: View {
-    @State private var results = ReturnCar()
-    @State private var isNewCarPresented = false
-    @State var isLoading = false
-    @State private var searchCar = ""
-    @State private var brands = [Brand]()
-    
-    @State private var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+    @StateObject var sharedViewData = SharedViewData()
 
-    @State var showAlert = false
+    @State private var searchCar = ""
     
     var body: some View {
     
@@ -24,7 +47,7 @@ struct ContentView: View {
             List {
                 ForEach(searchCars, id: \.license_plate) { result in
                     NavigationLink {
-                        CarDetails(car: result, brands: brands, region: result.getLocation())
+                        CarDetails(selectedCar: result, region: result.getLocation())
                     } label: {
                         VStack(alignment: .leading) {
                             Text(result.getLP())
@@ -44,14 +67,11 @@ struct ContentView: View {
                 }
                 .onDelete { IndexSet in
                     Task {
-//                            DispatchQueue.main.async {
-//                                print(0.1)
-//                                results = await deleteData(at: IndexSet, cars: results.cars)
-//                            }
-                        results = try await deleteData(at: IndexSet, cars: results.cars)
-                        if (results.error != "DEFAULT_VALUE") {
+                        sharedViewData.results = try await deleteData(at: IndexSet, cars: sharedViewData.results.cars)
+                        
+                        if (sharedViewData.results.error != "DEFAULT_VALUE") {
                             print("error delete")
-                            showAlert = true
+                            sharedViewData.showAlert = true
                         }
                     }
                 }
@@ -83,9 +103,9 @@ struct ContentView: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!isLoading)
+                        .isHidden(!sharedViewData.isLoading)
                     
-                    plusButton.disabled(isLoading)
+                    plusButton.disabled(sharedViewData.isLoading)
                 })
             }
             #endif
@@ -95,24 +115,26 @@ struct ContentView: View {
             }
             .searchable(text: $searchCar)
         }
-        .alert(results.error, isPresented: $showAlert, actions: {
+        .alert(sharedViewData.results.error, isPresented: $sharedViewData.showAlert, actions: {
             Button("Got it") {
                 print("alert confirmed")
             }
         })
-        .sheet(isPresented: $isNewCarPresented, onDismiss: {
+        .sheet(isPresented: $sharedViewData.isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
-                newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 46.229014679521015, longitude: 20.186523048482677)
+                sharedViewData.newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+                sharedViewData.selectedBrand = 1
             }
         }) {
-            NewCar(isPresented: _isNewCarPresented, isUpdate: State(initialValue: false), isUpload: State(initialValue: true), year: State(initialValue: ""), is_new: State(initialValue: true), ezLenniCar: self._newCar, brands: _brands)
+            NewCar(isUpload: true)
         }
+        .environmentObject(sharedViewData)
     }
     
     var plusButton: some View {
         Button (action: {
-            isNewCarPresented.toggle()
+            sharedViewData.isNewCarPresented.toggle()
         }, label: {
             Image(systemName: "plus")
         })
@@ -120,14 +142,14 @@ struct ContentView: View {
     
     var searchCars: [Car] {
         if searchCar.isEmpty {
-            return results.cars
+            return sharedViewData.results.cars
         } else {
             if self.searchCar.localizedStandardContains("new") {
-                return results.cars.filter {
+                return sharedViewData.results.cars.filter {
                     $0.is_new == 1
                 }
             }
-            return results.cars.filter {
+            return sharedViewData.results.cars.filter {
                 $0.license_plate.contains(self.searchCar.uppercased()) ||
                 $0.brand.localizedStandardContains(self.searchCar) ||
                 $0.model.localizedStandardContains(self.searchCar)
@@ -136,12 +158,12 @@ struct ContentView: View {
     }
     
     func loadViewData() async {
-        isLoading = true
-        results = await loadData()
-        brands = await loadBrands()
-        isLoading = false
-        if (results.error != "DEFAULT_VALUE") {
-            showAlert = true
+        sharedViewData.isLoading = true
+        sharedViewData.results = await loadData()
+        sharedViewData.brands = await loadBrands()
+        sharedViewData.isLoading = false
+        if (sharedViewData.results.error != "DEFAULT_VALUE") {
+            sharedViewData.showAlert = true
         }
     }
 }

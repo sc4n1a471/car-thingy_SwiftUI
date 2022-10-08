@@ -63,7 +63,7 @@ func loadCar(license_plate: String) async -> ReturnCar {
 }
 
 // MARK: saveData
-func saveData(uploadableCarData: CarData, isUpload: Bool, isUpdate: Bool) async -> Bool {
+func saveData(uploadableCarData: CarData, isUpload: Bool) async -> Bool {
     print(uploadableCarData.car)
     guard let encoded = try? JSONEncoder().encode(uploadableCarData.car) else {
         print("Failed to encode order")
