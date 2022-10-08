@@ -88,6 +88,7 @@ struct CarDetails: View {
             Task {
                 sharedViewData.isLoading = true
                 sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
+                selectedCar = sharedViewData.existingCar
                 sharedViewData.brands = await loadBrands()
                 sharedViewData.isLoading = false
             }
