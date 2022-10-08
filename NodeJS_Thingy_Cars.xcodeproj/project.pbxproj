@@ -7,25 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5705C44C28821C63004CC324 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705C44B28821C63004CC324 /* TestView.swift */; };
 		5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5724D1A928B0F9A7004768B8 /* Brand.swift */; };
 		577C65442895958500397961 /* HTTPController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTPController.swift */; };
 		5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */; };
 		5795FA97286E1288007E60DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA96286E1288007E60DF /* ContentView.swift */; };
 		5795FA99286E1289007E60DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5795FA98286E1289007E60DF /* Assets.xcassets */; };
 		5795FA9C286E1289007E60DF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5795FA9B286E1289007E60DF /* Preview Assets.xcassets */; };
-		57A49F2F2871EC85006A2712 /* CarDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F2E2871EC85006A2712 /* CarDetails.swift */; };
+		57A49F2F2871EC85006A2712 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F2E2871EC85006A2712 /* DetailView.swift */; };
 		57A49F312871EEA0006A2712 /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F302871EEA0006A2712 /* Car.swift */; };
 		57A49F332871EFE2006A2712 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F322871EFE2006A2712 /* Response.swift */; };
 		57A49F3A2872349B006A2712 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F392872349B006A2712 /* Database.swift */; };
-		57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9792D287765DE0024EAA0 /* DetailView.swift */; };
-		57A979322878B2980024EAA0 /* NewCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCar.swift */; };
+		57A979322878B2980024EAA0 /* NewCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCarView.swift */; };
 		57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BA28CE2C2700837E0F /* LocationManager.swift */; };
 		57D9B0F828BFCF1B001DFB09 /* CarData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D9B0F728BFCF1B001DFB09 /* CarData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5705C44B28821C63004CC324 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		5724D1A928B0F9A7004768B8 /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 		577C65432895958500397961 /* HTTPController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPController.swift; sourceTree = "<group>"; };
 		5795FA91286E1288007E60DF /* NodeJS_Thingy_Cars.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NodeJS_Thingy_Cars.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -33,12 +30,11 @@
 		5795FA96286E1288007E60DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5795FA98286E1289007E60DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5795FA9B286E1289007E60DF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		57A49F2E2871EC85006A2712 /* CarDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarDetails.swift; sourceTree = "<group>"; };
+		57A49F2E2871EC85006A2712 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		57A49F302871EEA0006A2712 /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		57A49F322871EFE2006A2712 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		57A49F392872349B006A2712 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
-		57A9792D287765DE0024EAA0 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
-		57A979312878B2980024EAA0 /* NewCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCar.swift; sourceTree = "<group>"; };
+		57A979312878B2980024EAA0 /* NewCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCarView.swift; sourceTree = "<group>"; };
 		57AFE3BA28CE2C2700837E0F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		57D9B0F728BFCF1B001DFB09 /* CarData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarData.swift; sourceTree = "<group>"; };
 		57F0F257288BEEFA0052D566 /* NodeJS_Thingy_Cars.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NodeJS_Thingy_Cars.entitlements; sourceTree = "<group>"; };
@@ -120,10 +116,8 @@
 			isa = PBXGroup;
 			children = (
 				5795FA96286E1288007E60DF /* ContentView.swift */,
-				57A49F2E2871EC85006A2712 /* CarDetails.swift */,
-				57A979312878B2980024EAA0 /* NewCar.swift */,
-				57A9792D287765DE0024EAA0 /* DetailView.swift */,
-				5705C44B28821C63004CC324 /* TestView.swift */,
+				57A49F2E2871EC85006A2712 /* DetailView.swift */,
+				57A979312878B2980024EAA0 /* NewCarView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -200,17 +194,15 @@
 			files = (
 				57A49F3A2872349B006A2712 /* Database.swift in Sources */,
 				5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */,
-				57A9792E287765DE0024EAA0 /* DetailView.swift in Sources */,
 				5795FA97286E1288007E60DF /* ContentView.swift in Sources */,
-				57A49F2F2871EC85006A2712 /* CarDetails.swift in Sources */,
+				57A49F2F2871EC85006A2712 /* DetailView.swift in Sources */,
 				577C65442895958500397961 /* HTTPController.swift in Sources */,
 				57A49F312871EEA0006A2712 /* Car.swift in Sources */,
 				57D9B0F828BFCF1B001DFB09 /* CarData.swift in Sources */,
-				5705C44C28821C63004CC324 /* TestView.swift in Sources */,
 				57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */,
 				5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */,
 				57A49F332871EFE2006A2712 /* Response.swift in Sources */,
-				57A979322878B2980024EAA0 /* NewCar.swift in Sources */,
+				57A979322878B2980024EAA0 /* NewCarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
