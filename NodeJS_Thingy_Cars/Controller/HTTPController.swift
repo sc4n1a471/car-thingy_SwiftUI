@@ -24,11 +24,11 @@ func loadData() async -> ReturnCar {
         // (data, metadata)-ban metadata most nem kell, ezért lehet _
         let (data, _) = try await URLSession.shared.data(from: url)
         
-        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-            returnedData.error = "Could not reach API (502)"
-            returnedData.cars = [errorCar]
-            return returnedData
-        }
+//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+//            returnedData.error = "Could not reach API (502)"
+//            returnedData.cars = [errorCar]
+//            return returnedData
+//        }
         return initData(dataCuccli: data)
     } catch {
         print("Invalid data")
