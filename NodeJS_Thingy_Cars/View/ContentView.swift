@@ -128,6 +128,7 @@ struct ContentView: View {
             }
         }) {
             NewCar(isUpload: true)
+                .environmentObject(sharedViewData)
         }
         .environmentObject(sharedViewData)
     }

@@ -23,7 +23,7 @@ struct Car: Codable, Identifiable {
     var is_new: Int
     var latitude: Double
     var longitude: Double
-    var created_at: String = "1990-01-01"
+//    var created_at: String = "1990-01-01"
     
     var hasBrand: Bool {
         if (brand != "DEFAULT_VALUE" && brand != "") {
