@@ -79,6 +79,12 @@ struct CarDetails: View {
                     .progressViewStyle(CircularProgressViewStyle())
                     .isHidden(!sharedViewData.isLoading)
                 
+                Link(destination:
+                    URL(string:"https://magyarorszag.hu/jszp_szuf")!
+                ) {
+                    Image(systemName: "link")
+                }
+                
                 editButton
                     .disabled(sharedViewData.isLoading)
             })
