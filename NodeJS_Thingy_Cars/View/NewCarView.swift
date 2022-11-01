@@ -259,11 +259,11 @@ struct NewCar: View {
                 sharedViewData.isLoading = true
                 
                 if (selectedMap == MapType.custom) {
-                    print("customMap")
+//                    print("customMap")
                     ezLenniCar.latitude = Double(customLatitude) ?? 37.789467
                     ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-                    print("currentMap")
+//                    print("currentMap")
                     ezLenniCar.latitude = locationManager.region.center.latitude
                     ezLenniCar.longitude = locationManager.region.center.longitude
                 }
@@ -288,15 +288,16 @@ struct NewCar: View {
                 oldLicensePlate.removeAll(where: {
                     removableCharacters.contains($0)
                 })
-                print("oldLicensePlate: \(oldLicensePlate)")
+//                print("oldLicensePlate: \(oldLicensePlate)")
                 
                 var ezLenniCarData = CarData(car: ezLenniCar, oldLicensePlate: ezLenniCar.license_plate)
-                print("ezLenniCarData1: \(ezLenniCarData)")
+//                print("ezLenniCarData1: \(ezLenniCarData)")
                 
                 if (oldLicensePlate != ezLenniCar.license_plate) {
                     ezLenniCarData.oldLicensePlate = oldLicensePlate
+                    sharedViewData.existingCar.license_plate = ezLenniCar.license_plate
                 }
-                print("ezLenniCarData2: \(ezLenniCarData)")
+//                print("ezLenniCarData2: \(ezLenniCarData)")
                 
                 let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload)
                 sharedViewData.isLoading = false
