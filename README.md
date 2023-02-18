@@ -1,4 +1,4 @@
-# NodeJS_Thingy_Cars
+# NodeJS_Thingy_SwiftUI
 Ez lenni repository for autós, rendszámos SwiftUI appcuccli
 
 Saját MySQL adatbázishoz csatlakozik, azon belül rendszámhoz kötött autókat lehet felvinni/módosítani/lekérni/törölni/keresni
