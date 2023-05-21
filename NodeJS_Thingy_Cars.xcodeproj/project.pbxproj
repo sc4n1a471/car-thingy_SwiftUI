@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5724D1A928B0F9A7004768B8 /* Brand.swift */; };
+		57563E842A1A78E30051B0F1 /* CarQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E832A1A78E30051B0F1 /* CarQuery.swift */; };
+		57563E862A1A7BDC0051B0F1 /* CarQueryInspection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E852A1A7BDC0051B0F1 /* CarQueryInspection.swift */; };
+		57563E892A1A7D320051B0F1 /* CarQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E882A1A7D320051B0F1 /* CarQueryResponse.swift */; };
+		57563E8B2A1A826F0051B0F1 /* QueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E8A2A1A826F0051B0F1 /* QueryView.swift */; };
+		57563E8F2A1A94830051B0F1 /* QuerySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E8E2A1A94830051B0F1 /* QuerySheetView.swift */; };
+		57563E922A1ABD530051B0F1 /* MileageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E912A1ABD530051B0F1 /* MileageView.swift */; };
+		57563E962A1AC2290051B0F1 /* Mileage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E952A1AC2290051B0F1 /* Mileage.swift */; };
 		577C65442895958500397961 /* HTTPController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTPController.swift */; };
 		5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */; };
 		5795FA97286E1288007E60DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA96286E1288007E60DF /* ContentView.swift */; };
@@ -24,6 +31,13 @@
 
 /* Begin PBXFileReference section */
 		5724D1A928B0F9A7004768B8 /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
+		57563E832A1A78E30051B0F1 /* CarQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarQuery.swift; sourceTree = "<group>"; };
+		57563E852A1A7BDC0051B0F1 /* CarQueryInspection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarQueryInspection.swift; sourceTree = "<group>"; };
+		57563E882A1A7D320051B0F1 /* CarQueryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarQueryResponse.swift; sourceTree = "<group>"; };
+		57563E8A2A1A826F0051B0F1 /* QueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryView.swift; sourceTree = "<group>"; };
+		57563E8E2A1A94830051B0F1 /* QuerySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuerySheetView.swift; sourceTree = "<group>"; };
+		57563E912A1ABD530051B0F1 /* MileageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MileageView.swift; sourceTree = "<group>"; };
+		57563E952A1AC2290051B0F1 /* Mileage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mileage.swift; sourceTree = "<group>"; };
 		577C65432895958500397961 /* HTTPController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPController.swift; sourceTree = "<group>"; };
 		5795FA91286E1288007E60DF /* NodeJS_Thingy_Cars.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NodeJS_Thingy_Cars.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeJS_Thingy_CarsApp.swift; sourceTree = "<group>"; };
@@ -52,6 +66,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		57563E872A1A7BE20051B0F1 /* Query */ = {
+			isa = PBXGroup;
+			children = (
+				57563E832A1A78E30051B0F1 /* CarQuery.swift */,
+				57563E852A1A7BDC0051B0F1 /* CarQueryInspection.swift */,
+				57563E882A1A7D320051B0F1 /* CarQueryResponse.swift */,
+				57563E952A1AC2290051B0F1 /* Mileage.swift */,
+			);
+			path = Query;
+			sourceTree = "<group>";
+		};
+		57563E902A1ABD240051B0F1 /* QueryViews */ = {
+			isa = PBXGroup;
+			children = (
+				57563E8A2A1A826F0051B0F1 /* QueryView.swift */,
+				57563E8E2A1A94830051B0F1 /* QuerySheetView.swift */,
+				57563E912A1ABD530051B0F1 /* MileageView.swift */,
+			);
+			path = QueryViews;
+			sourceTree = "<group>";
+		};
 		577C6546289595A300397961 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +143,7 @@
 				57A49F322871EFE2006A2712 /* Response.swift */,
 				5724D1A928B0F9A7004768B8 /* Brand.swift */,
 				57D9B0F728BFCF1B001DFB09 /* CarData.swift */,
+				57563E872A1A7BE20051B0F1 /* Query */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -118,6 +154,7 @@
 				5795FA96286E1288007E60DF /* ContentView.swift */,
 				57A49F2E2871EC85006A2712 /* DetailView.swift */,
 				57A979312878B2980024EAA0 /* NewCarView.swift */,
+				57563E902A1ABD240051B0F1 /* QueryViews */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -193,12 +230,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				57A49F3A2872349B006A2712 /* Database.swift in Sources */,
+				57563E8B2A1A826F0051B0F1 /* QueryView.swift in Sources */,
 				5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */,
 				5795FA97286E1288007E60DF /* ContentView.swift in Sources */,
 				57A49F2F2871EC85006A2712 /* DetailView.swift in Sources */,
 				577C65442895958500397961 /* HTTPController.swift in Sources */,
+				57563E962A1AC2290051B0F1 /* Mileage.swift in Sources */,
+				57563E842A1A78E30051B0F1 /* CarQuery.swift in Sources */,
+				57563E922A1ABD530051B0F1 /* MileageView.swift in Sources */,
 				57A49F312871EEA0006A2712 /* Car.swift in Sources */,
 				57D9B0F828BFCF1B001DFB09 /* CarData.swift in Sources */,
+				57563E892A1A7D320051B0F1 /* CarQueryResponse.swift in Sources */,
+				57563E8F2A1A94830051B0F1 /* QuerySheetView.swift in Sources */,
+				57563E862A1A7BDC0051B0F1 /* CarQueryInspection.swift in Sources */,
 				57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */,
 				5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */,
 				57A49F332871EFE2006A2712 /* Response.swift in Sources */,

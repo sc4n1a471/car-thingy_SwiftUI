@@ -14,6 +14,7 @@ class SharedViewData: ObservableObject {
     
     @Published var showAlert = false
     @Published var isLoading = false
+    @Published var areCarsLoaded = false
     @Published var isNewCarPresented = false
     @Published var isEditCarPresented = false
     
@@ -42,7 +43,6 @@ struct ContentView: View {
     @State private var searchCar = ""
     
     var body: some View {
-    
         NavigationView {
             List {
                 ForEach(searchCars, id: \.license_plate) { result in
@@ -77,7 +77,9 @@ struct ContentView: View {
                 }
             }
             .task {
-                await loadViewData()
+                if (!sharedViewData.areCarsLoaded) {
+                    await loadViewData()
+                }
             }
             .navigationTitle("Cars")
             
@@ -166,6 +168,7 @@ struct ContentView: View {
         if (sharedViewData.results.error != "DEFAULT_VALUE") {
             sharedViewData.showAlert = true
         }
+        sharedViewData.areCarsLoaded = true
     }
 }
 

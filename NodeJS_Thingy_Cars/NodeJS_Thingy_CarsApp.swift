@@ -12,7 +12,17 @@ struct NodeJS_Thingy_CarsApp: App {
     var body: some Scene {
         WindowGroup {
             #if os(iOS)
-            ContentView()
+            TabView {
+                QueryView()
+                    .tabItem {
+                        Label("Query Car", systemImage: "gear")
+                    }
+                ContentView()
+                    .tabItem {
+                        Label("My Cars", systemImage: "book")
+                    }
+            }
+            
             #elseif os(macOS)
             ContentView2()
             #endif

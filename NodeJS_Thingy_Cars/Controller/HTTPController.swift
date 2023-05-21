@@ -15,6 +15,11 @@ struct ReturnCar {
     var error: String = "DEFAULT_VALUE"
 }
 
+struct ReturnCarQuery {
+    var queriedCar: CarQuery?
+    var error: String = "DEFAULT_VALUE"
+}
+
 // MARK: loadData
 func loadData() async -> ReturnCar {
     let url = getURL(whichUrl: "cars")
@@ -58,6 +63,35 @@ func loadCar(license_plate: String) async -> ReturnCar {
         print("Invalid data")
         returnedData.error = error.localizedDescription
         returnedData.cars = [errorCar]
+        return returnedData
+    }
+}
+
+// MARK: queryCar
+func queryCar(license_plate: String) async -> ReturnCarQuery {
+    let url = URL(string: getURLasString(whichUrl: "carQuery") + "/" + license_plate.uppercased())!
+    
+//    print(url)
+
+    var returnedData = ReturnCarQuery()
+    
+    do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        let resultObject = try JSONSerialization.jsonObject(with: data, options: [.allowFragments,])
+        print("\(resultObject)")
+        
+//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+//            returnedData.error = "Could not reach API (502)"
+//            returnedData.queriedCar = [errorCar]
+//            return returnedData
+//        }
+        
+        return initCarQuery(dataCuccli: data)
+    } catch {
+        print("Invalid data")
+        returnedData.error = error.localizedDescription
+//        returnedData.cars = [errorCar]
         return returnedData
     }
 }
@@ -181,6 +215,34 @@ func initData(dataCuccli: Data) -> ReturnCar {
         return returnedData
     }
 }
+
+// MARK: initCarQuery
+func initCarQuery(dataCuccli: Data) -> ReturnCarQuery {
+    var decodedData: CarQueryResponse
+    var returnedData = ReturnCarQuery()
+    
+    do {
+        decodedData = try JSONDecoder().decode(CarQueryResponse.self, from: dataCuccli)
+                    
+        if (decodedData.status == "success") {
+            print("status (Cars): \(decodedData.status)")
+            returnedData.queriedCar = decodedData.message![0]
+            return returnedData
+        } else {
+            print("Failed response: \(decodedData.error ?? "No error message from server")")
+            returnedData.error = decodedData.error ?? "No error message from server"
+            return returnedData
+        }
+
+    } catch {
+        print("initCarQuery error: \(error)")
+        returnedData.error = error.localizedDescription
+//        returnedData.queriedCar = [errorCar]
+        return returnedData
+    }
+}
+
+
 
 //MARK: loadBrands
 func loadBrands() async -> [Brand] {
