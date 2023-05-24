@@ -14,15 +14,17 @@ struct Mileage: Codable, Identifiable {
     }
     
     var mileage: Int
-    var mileageDate: String
+    var mileage_date: String
     
     
     init(mileage: Int, mileageDate: String) {
-//        let calendar = Calendar.autoupdatingCurrent
-//        let dateSeperated = mileageDate.split(separator: ".")
-//        self.mileageDate = calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
-        self.mileageDate = mileageDate
-
+        self.mileage_date = mileageDate
         self.mileage = mileage
+    }
+    
+    func getDate() -> Date {
+        let calendar = Calendar.autoupdatingCurrent
+        let dateSeperated = mileage_date.split(separator: ".")
+        return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
     }
 }

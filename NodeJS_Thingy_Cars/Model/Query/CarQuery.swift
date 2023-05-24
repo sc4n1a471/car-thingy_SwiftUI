@@ -8,7 +8,7 @@
 import Foundation
 
 struct CarQuery: Codable {
-    var accidents: [String: String]
+    var accidents: [Accident]
     var brand: String
     var color: String
     var engine_size: Int
@@ -19,7 +19,7 @@ struct CarQuery: Codable {
     var fuel_type: String
     var gearbox: String
     
-    var inspections: [CarQueryInspection]
+    var inspections: [Inspection]
     
     var license_plate: String
     

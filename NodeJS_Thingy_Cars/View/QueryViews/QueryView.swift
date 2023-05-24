@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-var testCar: CarQuery = CarQuery(accidents: [:], brand: "yas", color: "Black", engine_size: 5000, first_reg: "yas", first_reg_hun: "yas", fuel_type: "yas", gearbox: "Automatic", inspections: [CarQueryInspection(images: [], inspection: "yas")], license_plate: "AAAA111", mileage: [Mileage(mileage: 100, mileageDate: "2020.01.01.")], model: "yas", num_of_owners: 5, performance: 400, restrictions: [], status: "yas", type_code: "yas", year: 2005)
+var testCar: CarQuery = CarQuery(accidents: [Accident(accident_date: "2020.01.01", role: "Károkozó")], brand: "yas", color: "Black", engine_size: 5000, first_reg: "yas", first_reg_hun: "yas", fuel_type: "yas", gearbox: "Automatic", inspections: [Inspection(images: [], name: "yas")], license_plate: "AAAA111", mileage: [Mileage(mileage: 100, mileageDate: "2020.01.01.")], model: "yas", num_of_owners: 5, performance: 400, restrictions: [], status: "yas", type_code: "yas", year: 2005)
 
 struct QueryView: View {
     @State var requestedLicensePlate: String = "test111"
@@ -44,6 +44,7 @@ struct QueryView: View {
                         .isHidden(!isLoading)
                 })
             }
+            .navigationTitle("Car Query")
         }
         .alert(returnedCarQuery.error, isPresented: $showAlert, actions: {
             Button("Got it") {
@@ -55,13 +56,10 @@ struct QueryView: View {
         }) {
             QuerySheetView(queriedCar: returnedCarQuery.queriedCar ?? testCar)
         }
-        
     }
     
     func queryCarButton(requestedCar: String) async {
         isLoading.toggle()
-        print(requestedCar)
-//        sleep(2)
         returnedCarQuery = await queryCar(license_plate: requestedCar)
         if (returnedCarQuery.error != "DEFAULT_VALUE") {
             showAlert = true

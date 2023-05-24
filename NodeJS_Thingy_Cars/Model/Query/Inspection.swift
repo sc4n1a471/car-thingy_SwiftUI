@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CarQueryInspection: Codable {
+struct Inspection: Codable {
     var images: [String]
-    var inspection: String
+    var name: String
 }

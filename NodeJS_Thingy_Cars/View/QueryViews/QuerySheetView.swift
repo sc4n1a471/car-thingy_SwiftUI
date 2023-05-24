@@ -45,6 +45,12 @@ struct QuerySheetView: View {
                     }
                     
                     Section {
+                        Text(queriedCar.model)
+                    } header: {
+                        Text(CarQueryData.model.rawValue)
+                    }
+                    
+                    Section {
                         Text(queriedCar.type_code)
                     } header: {
                         Text(CarQueryData.type_code.rawValue)
@@ -86,6 +92,12 @@ struct QuerySheetView: View {
                             Text(String(queriedCar.performance))
                         } header: {
                             Text(CarQueryData.performance.rawValue)
+                        }
+                        
+                        Section {
+                            Text(String(queriedCar.fuel_type))
+                        } header: {
+                            Text(CarQueryData.fuel_type.rawValue)
                         }
                         
                         Section {

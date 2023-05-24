@@ -15,11 +15,11 @@ struct NodeJS_Thingy_CarsApp: App {
             TabView {
                 QueryView()
                     .tabItem {
-                        Label("Query Car", systemImage: "gear")
+                        Label("Query Car", systemImage: "magnifyingglass")
                     }
                 ContentView()
                     .tabItem {
-                        Label("My Cars", systemImage: "book")
+                        Label("My Cars", systemImage: "tray.full")
                     }
             }
             

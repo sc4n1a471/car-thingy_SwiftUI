@@ -81,7 +81,7 @@ struct ContentView: View {
                     await loadViewData()
                 }
             }
-            .navigationTitle("Cars")
+            .navigationTitle("My Cars")
             
             #if os(iOS)
             .toolbar {

@@ -16,7 +16,7 @@ struct MileageView: View {
         VStack(spacing: 15) {
             Chart(mileageData) {
                 BarMark(
-                    x: .value("he", $0.mileageDate),
+                    x: .value("he", $0.getDate()),
                     y: .value("he", $0.mileage)
                 )
                 .cornerRadius(5)
@@ -26,7 +26,6 @@ struct MileageView: View {
     }
 }
 
-// TODO: Change parameter order
 struct MileageView_Previews: PreviewProvider {
     static var previews: some View {
         MileageView(mileageData: [
