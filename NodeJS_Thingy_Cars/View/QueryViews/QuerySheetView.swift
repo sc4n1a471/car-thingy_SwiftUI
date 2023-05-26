@@ -30,6 +30,8 @@ enum CarQueryData: String {
 
 struct QuerySheetView: View {
     @State var queriedCar: CarQuery
+    @State private var isRestrictionsExpanded = false
+    @State private var isAccidentsExpanded = false
     
     var body: some View {
         NavigationStack {
@@ -37,7 +39,7 @@ struct QuerySheetView: View {
                 Text(queriedCar.license_plate)
                     .font(.title)
                     .padding()
-                Form {
+                List {
                     Section {
                         Text(queriedCar.brand)
                     } header: {
@@ -112,7 +114,7 @@ struct QuerySheetView: View {
                             Text(CarQueryData.color.rawValue)
                         }
                     }
-
+                    
                     Group {
 //                        NavigationLink {
 //                            MileageView()
@@ -120,23 +122,30 @@ struct QuerySheetView: View {
 //                            Text(CarQueryData.inspections.rawValue)
 //                        }
                         
-//                        NavigationLink {
-//                            MileageView()
-//                        } label: {
-//                            Text(CarQueryData.restrictions.rawValue)
-//                        }
-                        
+                        Section {
+                            DisclosureGroup(CarQueryData.restrictions.rawValue, isExpanded: $isRestrictionsExpanded) {
+                                ForEach(queriedCar.restrictions!, id: \.self) { restriction in
+                                    Text(restriction)
+                                }
+                            }
+                            
+                            DisclosureGroup(CarQueryData.accidents.rawValue, isExpanded: $isAccidentsExpanded) {
+                                ForEach(queriedCar.accidents!, id: \.self) { accident in
+                                    HStack {
+                                        Text(accident.accident_date)
+                                        Text(accident.role)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    if let safeMileage = queriedCar.mileage {
                         NavigationLink {
-                            MileageView(mileageData: queriedCar.mileage)
+                            MileageView(mileageData: safeMileage)
                         } label: {
                             Text(CarQueryData.mileage.rawValue)
                         }
-                        
-//                        NavigationLink {
-//                            MileageView()
-//                        } label: {
-//                            Text(CarQueryData.accidents.rawValue)
-//                        }
                     }
                 }
             }
