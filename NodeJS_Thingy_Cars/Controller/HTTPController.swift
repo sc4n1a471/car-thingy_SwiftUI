@@ -78,20 +78,19 @@ func queryCar(license_plate: String) async -> ReturnCarQuery {
     do {
         let (data, _) = try await URLSession.shared.data(from: url)
         
-        let resultObject = try JSONSerialization.jsonObject(with: data, options: [.allowFragments,])
-        print("\(resultObject)")
+        if (String(data: data, encoding: .utf8)?.contains("500 Internal Server Error") == true) {
+            returnedData.error = "Internal server error (500)"
+            return returnedData
+        }
         
-//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-//            returnedData.error = "Could not reach API (502)"
-//            returnedData.queriedCar = [errorCar]
-//            return returnedData
-//        }
+        let resultObject = try JSONSerialization.jsonObject(with: data, options: [.allowFragments,])
+//        print("\(resultObject)")
         
         return initCarQuery(dataCuccli: data)
     } catch {
         print("Invalid data")
+        
         returnedData.error = error.localizedDescription
-//        returnedData.cars = [errorCar]
         return returnedData
     }
 }

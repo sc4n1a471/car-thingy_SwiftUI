@@ -84,6 +84,9 @@ struct QueryView: View {
         .sheet(isPresented: $isQueriedCarLoaded, onDismiss: {
             Task {}
         }) {
+            Button("Dismiss", action: { isQueriedCarLoaded.toggle() })
+                .buttonStyle(BorderedButtonStyle())
+                .padding()
             QuerySheetView(queriedCar: returnedCarQuery.queriedCar ?? testCar)
         }
     }
