@@ -32,6 +32,11 @@ struct NewCar: View {
     @State private var customLongitude: String = ""
     @State private var selectedMap = MapType.custom
     
+    private enum Field: Int, Hashable {
+        case newLicensePlate
+    }
+    @FocusState private var focusedField: Field?
+    
     init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
         self.isUpload = isUpload
         self._isNewBrand = isNewBrand
@@ -130,6 +135,7 @@ struct NewCar: View {
             Form {
                 Section {
                     TextField("License Plate", text: textBindingLicensePlate)
+                        .focused($focusedField, equals: .newLicensePlate)
                 } header: {
                     Text("License Plate")
                 }
@@ -246,6 +252,9 @@ struct NewCar: View {
                 self.ezLenniCar = sharedViewData.newCar
                 sharedViewData.selectedBrand = 1
                 sharedViewData.is_new = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(1)) {
+                    focusedField = .newLicensePlate
+                }
             }
             oldLicensePlate = sharedViewData.existingCar.license_plate
         }
