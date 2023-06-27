@@ -8,13 +8,13 @@
 import SwiftUI
 import MapKit
 
-class SharedViewData: ObservableObject {    
-    @Published var results = ReturnCar()
+class SharedViewData: ObservableObject {
     @Published var brands = [Brand]()
+    @Published var cars = [Car]()
+    @Published var error: String?
     
     @Published var showAlert = false
     @Published var isLoading = false
-    @Published var areCarsLoaded = false
     @Published var isNewCarPresented = false
     @Published var isEditCarPresented = false
     
@@ -67,19 +67,21 @@ struct ContentView: View {
                 }
                 .onDelete { IndexSet in
                     Task {
-                        sharedViewData.results = try await deleteData(at: IndexSet, cars: sharedViewData.results.cars)
+                        let (unsafeCars, unsafeError) = try await deleteData(at: IndexSet, cars: sharedViewData.cars)
                         
-                        if (sharedViewData.results.error != "DEFAULT_VALUE") {
-                            print("error delete")
+                        if let safeCars = unsafeCars {
+                            sharedViewData.cars = safeCars
+                        }
+                        
+                        if let safeError = unsafeError {
+                            sharedViewData.error = safeError
                             sharedViewData.showAlert = true
                         }
                     }
                 }
             }
             .task {
-                if (!sharedViewData.areCarsLoaded) {
-                    await loadViewData()
-                }
+                await loadViewData()
             }
             .navigationTitle("My Cars")
             
@@ -95,7 +97,7 @@ struct ContentView: View {
                     
                     Button(action: {
                         Task {
-                            await loadViewData()
+                            await loadViewData(true)
                         }
                     }, label: {
                         Image(systemName: "arrow.clockwise")
@@ -113,11 +115,11 @@ struct ContentView: View {
             #endif
             
             .refreshable {
-                await loadViewData()
+                await loadViewData(true)
             }
             .searchable(text: $searchCar)
         }
-        .alert(sharedViewData.results.error, isPresented: $sharedViewData.showAlert, actions: {
+        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewData.showAlert, actions: {
             Button("Got it") {
                 print("alert confirmed")
             }
@@ -145,14 +147,14 @@ struct ContentView: View {
     
     var searchCars: [Car] {
         if searchCar.isEmpty {
-            return sharedViewData.results.cars
+            return sharedViewData.cars
         } else {
             if self.searchCar.localizedStandardContains("new") {
-                return sharedViewData.results.cars.filter {
+                return sharedViewData.cars.filter {
                     $0.is_new == 1
                 }
             }
-            return sharedViewData.results.cars.filter {
+            return sharedViewData.cars.filter {
                 $0.license_plate.contains(self.searchCar.uppercased()) ||
                 $0.brand.localizedStandardContains(self.searchCar) ||
                 $0.model.localizedStandardContains(self.searchCar)
@@ -160,15 +162,28 @@ struct ContentView: View {
         }
     }
     
-    func loadViewData() async {
+    func loadViewData(_ refresh: Bool = false) async {
         sharedViewData.isLoading = true
-        sharedViewData.results = await loadData()
-        sharedViewData.brands = await loadBrands()
-        sharedViewData.isLoading = false
-        if (sharedViewData.results.error != "DEFAULT_VALUE") {
+        let (safeCars, safeCarError) = await loadData(refresh)
+        if let safeCars {
+            sharedViewData.cars = safeCars
+        }
+        
+        let (safeBrands, safeBrandError) = await loadBrands()
+        if let safeBrands {
+            sharedViewData.brands = safeBrands
+        }
+        
+        if let safeCarError {
+            sharedViewData.error = safeCarError
             sharedViewData.showAlert = true
         }
-        sharedViewData.areCarsLoaded = true
+        if let safeBrandError {
+            sharedViewData.error = safeBrandError
+            sharedViewData.showAlert = true
+        }
+        
+        sharedViewData.isLoading = false
     }
 }
 

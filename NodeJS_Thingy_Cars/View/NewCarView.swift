@@ -308,7 +308,7 @@ struct NewCar: View {
                 }
 //                print("ezLenniCarData2: \(ezLenniCarData)")
                 
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload)
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isNewBrand: isNewBrand)
                 sharedViewData.isLoading = false
                 if successfullyUploaded {
                     sharedViewData.isEditCarPresented = false
