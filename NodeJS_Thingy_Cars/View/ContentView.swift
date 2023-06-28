@@ -118,6 +118,9 @@ struct ContentView: View {
                 await loadViewData(true)
             }
             .searchable(text: $searchCar)
+            
+            
+            
         }
         .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewData.showAlert, actions: {
             Button("Got it") {
@@ -166,9 +169,10 @@ struct ContentView: View {
         sharedViewData.isLoading = true
         let (safeCars, safeCarError) = await loadData(refresh)
         if let safeCars {
-            sharedViewData.cars = safeCars
+            withAnimation {
+                sharedViewData.cars = safeCars
+            }
         }
-        
         let (safeBrands, safeBrandError) = await loadBrands()
         if let safeBrands {
             sharedViewData.brands = safeBrands

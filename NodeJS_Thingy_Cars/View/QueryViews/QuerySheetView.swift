@@ -33,12 +33,11 @@ struct QuerySheetView: View {
     @State private var isRestrictionsExpanded = false
     @State private var isAccidentsExpanded = false
     
+    @Environment(\.presentationMode) var presentationMode
+    
     var body: some View {
         NavigationStack {
             VStack() {
-                Text(queriedCar.license_plate)
-                    .font(.title)
-                    .padding()
                 List {
                     Section {
                         Text(queriedCar.brand)
@@ -148,8 +147,23 @@ struct QuerySheetView: View {
                         }
                     }
                 }
+                .navigationTitle(queriedCar.getLP())
+            }
+            // MARK: Toolbar items
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading, content: {
+                    close
+                })
             }
         }
+    }
+    
+    var close: some View {
+        Button(action: {
+            presentationMode.wrappedValue.dismiss()
+        }, label: {
+            Text("Close")
+        })
     }
 }
 

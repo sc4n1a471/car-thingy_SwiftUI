@@ -40,7 +40,7 @@ var testCar: CarQuery = CarQuery(
 )
 
 struct QueryView: View {
-    @State var requestedLicensePlate: String = ""
+    @State var requestedLicensePlate: String = "test111"
     @State var queriedCar: CarQuery?
     @State var error: String?
     @State var showAlert = false
@@ -55,14 +55,18 @@ struct QueryView: View {
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(10)
+                        .frame(maxWidth: 400)
                 }
-                Button("Request") {
+                Button {
                     Task {
                         await queryCarButton(requestedCar: $requestedLicensePlate.wrappedValue)
                     }
+                } label: {
+                    Text("Request")
+                        .frame(maxWidth: 200, maxHeight: 50)
                 }
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: 200)
+                .buttonStyle(.borderless)
+                .foregroundColor(.white)
                 .background(!isLoading ? Color.blue : Color.gray)
                 .cornerRadius(10)
                 .disabled(isLoading)
@@ -73,6 +77,12 @@ struct QueryView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                         .isHidden(!isLoading)
+                    
+                    Link(destination:
+                            URL(string:"https://magyarorszag.hu/jszp_szuf")!
+                    ) {
+                        Image(systemName: "link")
+                    }
                 })
             }
             .navigationTitle("Car Query")
@@ -85,9 +95,9 @@ struct QueryView: View {
         .sheet(isPresented: $isQueriedCarLoaded, onDismiss: {
             Task {}
         }) {
-            Button("Dismiss", action: { isQueriedCarLoaded.toggle() })
-                .buttonStyle(BorderedButtonStyle())
-                .padding()
+//            Button("Dismiss", action: { isQueriedCarLoaded.toggle() })
+//                .buttonStyle(BorderedButtonStyle())
+//                .padding()
             QuerySheetView(queriedCar: queriedCar ?? testCar)
         }
     }
@@ -112,5 +122,10 @@ struct QueryView: View {
 struct QueryView_Previews: PreviewProvider {
     static var previews: some View {
         QueryView()
+            .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
+            .previewDisplayName("iPhone SE")
+        QueryView()
+            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
+            .previewDisplayName("Mac Catalyst")
     }
 }
