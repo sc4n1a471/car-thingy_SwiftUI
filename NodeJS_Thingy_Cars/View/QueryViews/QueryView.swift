@@ -43,12 +43,14 @@ var testCar: CarQuery = CarQuery(
 )
 
 struct QueryView: View {
-    @State var requestedLicensePlate: String = "test111"
+    @State var requestedLicensePlate: String = ""
     @State var queriedCar: CarQuery?
     @State var error: String?
     @State var showAlert = false
     @State var isQueriedCarLoaded = false
     @State var isLoading = false
+    
+    @FocusState private var lpTextFieldFocused: Bool
     
     var body: some View {
         NavigationStack {
@@ -59,13 +61,29 @@ struct QueryView: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(10)
                         .frame(maxWidth: 400)
+                        .focused($lpTextFieldFocused)
                 }
                 Button {
                     Task {
+                        lpTextFieldFocused = false
                         await queryCarButton(requestedCar: $requestedLicensePlate.wrappedValue)
                     }
                 } label: {
                     Text("Request")
+                        .frame(maxWidth: 200, maxHeight: 50)
+                }
+                .buttonStyle(.borderless)
+                .foregroundColor(.white)
+                .background(!isLoading ? Color.blue : Color.gray)
+                .cornerRadius(10)
+                .disabled(isLoading)
+                
+                Button {
+                    Task {
+                        await queryCarButton(requestedCar: "test111")
+                    }
+                } label: {
+                    Text("Test Request")
                         .frame(maxWidth: 200, maxHeight: 50)
                 }
                 .buttonStyle(.borderless)

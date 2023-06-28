@@ -40,13 +40,17 @@ struct MileageView: View {
     }
     
     func calculateAvgMileage(_ mileageData: [Mileage]) -> Int {
-        let firstData: Mileage = mileageData.first!
-        let lastData: Mileage = mileageData.last!
-        
-        let mileageDelta = lastData.mileage - firstData.mileage
-        let yearDelta = lastData.getYear() - firstData.getYear()
-        
-        return Int(mileageDelta / yearDelta)
+        if let firstData = mileageData.first, let lastData = mileageData.last {
+            let mileageDelta = lastData.mileage - firstData.mileage
+            let yearDelta = lastData.getYear() - firstData.getYear()
+            
+            if yearDelta == 0 {
+                return 0
+            }
+            
+            return Int(mileageDelta / yearDelta)
+        }
+        return 0
     }
 }
 
