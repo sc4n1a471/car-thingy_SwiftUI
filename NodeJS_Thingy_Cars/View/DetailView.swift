@@ -66,11 +66,6 @@ struct CarDetails: View {
             }
                 .frame(height: 200)
         }
-        .task {
-            sharedViewData.isLoading = true
-            sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
-            sharedViewData.isLoading = false
-        }
         .navigationTitle(selectedCar.getLP())
 #if os(iOS)
         .toolbar {
@@ -93,9 +88,26 @@ struct CarDetails: View {
         .sheet(isPresented: $sharedViewData.isEditCarPresented, onDismiss: {
             Task {
                 sharedViewData.isLoading = true
-                sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
-                selectedCar = sharedViewData.existingCar
-                sharedViewData.brands = await loadBrands()
+                let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.license_plate)
+                if let safeCar {
+                    sharedViewData.existingCar = safeCar[0]
+                    selectedCar = sharedViewData.existingCar
+                }
+                
+                let (safeBrands, safeBrandError) = await loadBrands()
+                if let safeBrands {
+                    sharedViewData.brands = safeBrands
+                }
+                
+                if let safeCarError {
+                    sharedViewData.error = safeCarError
+                    sharedViewData.showAlert = true
+                }
+                if let safeBrandError {
+                    sharedViewData.error = safeBrandError
+                    sharedViewData.showAlert = true
+                }
+                
                 sharedViewData.isLoading = false
             }
         }) {

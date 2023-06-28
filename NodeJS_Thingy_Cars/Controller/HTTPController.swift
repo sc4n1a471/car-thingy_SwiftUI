@@ -10,93 +10,75 @@ import Foundation
 let errorCar = Car(license_plate: "ERROR", brand_id: 1, brand: "ERROR", model: "ERROR", codename: "ERROR", year: 9999, comment: "ERROR", is_new: 1, latitude: 37.332914, longitude: -122.005202)
 let errorBrand = Brand(brand_id: 1, brand: "ERROR")
 
-struct ReturnCar {
-    var cars: [Car] = [errorCar]
-    var error: String = "DEFAULT_VALUE"
-}
+var carsLoaded: Bool = false
+var brandsLoaded: Bool = false
 
-struct ReturnCarQuery {
-    var queriedCar: CarQuery?
-    var error: String = "DEFAULT_VALUE"
-}
 
-// MARK: loadData
-func loadData() async -> ReturnCar {
-    let url = getURL(whichUrl: "cars")
-    var returnedData = ReturnCar()
-    
-    do {
-        // (data, metadata)-ban metadata most nem kell, ezért lehet _
-        let (data, _) = try await URLSession.shared.data(from: url)
+// MARK: Car
+func loadData(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
+    if !carsLoaded || refresh {
+        let url = getURL(whichUrl: "cars")
         
-//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-//            returnedData.error = "Could not reach API (502)"
-//            returnedData.cars = [errorCar]
-//            return returnedData
-//        }
-        return initData(dataCuccli: data)
-    } catch {
-        print("Invalid data")
-        returnedData.error = error.localizedDescription
-        returnedData.cars = [errorCar]
-        return returnedData
+        do {
+            // (data, metadata)-ban metadata most nem kell, ezért lehet _
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+    //        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+    //            returnedData.error = "Could not reach API (502)"
+    //            returnedData.cars = [errorCar]
+    //            return returnedData
+    //        }
+            return initData(dataCuccli: data)
+        } catch {
+            print("Invalid data")
+            return ([errorCar], error.localizedDescription)
+        }
     }
+    print("Cars are already loaded")
+    return (nil,nil)
 }
 
-// MARK: loadCar
-func loadCar(license_plate: String) async -> ReturnCar {
+func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
     let url = URL(string: getURLasString(whichUrl: "cars") + "/" + license_plate.uppercased())!
-
-    var returnedData = ReturnCar()
     
     do {
         let (data, _) = try await URLSession.shared.data(from: url)
         
         if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-            returnedData.error = "Could not reach API (502)"
-            returnedData.cars = [errorCar]
-            return returnedData
+            return ([errorCar], "Could not reach API (502)")
         }
         
-        return initData(dataCuccli: data)
+        return initData(dataCuccli: data, carOnly: true)
     } catch {
         print("Invalid data")
-        returnedData.error = error.localizedDescription
-        returnedData.cars = [errorCar]
-        return returnedData
+        return ([errorCar], error.localizedDescription)
     }
 }
 
-// MARK: queryCar
-func queryCar(license_plate: String) async -> ReturnCarQuery {
-    let url = URL(string: getURLasString(whichUrl: "carQuery") + "/" + license_plate.uppercased())!
-    
-//    print(url)
-
-    var returnedData = ReturnCarQuery()
+func initData(dataCuccli: Data, carOnly: Bool = false) -> (cars: [Car]?, error: String?) {
+    var decodedData: Response
     
     do {
-        let (data, _) = try await URLSession.shared.data(from: url)
-        
-        if (String(data: data, encoding: .utf8)?.contains("500 Internal Server Error") == true) {
-            returnedData.error = "Internal server error (500)"
-            return returnedData
+        decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
+            
+        if (decodedData.success) {
+            print("status (Cars): \(decodedData.success)")
+            if !carOnly {
+                carsLoaded = true
+            }
+            return (decodedData.cars!, nil)
+        } else {
+            print("Failed response: \(decodedData.message ?? "No error message from server (?)")")
+            return (cars: nil, error: decodedData.message ?? "No error message from server (?)")
         }
-        
-        let resultObject = try JSONSerialization.jsonObject(with: data, options: [.allowFragments,])
-//        print("\(resultObject)")
-        
-        return initCarQuery(dataCuccli: data)
+
     } catch {
-        print("Invalid data")
-        
-        returnedData.error = error.localizedDescription
-        return returnedData
+        print("initData error: \(error)")
+        return ([errorCar], error.localizedDescription)
     }
 }
 
-// MARK: saveData
-func saveData(uploadableCarData: CarData, isUpload: Bool) async -> Bool {
+func saveData(uploadableCarData: CarData, isUpload: Bool, isNewBrand: Bool = false) async -> Bool {
     print(uploadableCarData.car)
     guard let encoded = try? JSONEncoder().encode(uploadableCarData.car) else {
         print("Failed to encode order")
@@ -114,6 +96,10 @@ func saveData(uploadableCarData: CarData, isUpload: Bool) async -> Bool {
         let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
 //        print(String(decoding: request.httpBody ?? Data(), as: UTF8.self))
 //        print(String(data: data, encoding: .utf8))
+        carsLoaded = false
+        if isNewBrand {
+            brandsLoaded = false
+        }
         return true
     } catch {
         print("Checkout failed.")
@@ -121,31 +107,29 @@ func saveData(uploadableCarData: CarData, isUpload: Bool) async -> Bool {
     }
 }
 
-// MARK: deleteHelper
 func deleteHelper (
     request: inout URLRequest,
-    cars: inout [Car],
-    returnedData: inout ReturnCar,
+    cars: [Car],
     offsets: IndexSet,
-    completionHandler: @escaping (_ returnedDataHe: ReturnCar?) -> Void
+    completionHandler: @escaping (_ cars: [Car]?, _ errorMsg: String?) -> Void
     ) {
     
-    var request = request
+    let request = request
     var cars = cars
-    var returnedData = returnedData
+    var errorMsg: String?
     
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil else {
             print("Error: error calling DELETE")
-            print("deleteData error: \(error)")
-            returnedData.error = "Error calling DELETE \n \(error)"
-            completionHandler(returnedData)
+            print("deleteData error: \(String(describing: error))")
+            errorMsg = "Error calling DELETE \n \(String(describing: error))"
+            completionHandler(cars, errorMsg)
             return
         }
         guard let data = data else {
             print("Error: Did not receive data")
-            returnedData.error = "Did not receive data in deleteData"
-            completionHandler(returnedData)
+            errorMsg = "Did not receive data in deleteData"
+            completionHandler(cars, errorMsg)
             return
         }
         
@@ -156,138 +140,118 @@ func deleteHelper (
         } catch {
             print("Error: Trying to convert JSON data to string")
             print("Error during decoding in deleteData. Error: \(error)")
-            returnedData.error = "Error during decoding in deleteData \n \(error)"
-            returnedData.cars = cars
-            completionHandler(returnedData)
+            errorMsg = "Error during decoding in deleteData \n \(error)"
+//            cars = cars
+            completionHandler(cars, errorMsg)
             return
         }
         
-        returnedData.cars.remove(atOffsets: offsets)
+        cars.remove(atOffsets: offsets)
         
-        completionHandler(returnedData)
+        completionHandler(cars, errorMsg)
     }.resume()
 }
 
-// MARK: deleteData
-func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> ReturnCar {
+func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?, error: String?) {
     
-    var cars = cars
-    var returnedData = ReturnCar()
-    returnedData.cars = cars
+    let cars: [Car]? = cars
     
-    let url1 = getURLasString(whichUrl: "cars") + "/" + (cars[offsets.first!].license_plate).uppercased()
+    let url1 = getURLasString(whichUrl: "cars") + "/" + (cars![offsets.first!].license_plate).uppercased()
     let urlFormatted = URL(string: url1)
     var request = URLRequest(url: urlFormatted!)
     request.httpMethod = "DELETE"
         
     return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-        deleteHelper(request: &request, cars: &cars, returnedData: &returnedData, offsets: offsets) { returnedDataHe in
-            if let returnedDataHe {
-                continuation.resume(returning: returnedDataHe)
+        deleteHelper(request: &request, cars: cars!, offsets: offsets) { (deleteCars, deleteError) in
+            if let deleteCars {
+                continuation.resume(returning: (deleteCars, deleteError))
+            }
+            if let deleteError {
+                continuation.resume(returning: (deleteCars, deleteError))
             }
         }
     })
 }
 
-// MARK: initData
-func initData(dataCuccli: Data) -> ReturnCar {
-    var decodedData: Response
-    var returnedData = ReturnCar()
-    
-    do {
-        decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
-            
-        if (decodedData.success) {
-            print("status (Cars): \(decodedData.success)")
-            returnedData.cars = decodedData.cars!
-            return returnedData
-        } else {
-            print("Failed response: \(decodedData.message ?? "No error message from server (?)")")
-            returnedData.error = decodedData.message ?? "No error message from server (?)"
-            return returnedData
-        }
 
+// MARK: Car query
+func queryCar(license_plate: String) async -> (queriedCar: CarQuery?, error: String?) {
+    let url = URL(string: getURLasString(whichUrl: "carQuery") + "/" + license_plate.uppercased())!
+        
+    do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        if (String(data: data, encoding: .utf8)?.contains("500 Internal Server Error") == true) {
+            return (nil, "Internal server error (500)")
+        }
+        
+        let resultObject = try JSONSerialization.jsonObject(with: data, options: [.allowFragments,])
+//        print("\(resultObject)")
+        
+        return initCarQuery(dataCuccli: data)
     } catch {
-        print("initData error: \(error)")
-        returnedData.error = error.localizedDescription
-        returnedData.cars = [errorCar]
-        return returnedData
+        print("Invalid data")
+        return (nil, error.localizedDescription)
     }
 }
 
-// MARK: initCarQuery
-func initCarQuery(dataCuccli: Data) -> ReturnCarQuery {
+func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, error: String?) {
     var decodedData: CarQueryResponse
-    var returnedData = ReturnCarQuery()
     
     do {
         decodedData = try JSONDecoder().decode(CarQueryResponse.self, from: dataCuccli)
                     
         if (decodedData.status == "success") {
             print("status (Cars): \(decodedData.status)")
-            returnedData.queriedCar = decodedData.message![0]
-            return returnedData
+            return (decodedData.message![0], nil)
         } else {
             print("Failed response: \(decodedData.error ?? "No error message from server")")
-            returnedData.error = decodedData.error ?? "No error message from server"
-            return returnedData
+            return (nil, decodedData.error ?? "No error message from server")
         }
 
     } catch {
         print("initCarQuery error: \(error)")
-        returnedData.error = error.localizedDescription
-//        returnedData.queriedCar = [errorCar]
-        return returnedData
+        return (nil, error.localizedDescription)
     }
 }
 
 
-
-//MARK: loadBrands
-func loadBrands() async -> [Brand] {
-    let url = getURL(whichUrl: "brands")
-    
-    do {
-        // (data, metadata)-ban metadata most nem kell, ezért lehet _
-        let (data, _) = try await URLSession.shared.data(from: url)
+//MARK: Brands
+func loadBrands() async -> (brands: [Brand]?, error: String?) {
+    if !brandsLoaded {
+        let url = getURL(whichUrl: "brands")
         
-        return initBrand(dataCuccli: data)
-    } catch {
-        print("Invalid data")
+        do {
+            // (data, metadata)-ban metadata most nem kell, ezért lehet _
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            return initBrand(dataCuccli: data)
+        } catch {
+            print("Invalid data")
+            return (nil, "Invalid data")
+        }
     }
-    return [errorBrand]
+    print("Brands are already loaded")
+    return (nil, nil)
 }
 
-//func loadBrand(license_plate: String) async -> [Brand] {
-//    let url = URL(string: getURLasString(whichUrl: "brands") + "/" + license_plate.uppercased())!
-//    print(url)
-//
-//    do {
-//        let (data, _) = try await URLSession.shared.data(from: url)
-//
-//        return initBrand(dataCuccli: data)
-//    } catch {
-//        print("Invalid data")
-//    }
-//    return [Brand(brand_id: 1, brand: "ERROR")]
-//}
-
-// MARK: initBrand
-func initBrand(dataCuccli: Data) -> [Brand] {
+func initBrand(dataCuccli: Data) -> (brands: [Brand]?, error: String?) {
     var decodedData: Response
     do {
         decodedData = try JSONDecoder().decode(Response.self, from: dataCuccli)
             
         if (decodedData.success) {
             print("status (Brand): \(decodedData.success)")
-            return decodedData.brands!
+            brandsLoaded = true
+            return (decodedData.brands!, nil)
         } else {
-            print("Failed response: \(decodedData.message)")
+            print("Failed response: \(String(describing: decodedData.message))")
+            return (nil, String(describing: decodedData.message))
         }
 
     } catch {
-        print(error)
+        print(error.localizedDescription)
+        return (nil, error.localizedDescription)
     }
-    return [errorBrand]
 }
 
