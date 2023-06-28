@@ -27,4 +27,9 @@ struct Mileage: Codable, Identifiable {
         let dateSeperated = mileage_date.split(separator: ".")
         return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
     }
+    
+    func getYear() -> Int {
+        let dateSeperated = mileage_date.split(separator: ".")
+        return Int(dateSeperated[0])!
+    }
 }

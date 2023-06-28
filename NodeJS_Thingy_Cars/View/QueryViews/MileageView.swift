@@ -14,28 +14,44 @@ struct MileageView: View {
     
     var body: some View {
         VStack(spacing: 15) {
-            Chart(mileageData) {
-                BarMark(
-                    x: .value("he", $0.getDate()),
-                    y: .value("he", $0.mileage)
-                )
-                .cornerRadius(5)
+            VStack(alignment: .leading) {
+                Text("Average mileage / year")
+                    .font(.footnote)
+                    .foregroundColor(Color.gray)
+                Text("\(calculateAvgMileage(mileageData)) km")
+                    .font(.title2)
+                    .bold()
             }
-            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Chart(mileageData, id: \.id) { data in
+                PointMark(
+                    x: .value("Year", data.getDate()),
+                    y: .value("Mileage", data.mileage)
+                )
+                LineMark(
+                    x: .value("Year", data.getDate()),
+                    y: .value("Mileage", data.mileage)
+                )
+                .interpolationMethod(.catmullRom)
+            }
+            .frame(height: 250)
+            .padding(.leading)
         }
+    }
+    
+    func calculateAvgMileage(_ mileageData: [Mileage]) -> Int {
+        let firstData: Mileage = mileageData.first!
+        let lastData: Mileage = mileageData.last!
+        
+        let mileageDelta = lastData.mileage - firstData.mileage
+        let yearDelta = lastData.getYear() - firstData.getYear()
+        
+        return Int(mileageDelta / yearDelta)
     }
 }
 
 struct MileageView_Previews: PreviewProvider {
     static var previews: some View {
-        MileageView(mileageData: [
-            Mileage(mileage: 127973, mileageDate: "2012.10.17."),
-            Mileage(mileage: 147050, mileageDate: "2013.06.18."),
-            Mileage(mileage: 249246, mileageDate: "2014.09.25."),
-            Mileage(mileage: 260900, mileageDate: "2017.04.25."),
-            Mileage(mileage: 302876, mileageDate: "2019.04.26."),
-            Mileage(mileage: 355278, mileageDate: "2021.04.13."),
-            Mileage(mileage: 456294, mileageDate: "2023.03.20.")
-        ])
+        MileageView(mileageData: testCar.mileage!)
     }
 }

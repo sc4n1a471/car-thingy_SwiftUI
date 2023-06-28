@@ -23,10 +23,13 @@ var testCar: CarQuery = CarQuery(
     ],
     license_plate: "AAAA111",
     mileage: [
-        Mileage(mileage: 100, mileageDate: "2020.01.01."),
-        Mileage(mileage: 300, mileageDate: "2020.04.01."),
-        Mileage(mileage: 500, mileageDate: "2020.07.01."),
-        Mileage(mileage: 700, mileageDate: "2020.09.01.")
+        Mileage(mileage: 127973, mileageDate: "2012.10.17."),
+        Mileage(mileage: 147050, mileageDate: "2013.06.18."),
+        Mileage(mileage: 249246, mileageDate: "2014.09.25."),
+        Mileage(mileage: 260900, mileageDate: "2017.04.25."),
+        Mileage(mileage: 302876, mileageDate: "2019.04.26."),
+        Mileage(mileage: 355278, mileageDate: "2021.04.13."),
+        Mileage(mileage: 456294, mileageDate: "2023.03.20.")
     ],
     model: "yas",
     num_of_owners: 5,

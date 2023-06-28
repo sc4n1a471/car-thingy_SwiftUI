@@ -11,7 +11,7 @@ enum CarQueryData: String {
     case accidents = "Accidents"
     case brand = "Brand"
     case color = "Color"
-    case engine_size = "Engine Size"
+    case engine_size = "Engine Size (cm3)"
     case first_reg = "First Registration Date / in Hungary"
     case first_reg_hun = "First Registration Date in Hungary"
     case fuel_type = "Fuel Type"
@@ -21,7 +21,7 @@ enum CarQueryData: String {
     case mileage = "Mileage"
     case model = "Model"
     case num_of_owners = "Number of owners"
-    case performance = "Performance"
+    case performance = "Performance (HP)"
     case restrictions = "Restrictions"
     case status = "Status"
     case type_code = "Type Code"
@@ -140,11 +140,7 @@ struct QuerySheetView: View {
                     }
                     
                     if let safeMileage = queriedCar.mileage {
-                        NavigationLink {
-                            MileageView(mileageData: safeMileage)
-                        } label: {
-                            Text(CarQueryData.mileage.rawValue)
-                        }
+                        MileageView(mileageData: safeMileage)
                     }
                 }
                 .navigationTitle(queriedCar.getLP())
