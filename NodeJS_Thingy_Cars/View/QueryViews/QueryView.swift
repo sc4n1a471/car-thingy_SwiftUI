@@ -40,8 +40,9 @@ var testCar: CarQuery = CarQuery(
 )
 
 struct QueryView: View {
-    @State var requestedLicensePlate: String = "test111"
-    @State var returnedCarQuery: ReturnCarQuery = ReturnCarQuery()
+    @State var requestedLicensePlate: String = ""
+    @State var queriedCar: CarQuery?
+    @State var error: String?
     @State var showAlert = false
     @State var isQueriedCarLoaded = false
     @State var isLoading = false
@@ -76,7 +77,7 @@ struct QueryView: View {
             }
             .navigationTitle("Car Query")
         }
-        .alert(returnedCarQuery.error, isPresented: $showAlert, actions: {
+        .alert(error ?? "No error message??", isPresented: $showAlert, actions: {
             Button("Got it") {
                 print("alert confirmed")
             }
@@ -87,17 +88,22 @@ struct QueryView: View {
             Button("Dismiss", action: { isQueriedCarLoaded.toggle() })
                 .buttonStyle(BorderedButtonStyle())
                 .padding()
-            QuerySheetView(queriedCar: returnedCarQuery.queriedCar ?? testCar)
+            QuerySheetView(queriedCar: queriedCar ?? testCar)
         }
     }
     
     func queryCarButton(requestedCar: String) async {
         isLoading.toggle()
-        returnedCarQuery = await queryCar(license_plate: requestedCar)
-        if (returnedCarQuery.error != "DEFAULT_VALUE") {
-            showAlert = true
-        } else {
+        
+        let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
+        if let safeCar {
+            queriedCar = safeCar
             isQueriedCarLoaded.toggle()
+        }
+        
+        if let safeCarError {
+            error = safeCarError
+            showAlert = true
         }
         isLoading.toggle()
     }
