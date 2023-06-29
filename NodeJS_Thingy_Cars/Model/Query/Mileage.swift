@@ -15,21 +15,32 @@ struct Mileage: Codable, Identifiable {
     
     var mileage: Int
     var mileage_date: String
-    
+    var animate: Bool?
     
     init(mileage: Int, mileageDate: String) {
         self.mileage_date = mileageDate
         self.mileage = mileage
     }
     
-    func getDate() -> Date {
+    func getDate(_ yearMonthOnly: Bool = false) -> Date {
         let calendar = Calendar.autoupdatingCurrent
         let dateSeperated = mileage_date.split(separator: ".")
-        return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
+        if yearMonthOnly {
+            return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1])))!
+        } else {
+            return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
+        }
     }
     
     func getYear() -> Int {
         let dateSeperated = mileage_date.split(separator: ".")
         return Int(dateSeperated[0])!
+    }
+    
+    func getDateComponents() -> DateComponents {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: getDate())
+        print(components.year)
+        return components
     }
 }

@@ -52,11 +52,26 @@ struct QueryView: View {
     
     @FocusState private var lpTextFieldFocused: Bool
     
+    let removableCharacters: Set<Character> = ["-"]
+    var textBindingLicensePlate: Binding<String> {
+            Binding<String>(
+                get: {
+                    return requestedLicensePlate
+                    
+            },
+                set: { newString in
+                    self.requestedLicensePlate = newString.uppercased()
+                    self.requestedLicensePlate.removeAll(where: {
+                        removableCharacters.contains($0)
+                    })
+            })
+    }
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 50) {
                 Section {
-                    TextField("Enter requested license plate", text: $requestedLicensePlate)
+                    TextField("Enter requested license plate", text: textBindingLicensePlate)
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(10)
