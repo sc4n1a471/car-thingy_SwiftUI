@@ -14,15 +14,22 @@ struct MileageView: View {
     
     var body: some View {
         VStack(spacing: 15) {
-            VStack(alignment: .leading) {
-                Text("Average mileage / year")
-                    .font(.footnote)
-                    .foregroundColor(Color.gray)
-                Text("\(calculateAvgMileage(mileageData)) km")
-                    .font(.title2)
-                    .bold()
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("Mileage")
+                        .font(.footnote)
+                        .foregroundColor(Color.gray)
+                    Text("\(mileageData.last?.mileage ?? 0) km")
+                        .font(.title2)
+                        .bold()
+                    Text("\(calculateAvgMileage(_:mileageData)) km / year")
+                        .font(.footnote)
+                        .foregroundColor(Color.gray)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            
             Chart(mileageData, id: \.id) { data in
                 PointMark(
                     x: .value("Year", data.getDate()),
