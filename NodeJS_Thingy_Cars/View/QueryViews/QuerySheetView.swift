@@ -37,7 +37,7 @@ struct QuerySheetView: View {
     
     var body: some View {
         NavigationStack {
-            VStack() {
+            VStack {
                 List {
                     Section {
                         Text(queriedCar.brand)
@@ -63,50 +63,50 @@ struct QuerySheetView: View {
                         } header: {
                             Text(CarQueryData.status.rawValue)
                         }
-                        
+
                         Section {
                             Text(queriedCar.first_reg)
                             Text(queriedCar.first_reg_hun)
                         } header: {
                             Text(CarQueryData.first_reg.rawValue)
                         }
-                        
+
                         Section {
                             Text(String(queriedCar.num_of_owners))
                         } header: {
                             Text(CarQueryData.num_of_owners.rawValue)
                         }
-                        
+
                         Section {
                             Text(String(queriedCar.year))
                         } header: {
                             Text(CarQueryData.year.rawValue)
                         }
-                        
+
                         Section {
                             Text(String(queriedCar.engine_size))
                         } header: {
                             Text(CarQueryData.engine_size.rawValue)
                         }
-                        
+
                         Section {
                             Text(String(queriedCar.performance))
                         } header: {
                             Text(CarQueryData.performance.rawValue)
                         }
-                        
+
                         Section {
                             Text(String(queriedCar.fuel_type))
                         } header: {
                             Text(CarQueryData.fuel_type.rawValue)
                         }
-                        
+
                         Section {
                             Text(queriedCar.gearbox)
                         } header: {
                             Text(CarQueryData.gearbox.rawValue)
                         }
-                        
+
                         Section {
                             Text(queriedCar.color)
                         } header: {
@@ -115,19 +115,13 @@ struct QuerySheetView: View {
                     }
                     
                     Group {
-//                        NavigationLink {
-//                            MileageView()
-//                        } label: {
-//                            Text(CarQueryData.inspections.rawValue)
-//                        }
-                        
                         Section {
                             DisclosureGroup(CarQueryData.restrictions.rawValue, isExpanded: $isRestrictionsExpanded) {
                                 ForEach(queriedCar.restrictions!, id: \.self) { restriction in
                                     Text(restriction)
                                 }
                             }
-                            
+
                             DisclosureGroup(CarQueryData.accidents.rawValue, isExpanded: $isAccidentsExpanded) {
                                 ForEach(queriedCar.accidents!, id: \.self) { accident in
                                     HStack {
@@ -142,9 +136,24 @@ struct QuerySheetView: View {
                     if let safeMileage = queriedCar.mileage {
                         MileageView(mileageData: safeMileage)
                     }
+                    
+                    ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
+                    if let safeInspections = queriedCar.inspections {
+                        Section {
+                            ForEach(safeInspections, id: \.self) { safeInspection in
+                                InspectionView(inspection: safeInspection)
+                                    .frame(height: 240)
+                            }
+                            .listStyle(.plain)
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(.none)
+                    }
                 }
                 .navigationTitle(queriedCar.getLP())
+                
             }
+            
             // MARK: Toolbar items
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading, content: {

@@ -7,41 +7,6 @@
 
 import SwiftUI
 
-var testCar: CarQuery = CarQuery(
-    accidents: [
-        Accident(accident_date: "2020.01.01", role: "Károkozó")
-    ],
-    brand: "yas",
-    color: "Black",
-    engine_size: 5000,
-    first_reg: "yas",
-    first_reg_hun: "yas",
-    fuel_type: "yas",
-    gearbox: "Automatic",
-    inspections: [
-        Inspection(images: [], name: "yas")
-    ],
-    license_plate: "AAAA111",
-    mileage: [
-        Mileage(mileage: 127973, mileageDate: "2012.10.17."),
-        Mileage(mileage: 147050, mileageDate: "2013.06.18."),
-        Mileage(mileage: 249246, mileageDate: "2014.09.25."),
-        Mileage(mileage: 260900, mileageDate: "2017.04.25."),
-        Mileage(mileage: 302876, mileageDate: "2019.04.26."),
-        Mileage(mileage: 355278, mileageDate: "2021.04.13."),
-        Mileage(mileage: 456294, mileageDate: "2023.03.20.")
-    ],
-    model: "yas",
-    num_of_owners: 5,
-    performance: 400,
-    restrictions: [
-        "1", "2", "3"
-    ],
-    status: "yas",
-    type_code: "yas",
-    year: 2005
-)
-
 struct QueryView: View {
     @State var requestedLicensePlate: String = ""
     @State var queriedCar: CarQuery?

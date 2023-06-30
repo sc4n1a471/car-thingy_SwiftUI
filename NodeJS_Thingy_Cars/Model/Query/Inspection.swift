@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct Inspection: Codable {
+struct Inspection: Codable, Hashable {
+//    var id = UUID()?
     var images: [String]
     var name: String
 }
