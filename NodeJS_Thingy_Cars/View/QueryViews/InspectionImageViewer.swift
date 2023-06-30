@@ -11,18 +11,30 @@ struct InspectionImageViewer: View {
     @State var imageIndex = 0
     @State var images: [String]
     
+    @Environment(\.presentationMode) var presentationMode
+    
     var body: some View {
-        TabView {
-            ForEach(0..<images.count, id:\.self) { i in
-                if let safeImage = convertImage(base64: images[i]) {
-                    safeImage
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+        NavigationStack {
+            VStack {
+                TabView {
+                    ForEach(0..<images.count, id:\.self) { i in
+                        if let safeImage = convertImage(base64: images[i]) {
+                            safeImage
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }
+                    }
                 }
+                .tabViewStyle(PageTabViewStyle())
+                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+            }
+            // MARK: Toolbar items
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading, content: {
+                    close
+                })
             }
         }
-        .tabViewStyle(PageTabViewStyle())
-        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
     }
     
     func convertImage(base64: String) -> Image? {
@@ -35,6 +47,14 @@ struct InspectionImageViewer: View {
         let swiftUIImage = Image(uiImage: uiImage)
         
         return swiftUIImage
+    }
+    
+    var close: some View {
+        Button(action: {
+            presentationMode.wrappedValue.dismiss()
+        }, label: {
+            Text("Close")
+        })
     }
 }
 
