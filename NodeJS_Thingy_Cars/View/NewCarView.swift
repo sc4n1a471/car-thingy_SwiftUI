@@ -148,29 +148,33 @@ struct NewCar: View {
                     }
                     .pickerStyle(.segmented)
                     
-                    if selectedMap == MapType.custom {
-                        TextField("Custom latitude", text: $customLatitude)
-                            .keyboardType(.decimalPad)
-                        TextField("Custom longitude", text: $customLongitude)
-                            .keyboardType(.decimalPad)
-                    } else if (selectedMap == MapType.current || isUpload) {
-                        Map(
-                            coordinateRegion: $locationManager.region,
-                            interactionModes: MapInteractionModes.all,
-                            showsUserLocation: true,
-                            userTrackingMode: .none
-                        )
+                    Section {
+                        if selectedMap == MapType.custom {
+                            TextField("Custom latitude", text: $customLatitude)
+                                .keyboardType(.decimalPad)
+                            TextField("Custom longitude", text: $customLongitude)
+                                .keyboardType(.decimalPad)
+                        } else if (selectedMap == MapType.current || isUpload) {
+                            Map(
+                                coordinateRegion: $locationManager.region,
+                                interactionModes: MapInteractionModes.all,
+                                showsUserLocation: true,
+                                userTrackingMode: .none
+                            )
                             .frame(height: 200)
-                    } else if (selectedMap == MapType.existing || !isUpload) {
-                        Map(
-                            coordinateRegion: $sharedViewData.region,
-                            interactionModes: MapInteractionModes.all,
-                            annotationItems: [ezLenniCar]
-                        ) {
-                            MapMarker(coordinate: $0.getLocation().center)
+                        } else if (selectedMap == MapType.existing || !isUpload) {
+                            Map(
+                                coordinateRegion: $sharedViewData.region,
+                                interactionModes: MapInteractionModes.all,
+                                annotationItems: [ezLenniCar]
+                            ) {
+                                MapMarker(coordinate: $0.getLocation().center)
+                            }
+                            .frame(height: 200)
                         }
-                            .frame(height: 200)
                     }
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
                 
                 Toggle("Unknown car", isOn: $sharedViewData.is_new)

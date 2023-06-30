@@ -57,14 +57,20 @@ struct CarDetails: View {
                     Text("Comment")
                 }
             }
-            Map(
-                coordinateRegion: $region,
-                interactionModes: MapInteractionModes.all,
-                annotationItems: [selectedCar]
-            ) {
-                MapMarker(coordinate: $0.getLocation().center)
-            }
+            
+            Section {
+                Map(
+                    coordinateRegion: $region,
+                    interactionModes: MapInteractionModes.all,
+                    annotationItems: [selectedCar]
+                ) {
+                    MapMarker(coordinate: $0.getLocation().center)
+                }
                 .frame(height: 200)
+                .cornerRadius(15)
+            }
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
         }
         .navigationTitle(selectedCar.getLP())
 #if os(iOS)
