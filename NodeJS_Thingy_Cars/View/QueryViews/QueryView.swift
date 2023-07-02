@@ -113,6 +113,7 @@ struct QueryView: View {
         }
         
         if let safeCarError {
+            await ContentView().haptic(type: .error)
             error = safeCarError
             showAlert = true
         }

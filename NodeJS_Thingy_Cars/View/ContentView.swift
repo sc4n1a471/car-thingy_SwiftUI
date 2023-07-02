@@ -37,6 +37,12 @@ class SharedViewData: ObservableObject {
     var yearAsString = ""
 }
 
+enum HapticType: String {
+    case notification
+    case standard
+    case error
+}
+
 struct ContentView: View {
     @StateObject var sharedViewData = SharedViewData()
 
@@ -71,11 +77,13 @@ struct ContentView: View {
                         
                         if let safeCars = unsafeCars {
                             sharedViewData.cars = safeCars
+                            haptic()
                         }
                         
                         if let safeError = unsafeError {
                             sharedViewData.error = safeError
                             sharedViewData.showAlert = true
+                            haptic(type: .error)
                         }
                     }
                 }
@@ -118,15 +126,12 @@ struct ContentView: View {
                 await loadViewData(true)
             }
             .searchable(text: $searchCar)
-            
-            
-            
         }
-        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewData.showAlert, actions: {
+        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewData.showAlert) {
             Button("Got it") {
                 print("alert confirmed")
             }
-        })
+        }
         .sheet(isPresented: $sharedViewData.isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
@@ -181,13 +186,33 @@ struct ContentView: View {
         if let safeCarError {
             sharedViewData.error = safeCarError
             sharedViewData.showAlert = true
+            haptic(type: .error)
         }
         if let safeBrandError {
             sharedViewData.error = safeBrandError
             sharedViewData.showAlert = true
+            haptic(type: .error)
         }
         
         sharedViewData.isLoading = false
+    }
+    
+    func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+        print("Haptic")
+        switch type {
+        case .standard:
+            let impact = UIImpactFeedbackGenerator()
+            impact.prepare()
+            impact.impactOccurred(intensity: intensity)
+        case .notification:
+            let generator = UINotificationFeedbackGenerator()
+            generator.prepare()
+            generator.notificationOccurred(.success)
+        case .error:
+            let generator = UINotificationFeedbackGenerator()
+            generator.prepare()
+            generator.notificationOccurred(.error)
+        }
     }
 }
 

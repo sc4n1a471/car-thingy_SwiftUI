@@ -26,6 +26,7 @@ struct InspectionView: View {
                     .bold()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
             
             TabView {
                 ForEach(0..<inspection.images.count, id:\.self) { i in
@@ -40,7 +41,7 @@ struct InspectionView: View {
                     }
                 }
             }
-            .cornerRadius(16)
+            .cornerRadius(10)
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
         }
@@ -74,6 +75,6 @@ struct InspectionView: View {
 struct InspectionView_Previews: PreviewProvider {
     static var previews: some View {
 //        InspectionView(inspection: testCar.inspections![0])
-        QuerySheetView(queriedCar: testCar)
+        QuerySheetView(queriedCar: testCar, inspectionsOnly: true)
     }
 }

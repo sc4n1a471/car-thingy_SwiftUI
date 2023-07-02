@@ -249,6 +249,7 @@ struct NewCar: View {
             }
         }
         .onAppear() {
+            ContentView().haptic()
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
                 self.year = String(sharedViewData.existingCar.year)
@@ -263,7 +264,6 @@ struct NewCar: View {
             oldLicensePlate = sharedViewData.existingCar.license_plate
         }
     }
-    
     
     // MARK: Button functions
     var save: some View {
@@ -317,9 +317,12 @@ struct NewCar: View {
                 if successfullyUploaded {
                     sharedViewData.isEditCarPresented = false
                     presentationMode.wrappedValue.dismiss()
+                    ContentView().haptic()
                     print("Success: Upload")
                 } else {
+                    sharedViewData.error = "Failed: Upload"
                     sharedViewData.showAlert = true
+                    ContentView().haptic(type: .error)
                     print("Failed: Upload")
                 }
                 presentationMode.wrappedValue.dismiss()

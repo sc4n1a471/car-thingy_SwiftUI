@@ -108,10 +108,12 @@ struct CarDetails: View {
                 if let safeCarError {
                     sharedViewData.error = safeCarError
                     sharedViewData.showAlert = true
+                    ContentView().haptic(type: .error)
                 }
                 if let safeBrandError {
                     sharedViewData.error = safeBrandError
                     sharedViewData.showAlert = true
+                    ContentView().haptic(type: .error)
                 }
                 
                 sharedViewData.isLoading = false

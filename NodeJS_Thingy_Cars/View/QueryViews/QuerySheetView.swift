@@ -33,133 +33,106 @@ struct QuerySheetView: View {
     @State private var isRestrictionsExpanded = false
     @State private var isAccidentsExpanded = false
     
+    @State var inspectionsOnly = false
+    @State private var enableScrollView = false
+    
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationStack {
-            VStack {
-                List {
+            List {
+                if !inspectionsOnly {
                     Section {
-                        Text(queriedCar.brand)
-                    } header: {
-                        Text(CarQueryData.brand.rawValue)
+                        SpecView(header: "Brand", content: queriedCar.brand)
+                        SpecView(header: "Model", content: queriedCar.model)
+                        SpecView(header: "Type Code", content: queriedCar.type_code)
                     }
                     
                     Section {
-                        Text(queriedCar.model)
-                    } header: {
-                        Text(CarQueryData.model.rawValue)
+                        SpecView(header: "Status", content: queriedCar.status)
+                        SpecView(header: "First registration", content: queriedCar.first_reg)
+                        SpecView(header: "First registration in 🇭🇺", content: queriedCar.first_reg_hun)
+                        SpecView(header: "Number of owners", content: String(queriedCar.num_of_owners))
                     }
                     
                     Section {
-                        Text(queriedCar.type_code)
-                    } header: {
-                        Text(CarQueryData.type_code.rawValue)
+                        SpecView(header: "Year", content: String(queriedCar.year))
+                        SpecView(header: "Engine size", content: String(queriedCar.engine_size), note: "cm3")
+                        SpecView(header: "Performance", content: String(queriedCar.performance), note: "HP")
+                        SpecView(header: "Fuel type", content: String(queriedCar.fuel_type))
+                        SpecView(header: "Gearbox", content: String(queriedCar.gearbox))
+                        SpecView(header: "Color", content: String(queriedCar.color))
+                    }
+                    
+                    Section {
+                        SpecView(header: "Restrictions", contents: queriedCar.restrictions)
                     }
                     
                     Group {
-                        Section {
-                            Text(queriedCar.status)
-                        } header: {
-                            Text(CarQueryData.status.rawValue)
-                        }
-
-                        Section {
-                            Text(queriedCar.first_reg)
-                            Text(queriedCar.first_reg_hun)
-                        } header: {
-                            Text(CarQueryData.first_reg.rawValue)
-                        }
-
-                        Section {
-                            Text(String(queriedCar.num_of_owners))
-                        } header: {
-                            Text(CarQueryData.num_of_owners.rawValue)
-                        }
-
-                        Section {
-                            Text(String(queriedCar.year))
-                        } header: {
-                            Text(CarQueryData.year.rawValue)
-                        }
-
-                        Section {
-                            Text(String(queriedCar.engine_size))
-                        } header: {
-                            Text(CarQueryData.engine_size.rawValue)
-                        }
-
-                        Section {
-                            Text(String(queriedCar.performance))
-                        } header: {
-                            Text(CarQueryData.performance.rawValue)
-                        }
-
-                        Section {
-                            Text(String(queriedCar.fuel_type))
-                        } header: {
-                            Text(CarQueryData.fuel_type.rawValue)
-                        }
-
-                        Section {
-                            Text(queriedCar.gearbox)
-                        } header: {
-                            Text(CarQueryData.gearbox.rawValue)
-                        }
-
-                        Section {
-                            Text(queriedCar.color)
-                        } header: {
-                            Text(CarQueryData.color.rawValue)
-                        }
-                    }
-                    
-                    Group {
-                        Section {
-                            DisclosureGroup(CarQueryData.restrictions.rawValue, isExpanded: $isRestrictionsExpanded) {
-                                ForEach(queriedCar.restrictions!, id: \.self) { restriction in
-                                    Text(restriction)
-                                }
-                            }
-
-                            DisclosureGroup(CarQueryData.accidents.rawValue, isExpanded: $isAccidentsExpanded) {
-                                ForEach(queriedCar.accidents!, id: \.self) { accident in
-                                    HStack {
-                                        Text(accident.accident_date)
-                                        Text(accident.role)
-                                    }
-                                }
-                            }
-                        }
+                        SpecView(header: "Accidents", accidents: queriedCar.accidents)
                     }
                     
                     if let safeMileage = queriedCar.mileage {
-                        MileageView(mileageData: safeMileage)
-                    }
-                    
-                    ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
-                    if let safeInspections = queriedCar.inspections {
                         Section {
-                            ForEach(safeInspections, id: \.self) { safeInspection in
-                                InspectionView(inspection: safeInspection)
-                                    .frame(height: 240)
-                            }
-                            .listStyle(.plain)
+                            MileageView(mileageData: safeMileage)
                         }
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(.none)
                     }
                 }
-                .navigationTitle(queriedCar.getLP())
                 
+                ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
+                if let safeInspections = queriedCar.inspections {
+                    if enableScrollView {
+                        Section {
+                            if safeInspections.count == 1 {
+                                ForEach(safeInspections, id: \.self) { safeInspection in
+                                    Section {
+                                        InspectionView(inspection: safeInspection)
+                                            .frame(width: 391, height: 300)
+                                    }
+                                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                }
+                            } else {
+                                ScrollView(.horizontal) {
+                                    HStack {
+                                        ForEach(safeInspections, id: \.self) { safeInspection in
+                                            Section {
+                                                InspectionView(inspection: safeInspection)
+                                                    .frame(width: 300, height: 300)
+                                            }
+                                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                        }
+                                        .listStyle(.plain)
+                                    }
+                                }
+                            }
+                        } header: {
+                            Text("Inspections")
+                        }
+                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .edgesIgnoringSafeArea(.all)
+                        .listStyle(GroupedListStyle()) // or PlainListStyle()
+                        /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
+                    } else {
+                        ForEach(safeInspections, id: \.self) { safeInspection in
+                            Section {
+                                InspectionView(inspection: safeInspection)
+                                    .frame(height: 300)
+                            }
+                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        }
+                    }
+                }
             }
-            
-            // MARK: Toolbar items
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading, content: {
-                    close
-                })
-            }
+            .navigationTitle(queriedCar.getLP())
+        }
+        // MARK: Toolbar items
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading, content: {
+                close
+            })
+        }
+        .onAppear {
+            ContentView().haptic(type: .notification)
         }
     }
     
@@ -175,5 +148,60 @@ struct QuerySheetView: View {
 struct QuerySheetView_Previews: PreviewProvider {
     static var previews: some View {
         QuerySheetView(queriedCar: testCar)
+    }
+}
+
+struct SpecView: View {
+    @State var header: String
+    @State var content: String?
+    @State var note: String?
+    @State var contents: [String]?
+    @State var accidents: [Accident]?
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(header)
+                    .font(.footnote)
+                    .foregroundColor(Color.gray)
+                HStack {
+                    if let safeContets = self.contents {
+                        VStack {
+                            ForEach(safeContets, id: \.self) { item in
+                                HStack {
+                                    Text(item)
+                                        .font(.system(size: 22)).bold()
+                                    Text(note ?? "")
+                                        .font(.body.bold())
+                                        .foregroundColor(Color.gray)
+                                        .padding(.top, 2)
+                                }
+                            }
+                        }
+                    } else if let safeContent = self.content {
+                        Text(safeContent)
+                            .font(.system(size: 22)).bold()
+                        Text(note ?? "")
+                            .font(.body.bold())
+                            .foregroundColor(Color.gray)
+                            .padding(.top, 2)
+                    } else if let safeAccidents = self.accidents {
+                        VStack {
+                            ForEach(safeAccidents, id: \.self) { accident in
+                                HStack {
+                                    Text(accident.accident_date)
+                                        .font(.system(size: 22)).bold()
+                                    Text(accident.role)
+                                        .font(.body.bold())
+                                        .foregroundColor(Color.gray)
+                                        .padding(.top, 2)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }

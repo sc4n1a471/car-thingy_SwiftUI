@@ -72,7 +72,7 @@ var testCar: CarQuery = CarQuery(
     num_of_owners: 5,
     performance: 281,
     restrictions: [
-        "1", "2", "3"
+        "Restriction 1", "Restriction 2", "Restriction 3"
     ],
     status: "Forgalomban van",
     type_code: "750 I",

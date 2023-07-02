@@ -13,6 +13,7 @@ struct MileageView: View {
     @State var mileageData: [Mileage]
     @State var currentActiveMileage: Mileage?
     @State var hideLabels: Bool = false
+    @State private var firstHaptic: Bool = true
     
     var body: some View {
         VStack(spacing: 15) {
@@ -93,9 +94,19 @@ struct MileageView: View {
                                         if let currentMileageData = mileageData.first(where: { item in
                                             item.getYear() == components.year
                                         }) {
+                                            if let safeCurrentActiveMileage = self.currentActiveMileage {
+                                                if safeCurrentActiveMileage.mileage_date != currentMileageData.mileage_date {
+                                                    firstHaptic = true
+                                                }
+                                            }
                                             self.currentActiveMileage = currentMileageData
                                             withAnimation {
                                                 self.hideLabels = true
+                                            }
+                                            
+                                            if firstHaptic {
+                                                ContentView().haptic()
+                                                firstHaptic = false
                                             }
                                         }
                                     }
@@ -105,6 +116,7 @@ struct MileageView: View {
                                     withAnimation {
                                         self.hideLabels = false
                                     }
+                                    firstHaptic = true
                                 }
                         )
                 }
