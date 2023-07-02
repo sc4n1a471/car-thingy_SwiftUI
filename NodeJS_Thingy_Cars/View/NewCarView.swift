@@ -249,7 +249,7 @@ struct NewCar: View {
             }
         }
         .onAppear() {
-            ContentView().haptic()
+            ContentView().haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
                 self.year = String(sharedViewData.existingCar.year)
@@ -280,7 +280,7 @@ struct NewCar: View {
                     ezLenniCar.latitude = locationManager.region.center.latitude
                     ezLenniCar.longitude = locationManager.region.center.longitude
                 }
-                print(ezLenniCar)
+//                print(ezLenniCar)
                 
                 if (!isNewBrand) {
                     for brand in sharedViewData.brands {
