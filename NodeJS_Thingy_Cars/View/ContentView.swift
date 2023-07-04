@@ -18,8 +18,8 @@ class SharedViewData: ObservableObject {
     @Published var isNewCarPresented = false
     @Published var isEditCarPresented = false
     
-    @Published var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
-    @Published var existingCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 10.332914, longitude: -122.005202)
+    @Published var newCar = ContentView().createEmptyCar()
+    @Published var existingCar = ContentView().createEmptyCar()
     
     @Published var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
@@ -50,10 +50,11 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
+            
             List {
                 ForEach(searchCars, id: \.license_plate) { result in
                     NavigationLink {
-                        CarDetails(selectedCar: result, region: result.getLocation())
+                        DetailView(selectedCar: result, region: result.getLocation())
                     } label: {
                         VStack(alignment: .leading) {
                             Text(result.getLP())
@@ -213,6 +214,10 @@ struct ContentView: View {
             generator.prepare()
             generator.notificationOccurred(.error)
         }
+    }
+    
+    func createEmptyCar() -> Car {
+        return Car(license_plate: "AAA111", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
     }
 }
 

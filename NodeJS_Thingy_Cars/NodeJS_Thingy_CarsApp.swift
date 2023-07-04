@@ -24,7 +24,7 @@ struct NodeJS_Thingy_CarsApp: App {
             }
             
             #elseif os(macOS)
-            ContentView2()
+//            ContentView2()
             #endif
         }
     }

@@ -7,7 +7,9 @@
 
 import SwiftUI
 import CoreLocation
+#if canImport(CoreLocationUI)
 import CoreLocationUI
+#endif
 import MapKit
 
 enum MapType: String {
@@ -15,15 +17,19 @@ enum MapType: String {
     case current = "currentMap"
     case existing = "existingMap"
 }
+enum Field: Int, Hashable {
+    case newLicensePlate
+}
 
 struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
     @EnvironmentObject var sharedViewData: SharedViewData
     
-    private var isUpload: Bool
+    @FocusState private var focusedField: Field?
+    
     @State private var year: String = ""     // TODO: Figure out why I have textYearBinding for year
-    @State private var ezLenniCar = Car(license_plate: "aaaaaa", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+    @State private var ezLenniCar = ContentView().createEmptyCar()
     @State private var isNewBrand = false
     @State private var oldLicensePlate = ""
     
@@ -32,10 +38,7 @@ struct NewCar: View {
     @State private var customLongitude: String = ""
     @State private var selectedMap = MapType.custom
     
-    private enum Field: Int, Hashable {
-        case newLicensePlate
-    }
-    @FocusState private var focusedField: Field?
+    private var isUpload: Bool
     
     init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
         self.isUpload = isUpload

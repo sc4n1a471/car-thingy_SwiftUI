@@ -28,6 +28,7 @@
 		57A49F3A2872349B006A2712 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F392872349B006A2712 /* Database.swift */; };
 		57A979322878B2980024EAA0 /* NewCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCarView.swift */; };
 		57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BA28CE2C2700837E0F /* LocationManager.swift */; };
+		57BA6B172A5466F6005C447C /* SpecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BA6B162A5466F6005C447C /* SpecView.swift */; };
 		57BD24742A4EE6A6000508A3 /* InspectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24732A4EE6A6000508A3 /* InspectionView.swift */; };
 		57BD24762A4EF455000508A3 /* TestCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24752A4EF455000508A3 /* TestCar.swift */; };
 		57BD24782A4F37AF000508A3 /* InspectionImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24772A4F37AF000508A3 /* InspectionImageViewer.swift */; };
@@ -57,6 +58,7 @@
 		57A49F392872349B006A2712 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		57A979312878B2980024EAA0 /* NewCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCarView.swift; sourceTree = "<group>"; };
 		57AFE3BA28CE2C2700837E0F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		57BA6B162A5466F6005C447C /* SpecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecView.swift; sourceTree = "<group>"; };
 		57BD24732A4EE6A6000508A3 /* InspectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionView.swift; sourceTree = "<group>"; };
 		57BD24752A4EF455000508A3 /* TestCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCar.swift; sourceTree = "<group>"; };
 		57BD24772A4F37AF000508A3 /* InspectionImageViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionImageViewer.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				57A49F2E2871EC85006A2712 /* DetailView.swift */,
 				57A979312878B2980024EAA0 /* NewCarView.swift */,
 				57563E902A1ABD240051B0F1 /* QueryViews */,
+				57BA6B162A5466F6005C447C /* SpecView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */,
 				57A49F332871EFE2006A2712 /* Response.swift in Sources */,
 				57A979322878B2980024EAA0 /* NewCarView.swift in Sources */,
+				57BA6B172A5466F6005C447C /* SpecView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -10,10 +10,10 @@ import SwiftUI
 struct InspectionView: View {
     var inspection: Inspection
     @State private var inspectionDate: String = ""
-    @State private var inspectionName: String = "Műszaki vizsgálat"
+    var inspectionName: String = "Műszaki vizsgálat"
     
     @State private var presentSheet = false
-    @State var imageIndex: Int?
+    @State private var imageIndex: Int?
     
     var body: some View {
         VStack {
