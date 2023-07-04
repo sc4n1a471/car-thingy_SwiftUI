@@ -9,7 +9,7 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
-struct CarDetails: View {
+struct DetailView: View {
     @EnvironmentObject var sharedViewData: SharedViewData
     
     @State private var selectedCar: Car
@@ -24,52 +24,43 @@ struct CarDetails: View {
         List {
             if selectedCar.hasBrand {
                 Section {
-                    Text(String(selectedCar.brand))
-                } header: {
-                    Text("Brand")
+                    SpecView(header: "Brand", content: selectedCar.brand)
                 }
             }
             if selectedCar.hasModel {
                 Section {
-                    Text(String(selectedCar.model))
-                } header: {
-                    Text("Model")
+                    SpecView(header: "Model", content: selectedCar.model)
                 }
             }
             if selectedCar.hasCodename {
                 Section {
-                    Text(String(selectedCar.codename))
-                } header: {
-                    Text("Codename")
+                    SpecView(header: "Codename", content: selectedCar.codename)
                 }
             }
             if selectedCar.hasYear {
                 Section {
-                    Text(String(selectedCar.year))
-                } header: {
-                    Text("Year")
+                    SpecView(header: "Year", content: String(selectedCar.year))
                 }
             }
             if selectedCar.hasComment {
                 Section {
-                    Text(selectedCar.comment)
-                } header: {
-                    Text("Comment")
+                    SpecView(header: "Comment", content: selectedCar.comment)
                 }
             }
-            Map(
-                coordinateRegion: $region,
-                interactionModes: MapInteractionModes.all,
-                annotationItems: [selectedCar]
-            ) {
-                MapMarker(coordinate: $0.getLocation().center)
-            }
+            
+            Section {
+                Map(
+                    coordinateRegion: $region,
+                    interactionModes: MapInteractionModes.all,
+                    annotationItems: [selectedCar]
+                ) {
+                    MapMarker(coordinate: $0.getLocation().center)
+                }
                 .frame(height: 200)
-        }
-        .task {
-            sharedViewData.isLoading = true
-            sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
-            sharedViewData.isLoading = false
+                .cornerRadius(10)
+            }
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
         }
         .navigationTitle(selectedCar.getLP())
 #if os(iOS)
@@ -93,9 +84,27 @@ struct CarDetails: View {
         .sheet(isPresented: $sharedViewData.isEditCarPresented, onDismiss: {
             Task {
                 sharedViewData.isLoading = true
-                sharedViewData.existingCar = await loadCar(license_plate: sharedViewData.existingCar.license_plate).cars[0]
-                selectedCar = sharedViewData.existingCar
-                sharedViewData.brands = await loadBrands()
+                let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.license_plate)
+                if let safeCar {
+                    sharedViewData.existingCar = safeCar[0]
+                    selectedCar = sharedViewData.existingCar
+                }
+                
+                let (safeBrands, safeBrandError) = await loadBrands()
+                if let safeBrands {
+                    sharedViewData.brands = safeBrands
+                }
+                
+                if let safeCarError {
+                    sharedViewData.error = safeCarError
+                    sharedViewData.showAlert = true
+                    ContentView().haptic(type: .error)
+                }
+                if let safeBrandError {
+                    sharedViewData.error = safeBrandError
+                    sharedViewData.showAlert = true
+                    ContentView().haptic(type: .error)
+                }
                 sharedViewData.isLoading = false
             }
         }) {
@@ -120,7 +129,7 @@ struct CarDetails: View {
 
 struct View2_Previews: PreviewProvider {
     static var previews: some View {
-        CarDetails(selectedCar: Car(license_plate: "AAA111", brand_id: 3, brand: "BMW", model: "M5", codename: "E60", year: 2008, comment: "Heee", is_new: 0, latitude: 39, longitude: -122), region: MKCoordinateRegion(
+        DetailView(selectedCar: Car(license_plate: "AAA111", brand_id: 3, brand: "BMW", model: "M5", codename: "E60", year: 2008, comment: "Heee", is_new: 0, latitude: 39, longitude: -122), region: MKCoordinateRegion(
             center:  CLLocationCoordinate2D(
               latitude: 37.789467,
               longitude: -122.416772

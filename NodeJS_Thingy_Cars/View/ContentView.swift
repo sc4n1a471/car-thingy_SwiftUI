@@ -8,17 +8,18 @@
 import SwiftUI
 import MapKit
 
-class SharedViewData: ObservableObject {    
-    @Published var results = ReturnCar()
+class SharedViewData: ObservableObject {
     @Published var brands = [Brand]()
+    @Published var cars = [Car]()
+    @Published var error: String?
     
     @Published var showAlert = false
     @Published var isLoading = false
     @Published var isNewCarPresented = false
     @Published var isEditCarPresented = false
     
-    @Published var newCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
-    @Published var existingCar = Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 10.332914, longitude: -122.005202)
+    @Published var newCar = ContentView().createEmptyCar()
+    @Published var existingCar = ContentView().createEmptyCar()
     
     @Published var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
@@ -36,18 +37,24 @@ class SharedViewData: ObservableObject {
     var yearAsString = ""
 }
 
+enum HapticType: String {
+    case notification
+    case standard
+    case error
+}
+
 struct ContentView: View {
     @StateObject var sharedViewData = SharedViewData()
 
     @State private var searchCar = ""
     
     var body: some View {
-    
         NavigationView {
+            
             List {
                 ForEach(searchCars, id: \.license_plate) { result in
                     NavigationLink {
-                        CarDetails(selectedCar: result, region: result.getLocation())
+                        DetailView(selectedCar: result, region: result.getLocation())
                     } label: {
                         VStack(alignment: .leading) {
                             Text(result.getLP())
@@ -67,11 +74,17 @@ struct ContentView: View {
                 }
                 .onDelete { IndexSet in
                     Task {
-                        sharedViewData.results = try await deleteData(at: IndexSet, cars: sharedViewData.results.cars)
+                        let (unsafeCars, unsafeError) = try await deleteData(at: IndexSet, cars: sharedViewData.cars)
                         
-                        if (sharedViewData.results.error != "DEFAULT_VALUE") {
-                            print("error delete")
+                        if let safeCars = unsafeCars {
+                            sharedViewData.cars = safeCars
+                            haptic()
+                        }
+                        
+                        if let safeError = unsafeError {
+                            sharedViewData.error = safeError
                             sharedViewData.showAlert = true
+                            haptic(type: .error)
                         }
                     }
                 }
@@ -79,7 +92,7 @@ struct ContentView: View {
             .task {
                 await loadViewData()
             }
-            .navigationTitle("Cars")
+            .navigationTitle("My Cars")
             
             #if os(iOS)
             .toolbar {
@@ -93,7 +106,7 @@ struct ContentView: View {
                     
                     Button(action: {
                         Task {
-                            await loadViewData()
+                            await loadViewData(true)
                         }
                     }, label: {
                         Image(systemName: "arrow.clockwise")
@@ -111,15 +124,15 @@ struct ContentView: View {
             #endif
             
             .refreshable {
-                await loadViewData()
+                await loadViewData(true)
             }
             .searchable(text: $searchCar)
         }
-        .alert(sharedViewData.results.error, isPresented: $sharedViewData.showAlert, actions: {
+        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewData.showAlert) {
             Button("Got it") {
                 print("alert confirmed")
             }
-        })
+        }
         .sheet(isPresented: $sharedViewData.isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
@@ -143,14 +156,14 @@ struct ContentView: View {
     
     var searchCars: [Car] {
         if searchCar.isEmpty {
-            return sharedViewData.results.cars
+            return sharedViewData.cars
         } else {
             if self.searchCar.localizedStandardContains("new") {
-                return sharedViewData.results.cars.filter {
+                return sharedViewData.cars.filter {
                     $0.is_new == 1
                 }
             }
-            return sharedViewData.results.cars.filter {
+            return sharedViewData.cars.filter {
                 $0.license_plate.contains(self.searchCar.uppercased()) ||
                 $0.brand.localizedStandardContains(self.searchCar) ||
                 $0.model.localizedStandardContains(self.searchCar)
@@ -158,14 +171,53 @@ struct ContentView: View {
         }
     }
     
-    func loadViewData() async {
+    func loadViewData(_ refresh: Bool = false) async {
         sharedViewData.isLoading = true
-        sharedViewData.results = await loadData()
-        sharedViewData.brands = await loadBrands()
-        sharedViewData.isLoading = false
-        if (sharedViewData.results.error != "DEFAULT_VALUE") {
-            sharedViewData.showAlert = true
+        let (safeCars, safeCarError) = await loadData(refresh)
+        if let safeCars {
+            withAnimation {
+                sharedViewData.cars = safeCars
+            }
         }
+        let (safeBrands, safeBrandError) = await loadBrands()
+        if let safeBrands {
+            sharedViewData.brands = safeBrands
+        }
+        
+        if let safeCarError {
+            sharedViewData.error = safeCarError
+            sharedViewData.showAlert = true
+            haptic(type: .error)
+        }
+        if let safeBrandError {
+            sharedViewData.error = safeBrandError
+            sharedViewData.showAlert = true
+            haptic(type: .error)
+        }
+        
+        sharedViewData.isLoading = false
+    }
+    
+    func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+        print("Haptic")
+        switch type {
+        case .standard:
+            let impact = UIImpactFeedbackGenerator()
+            impact.prepare()
+            impact.impactOccurred(intensity: intensity)
+        case .notification:
+            let generator = UINotificationFeedbackGenerator()
+            generator.prepare()
+            generator.notificationOccurred(.success)
+        case .error:
+            let generator = UINotificationFeedbackGenerator()
+            generator.prepare()
+            generator.notificationOccurred(.error)
+        }
+    }
+    
+    func createEmptyCar() -> Car {
+        return Car(license_plate: "AAA111", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
     }
 }
 

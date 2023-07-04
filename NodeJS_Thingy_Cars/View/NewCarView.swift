@@ -7,7 +7,9 @@
 
 import SwiftUI
 import CoreLocation
+#if canImport(CoreLocationUI)
 import CoreLocationUI
+#endif
 import MapKit
 
 enum MapType: String {
@@ -15,15 +17,19 @@ enum MapType: String {
     case current = "currentMap"
     case existing = "existingMap"
 }
+enum Field: Int, Hashable {
+    case newLicensePlate
+}
 
 struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
     @EnvironmentObject var sharedViewData: SharedViewData
     
-    private var isUpload: Bool
+    @FocusState private var focusedField: Field?
+    
     @State private var year: String = ""     // TODO: Figure out why I have textYearBinding for year
-    @State private var ezLenniCar = Car(license_plate: "aaaaaa", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
+    @State private var ezLenniCar = ContentView().createEmptyCar()
     @State private var isNewBrand = false
     @State private var oldLicensePlate = ""
     
@@ -31,6 +37,8 @@ struct NewCar: View {
     @State private var customLatitude: String = ""
     @State private var customLongitude: String = ""
     @State private var selectedMap = MapType.custom
+    
+    private var isUpload: Bool
     
     init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
         self.isUpload = isUpload
@@ -130,6 +138,7 @@ struct NewCar: View {
             Form {
                 Section {
                     TextField("License Plate", text: textBindingLicensePlate)
+                        .focused($focusedField, equals: .newLicensePlate)
                 } header: {
                     Text("License Plate")
                 }
@@ -142,29 +151,33 @@ struct NewCar: View {
                     }
                     .pickerStyle(.segmented)
                     
-                    if selectedMap == MapType.custom {
-                        TextField("Custom latitude", text: $customLatitude)
-                            .keyboardType(.decimalPad)
-                        TextField("Custom longitude", text: $customLongitude)
-                            .keyboardType(.decimalPad)
-                    } else if (selectedMap == MapType.current || isUpload) {
-                        Map(
-                            coordinateRegion: $locationManager.region,
-                            interactionModes: MapInteractionModes.all,
-                            showsUserLocation: true,
-                            userTrackingMode: .none
-                        )
+                    Section {
+                        if selectedMap == MapType.custom {
+                            TextField("Custom latitude", text: $customLatitude)
+                                .keyboardType(.decimalPad)
+                            TextField("Custom longitude", text: $customLongitude)
+                                .keyboardType(.decimalPad)
+                        } else if (selectedMap == MapType.current || isUpload) {
+                            Map(
+                                coordinateRegion: $locationManager.region,
+                                interactionModes: MapInteractionModes.all,
+                                showsUserLocation: true,
+                                userTrackingMode: .none
+                            )
                             .frame(height: 200)
-                    } else if (selectedMap == MapType.existing || !isUpload) {
-                        Map(
-                            coordinateRegion: $sharedViewData.region,
-                            interactionModes: MapInteractionModes.all,
-                            annotationItems: [ezLenniCar]
-                        ) {
-                            MapMarker(coordinate: $0.getLocation().center)
+                        } else if (selectedMap == MapType.existing || !isUpload) {
+                            Map(
+                                coordinateRegion: $sharedViewData.region,
+                                interactionModes: MapInteractionModes.all,
+                                annotationItems: [ezLenniCar]
+                            ) {
+                                MapMarker(coordinate: $0.getLocation().center)
+                            }
+                            .frame(height: 200)
                         }
-                            .frame(height: 200)
                     }
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
                 
                 Toggle("Unknown car", isOn: $sharedViewData.is_new)
@@ -239,6 +252,7 @@ struct NewCar: View {
             }
         }
         .onAppear() {
+            ContentView().haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
                 self.year = String(sharedViewData.existingCar.year)
@@ -246,11 +260,13 @@ struct NewCar: View {
                 self.ezLenniCar = sharedViewData.newCar
                 sharedViewData.selectedBrand = 1
                 sharedViewData.is_new = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(1)) {
+                    focusedField = .newLicensePlate
+                }
             }
             oldLicensePlate = sharedViewData.existingCar.license_plate
         }
     }
-    
     
     // MARK: Button functions
     var save: some View {
@@ -267,7 +283,7 @@ struct NewCar: View {
                     ezLenniCar.latitude = locationManager.region.center.latitude
                     ezLenniCar.longitude = locationManager.region.center.longitude
                 }
-                print(ezLenniCar)
+//                print(ezLenniCar)
                 
                 if (!isNewBrand) {
                     for brand in sharedViewData.brands {
@@ -299,14 +315,17 @@ struct NewCar: View {
                 }
 //                print("ezLenniCarData2: \(ezLenniCarData)")
                 
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload)
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isNewBrand: isNewBrand)
                 sharedViewData.isLoading = false
                 if successfullyUploaded {
                     sharedViewData.isEditCarPresented = false
                     presentationMode.wrappedValue.dismiss()
+                    ContentView().haptic()
                     print("Success: Upload")
                 } else {
+                    sharedViewData.error = "Failed: Upload"
                     sharedViewData.showAlert = true
+                    ContentView().haptic(type: .error)
                     print("Failed: Upload")
                 }
                 presentationMode.wrappedValue.dismiss()
