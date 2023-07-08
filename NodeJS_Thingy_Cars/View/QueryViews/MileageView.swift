@@ -105,7 +105,7 @@ struct MileageView: View {
                                             }
                                             
                                             if firstHaptic {
-                                                ContentView().haptic()
+                                                MyCarsView().haptic()
                                                 firstHaptic = false
                                             }
                                         }

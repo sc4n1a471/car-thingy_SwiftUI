@@ -177,6 +177,7 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?
 // MARK: Car query
 func queryCar(license_plate: String) async -> (queriedCar: CarQuery?, error: String?) {
     let url = URL(string: getURLasString(whichUrl: "carQuery") + "/" + license_plate.uppercased())!
+    print("Querying \(license_plate)")
         
     do {
         let (data, _) = try await URLSession.shared.data(from: url)
@@ -202,7 +203,7 @@ func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, error: String?) {
         decodedData = try JSONDecoder().decode(CarQueryResponse.self, from: dataCuccli)
                     
         if (decodedData.status == "success") {
-            print("status (Cars): \(decodedData.status)")
+            print("status (query): \(decodedData.status)")
             return (decodedData.message![0], nil)
         } else {
             print("Failed response: \(decodedData.error ?? "No error message from server")")

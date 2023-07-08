@@ -29,7 +29,7 @@ struct NewCar: View {
     @FocusState private var focusedField: Field?
     
     @State private var year: String = ""     // TODO: Figure out why I have textYearBinding for year
-    @State private var ezLenniCar = ContentView().createEmptyCar()
+    @State private var ezLenniCar = MyCarsView().createEmptyCar()
     @State private var isNewBrand = false
     @State private var oldLicensePlate = ""
     
@@ -252,7 +252,7 @@ struct NewCar: View {
             }
         }
         .onAppear() {
-            ContentView().haptic(type: .notification)
+            MyCarsView().haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
                 self.year = String(sharedViewData.existingCar.year)
@@ -320,12 +320,12 @@ struct NewCar: View {
                 if successfullyUploaded {
                     sharedViewData.isEditCarPresented = false
                     presentationMode.wrappedValue.dismiss()
-                    ContentView().haptic()
+                    MyCarsView().haptic()
                     print("Success: Upload")
                 } else {
                     sharedViewData.error = "Failed: Upload"
                     sharedViewData.showAlert = true
-                    ContentView().haptic(type: .error)
+                    MyCarsView().haptic(type: .error)
                     print("Failed: Upload")
                 }
                 presentationMode.wrappedValue.dismiss()

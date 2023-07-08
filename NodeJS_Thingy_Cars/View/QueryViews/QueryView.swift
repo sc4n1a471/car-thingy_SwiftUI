@@ -8,12 +8,8 @@
 import SwiftUI
 
 struct QueryView: View {
-    @State var requestedLicensePlate: String = ""
-    @State var queriedCar: CarQuery?
-    @State var error: String?
-    @State var showAlert = false
-    @State var isQueriedCarLoaded = false
-    @State var isLoading = false
+    @EnvironmentObject var sharedViewData: SharedViewData
+    @EnvironmentObject var querySharedData: QuerySharedData
     
     @FocusState private var lpTextFieldFocused: Bool
     
@@ -21,12 +17,12 @@ struct QueryView: View {
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
                 get: {
-                    return requestedLicensePlate
+                    return querySharedData.requestedLicensePlate
                     
             },
                 set: { newString in
-                    self.requestedLicensePlate = newString.uppercased()
-                    self.requestedLicensePlate.removeAll(where: {
+                    querySharedData.requestedLicensePlate = newString.uppercased()
+                    querySharedData.requestedLicensePlate.removeAll(where: {
                         removableCharacters.contains($0)
                     })
             })
@@ -46,7 +42,7 @@ struct QueryView: View {
                 Button {
                     Task {
                         lpTextFieldFocused = false
-                        await queryCarButton(requestedCar: $requestedLicensePlate.wrappedValue)
+                        await QueryView().queryCarButton(requestedCar: $querySharedData.requestedLicensePlate.wrappedValue)
                     }
                 } label: {
                     Text("Request")
@@ -54,9 +50,9 @@ struct QueryView: View {
                 }
                 .buttonStyle(.borderless)
                 .foregroundColor(.white)
-                .background(!isLoading ? Color.blue : Color.gray)
+                .background(!querySharedData.isLoading ? Color.blue : Color.gray)
                 .cornerRadius(10)
-                .disabled(isLoading)
+                .disabled(querySharedData.isLoading)
                 
                 Button {
                     Task {
@@ -68,16 +64,16 @@ struct QueryView: View {
                 }
                 .buttonStyle(.borderless)
                 .foregroundColor(.white)
-                .background(!isLoading ? Color.blue : Color.gray)
+                .background(!querySharedData.isLoading ? Color.blue : Color.gray)
                 .cornerRadius(10)
-                .disabled(isLoading)
+                .disabled(querySharedData.isLoading)
             }
             .padding()
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!isLoading)
+                        .isHidden(!querySharedData.isLoading)
                     
                     Link(destination:
                             URL(string:"https://magyarorszag.hu/jszp_szuf")!
@@ -88,36 +84,35 @@ struct QueryView: View {
             }
             .navigationTitle("Car Query")
         }
-        .alert(error ?? "No error message??", isPresented: $showAlert, actions: {
+        .alert(querySharedData.error ?? "No error message??", isPresented: $querySharedData.showAlert, actions: {
             Button("Got it") {
                 print("alert confirmed")
             }
         })
-        .sheet(isPresented: $isQueriedCarLoaded, onDismiss: {
+        .sheet(isPresented: $querySharedData.isQueriedCarLoaded, onDismiss: {
             Task {}
         }) {
-//            Button("Dismiss", action: { isQueriedCarLoaded.toggle() })
-//                .buttonStyle(BorderedButtonStyle())
-//                .padding()
-            QuerySheetView(queriedCar: queriedCar ?? testCar)
+            QuerySheetView(queriedCar: querySharedData.queriedCar ?? testCar)
         }
     }
     
     func queryCarButton(requestedCar: String) async {
-        isLoading.toggle()
+        sharedViewData.isLoading.toggle()
+        querySharedData.isLoading.toggle()
         
         let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
         if let safeCar {
-            queriedCar = safeCar
-            isQueriedCarLoaded.toggle()
+            querySharedData.queriedCar = safeCar
+            querySharedData.isQueriedCarLoaded.toggle()
+            print(querySharedData.isQueriedCarLoaded)
         }
         
         if let safeCarError {
-            await ContentView().haptic(type: .error)
-            error = safeCarError
-            showAlert = true
+            MyCarsView().haptic(type: .error)
+            querySharedData.error = safeCarError
+            querySharedData.showAlert = true
         }
-        isLoading.toggle()
+        querySharedData.isLoading.toggle()
     }
 }
 
@@ -126,8 +121,10 @@ struct QueryView_Previews: PreviewProvider {
         QueryView()
             .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
             .previewDisplayName("iPhone SE")
+            .environmentObject(QuerySharedData())
         QueryView()
             .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
             .previewDisplayName("Mac Catalyst")
+            .environmentObject(QuerySharedData())
     }
 }
