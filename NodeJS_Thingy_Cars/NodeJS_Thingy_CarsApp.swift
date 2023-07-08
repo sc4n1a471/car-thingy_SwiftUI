@@ -11,21 +11,7 @@ import SwiftUI
 struct NodeJS_Thingy_CarsApp: App {
     var body: some Scene {
         WindowGroup {
-            #if os(iOS)
-            TabView {
-                QueryView()
-                    .tabItem {
-                        Label("Query Car", systemImage: "magnifyingglass")
-                    }
-                ContentView()
-                    .tabItem {
-                        Label("My Cars", systemImage: "tray.full")
-                    }
-            }
-            
-            #elseif os(macOS)
-//            ContentView2()
-            #endif
+            ContentView()
         }
     }
 }

@@ -132,7 +132,7 @@ struct QuerySheetView: View {
             .navigationTitle(queriedCar.getLP())
         }
         .onAppear {
-            ContentView().haptic(type: .notification)
+            MyCarsView().haptic(type: .notification)
         }
     }
     
