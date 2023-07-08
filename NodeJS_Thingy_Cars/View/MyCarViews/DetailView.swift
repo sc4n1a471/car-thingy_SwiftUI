@@ -11,6 +11,7 @@ import MapKit
 
 struct DetailView: View {
     @EnvironmentObject var sharedViewData: SharedViewData
+    @EnvironmentObject var querySharedData: QuerySharedData
     
     @State private var selectedCar: Car
     @State private var region: MKCoordinateRegion
@@ -68,7 +69,11 @@ struct DetailView: View {
             ToolbarItemGroup(placement: .navigationBarTrailing, content: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!sharedViewData.isLoading)
+                    .isHidden(!querySharedData.isLoading)
+                    .isHidden(sharedViewData.isLoading)
+                
+                queryButton
+                    .disabled(querySharedData.isLoading)
                 
                 Link(destination:
                     URL(string:"https://magyarorszag.hu/jszp_szuf")!
@@ -98,12 +103,12 @@ struct DetailView: View {
                 if let safeCarError {
                     sharedViewData.error = safeCarError
                     sharedViewData.showAlert = true
-                    ContentView().haptic(type: .error)
+                    MyCarsView().haptic(type: .error)
                 }
                 if let safeBrandError {
                     sharedViewData.error = safeBrandError
                     sharedViewData.showAlert = true
-                    ContentView().haptic(type: .error)
+                    MyCarsView().haptic(type: .error)
                 }
                 sharedViewData.isLoading = false
             }
@@ -115,6 +120,7 @@ struct DetailView: View {
             sharedViewData.region = region
             sharedViewData.existingCar.isNew() ? (sharedViewData.is_new = true) : (sharedViewData.is_new = false)
             sharedViewData.selectedBrand = sharedViewData.existingCar.brand_id
+            print(querySharedData)
         }
     }
     
@@ -124,6 +130,34 @@ struct DetailView: View {
         }, label: {
             Image(systemName: "pencil")
         })
+    }
+    
+    var queryButton: some View {
+        Button(action: {
+            Task {
+                await queryCarButton(requestedCar: selectedCar.license_plate)
+            }
+        }, label: {
+            Image(systemName: "magnifyingglass")
+        })
+    }
+    
+    func queryCarButton(requestedCar: String) async {
+        querySharedData.isLoading.toggle()
+        
+        let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
+        if let safeCar {
+            querySharedData.queriedCar = safeCar
+            querySharedData.isQueriedCarLoaded.toggle()
+            print(querySharedData.isQueriedCarLoaded)
+        }
+        
+        if let safeCarError {
+            MyCarsView().haptic(type: .error)
+            querySharedData.error = safeCarError
+            querySharedData.showAlert = true
+        }
+        querySharedData.isLoading.toggle()
     }
 }
 
@@ -140,5 +174,6 @@ struct View2_Previews: PreviewProvider {
            )
         ))
         .environmentObject(SharedViewData())
+        .environmentObject(QuerySharedData())
     }
 }
