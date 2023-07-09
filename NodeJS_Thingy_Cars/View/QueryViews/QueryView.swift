@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct QueryView: View {
-    @EnvironmentObject var sharedViewData: SharedViewData
     @EnvironmentObject var querySharedData: QuerySharedData
     
     @FocusState private var lpTextFieldFocused: Bool
@@ -42,7 +41,7 @@ struct QueryView: View {
                 Button {
                     Task {
                         lpTextFieldFocused = false
-                        await QueryView().queryCarButton(requestedCar: $querySharedData.requestedLicensePlate.wrappedValue)
+                        await queryCarButton(requestedCar: querySharedData.requestedLicensePlate)
                     }
                 } label: {
                     Text("Request")
@@ -97,7 +96,6 @@ struct QueryView: View {
     }
     
     func queryCarButton(requestedCar: String) async {
-        sharedViewData.isLoading.toggle()
         querySharedData.isLoading.toggle()
         
         let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
