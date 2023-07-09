@@ -426,7 +426,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NodeJS_Thingy_Cars/NodeJS_Thingy_Cars.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+<<<<<<< Updated upstream
 				CURRENT_PROJECT_VERSION = 1;
+=======
+				CURRENT_PROJECT_VERSION = 12;
+>>>>>>> Stashed changes
 				DEVELOPMENT_ASSET_PATHS = "\"NodeJS_Thingy_Cars/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -441,7 +445,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.3;
+				MARKETING_VERSION = 5.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.NodeJS-Thingy-Cars";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -460,7 +464,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NodeJS_Thingy_Cars/NodeJS_Thingy_Cars.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+<<<<<<< Updated upstream
 				CURRENT_PROJECT_VERSION = 1;
+=======
+				CURRENT_PROJECT_VERSION = 12;
+>>>>>>> Stashed changes
 				DEVELOPMENT_ASSET_PATHS = "\"NodeJS_Thingy_Cars/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -475,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.3;
+				MARKETING_VERSION = 5.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.NodeJS-Thingy-Cars";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
