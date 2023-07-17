@@ -426,11 +426,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NodeJS_Thingy_Cars/NodeJS_Thingy_Cars.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-<<<<<<< Updated upstream
-				CURRENT_PROJECT_VERSION = 1;
-=======
 				CURRENT_PROJECT_VERSION = 12;
->>>>>>> Stashed changes
 				DEVELOPMENT_ASSET_PATHS = "\"NodeJS_Thingy_Cars/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -464,11 +460,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NodeJS_Thingy_Cars/NodeJS_Thingy_Cars.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-<<<<<<< Updated upstream
-				CURRENT_PROJECT_VERSION = 1;
-=======
 				CURRENT_PROJECT_VERSION = 12;
->>>>>>> Stashed changes
 				DEVELOPMENT_ASSET_PATHS = "\"NodeJS_Thingy_Cars/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
