@@ -175,7 +175,7 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?
 
 
 // MARK: Car query
-func queryCar(license_plate: String) async -> (queriedCar: CarQuery?, error: String?) {
+func queryCar(license_plate: String) async -> (queriedCar: CarQuery?, message: String?, error: String?) {
     let url = URL(string: getURLasString(whichUrl: "carQuery") + "/" + license_plate.uppercased())!
     print("Querying \(license_plate)")
         
@@ -183,7 +183,7 @@ func queryCar(license_plate: String) async -> (queriedCar: CarQuery?, error: Str
         let (data, _) = try await URLSession.shared.data(from: url)
         
         if (String(data: data, encoding: .utf8)?.contains("500 Internal Server Error") == true) {
-            return (nil, "Internal server error (500)")
+            return (nil, nil, "Internal server error (500)")
         }
         
         let resultObject = try JSONSerialization.jsonObject(with: data, options: [.allowFragments,])
@@ -192,11 +192,11 @@ func queryCar(license_plate: String) async -> (queriedCar: CarQuery?, error: Str
         return initCarQuery(dataCuccli: data)
     } catch {
         print("Invalid data")
-        return (nil, error.localizedDescription)
+        return (nil, nil, error.localizedDescription)
     }
 }
 
-func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, error: String?) {
+func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, message: String?, error: String?) {
     var decodedData: CarQueryResponse
     
     do {
@@ -204,15 +204,18 @@ func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, error: String?) {
                     
         if (decodedData.status == "success") {
             print("status (query): \(decodedData.status)")
-            return (decodedData.message![0], nil)
+            return (decodedData.data![0], nil, nil)
+        } else if (decodedData.status == "pending") {
+            print("status (query): \(decodedData.message)")
+            return (nil, decodedData.message, nil)
         } else {
             print("Failed response: \(decodedData.error ?? "No error message from server")")
-            return (nil, decodedData.error ?? "No error message from server")
+            return (nil, nil, decodedData.error ?? "No error message from server")
         }
 
     } catch {
         print("initCarQuery error: \(error)")
-        return (nil, error.localizedDescription)
+        return (nil, nil, error.localizedDescription)
     }
 }
 

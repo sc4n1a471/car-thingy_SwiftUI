@@ -145,7 +145,7 @@ struct DetailView: View {
     func queryCarButton(requestedCar: String) async {
         querySharedData.isLoading.toggle()
         
-        let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
+        let (safeCar, safeMessage, safeCarError) = await queryCar(license_plate: requestedCar)
         if let safeCar {
             querySharedData.queriedCar = safeCar
             querySharedData.isQueriedCarLoaded.toggle()

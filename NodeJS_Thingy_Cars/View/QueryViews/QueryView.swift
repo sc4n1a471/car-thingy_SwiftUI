@@ -12,6 +12,8 @@ struct QueryView: View {
     
     @FocusState private var lpTextFieldFocused: Bool
     
+    @ObservedObject var websocket: Websocket = Websocket()
+    
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
@@ -98,21 +100,138 @@ struct QueryView: View {
     func queryCarButton(requestedCar: String) async {
         querySharedData.isLoading.toggle()
         
-        let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
-        if let safeCar {
-            querySharedData.queriedCar = safeCar
-            querySharedData.isQueriedCarLoaded.toggle()
-            print(querySharedData.isQueriedCarLoaded)
-        }
+        websocket.connect()
+        websocket.sendMessage(requestedCar)
         
-        if let safeCarError {
-            MyCarsView().haptic(type: .error)
-            querySharedData.error = safeCarError
-            querySharedData.showAlert = true
-        }
+//        let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
+//        if let safeCar {
+//            querySharedData.queriedCar = safeCar
+//            querySharedData.isQueriedCarLoaded.toggle()
+//            print(querySharedData.isQueriedCarLoaded)
+//        }
+//
+//        if let safeCarError {
+//            MyCarsView().haptic(type: .error)
+//            querySharedData.error = safeCarError
+//            querySharedData.showAlert = true
+//        }
         querySharedData.isLoading.toggle()
     }
 }
+
+class Websocket: ObservableObject {
+    @Published var messages = String()
+    
+    private var webSocketTask: URLSessionWebSocketTask?
+    private var counter = 0
+    
+    init() {
+//        print("Connected")
+//        self.connect()
+//        ping()
+    }
+    
+    func connect() {
+        guard let url = URL(string: "ws://127.0.0.1:3001/") else { return }
+        let request = URLRequest(url: url)
+//        let session = URLSession(
+//            configuration: .default,
+//            delegate: self,
+//            delegateQueue: OperationQueue()
+//        )
+        webSocketTask = URLSession.shared.webSocketTask(with: request)
+        webSocketTask?.resume()
+        receiveMessage()
+        print("Connected")
+    }
+    
+    private func receiveMessage() {
+        print("Listening... (\(self.counter))")
+        counter += 1
+        webSocketTask?.receive(completionHandler: { result in
+            switch result {
+            case .failure(let error):
+                print("Received error: \(error.localizedDescription)")
+                self.close()
+                return
+            case .success(let message):
+                switch message {
+                case .string(let text):
+//                    self.messages.append(text)
+                    
+                    let jsonData = Data(text.utf8)
+                    
+                    let (safeCar, safeMessage, safeCarError) = initCarQuery(dataCuccli: jsonData)
+                    
+                    if let safeCar {
+                        print("Received car successfully")
+                        self.close()
+                        return
+                    }
+                    if let safeMessage {
+                        print("Message")
+                        self.ping()
+                    }
+                    if let safeCarError {
+                        print("error")
+                    }
+                case .data(let data):
+                    // Handle binary data
+                    print(data)
+                    
+                    break
+                @unknown default:
+                    break
+                }
+            }
+            
+            if self.counter < 100 {
+                self.receiveMessage()
+            } else {
+                print("Forced close")
+                self.close()
+            }
+        })
+    }
+    
+    func sendMessage(_ message: String) {
+        guard let data = message.data(using: .utf8) else { return }
+        webSocketTask?.send(.string(message)) { error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func close() {
+        webSocketTask?.cancel(with: .goingAway, reason: "Query ended".data(using: .utf8))
+        print("Disconnected")
+    }
+    
+    func ping() {
+        webSocketTask?.sendPing { error in
+            if let safeError = error {
+                print("Ping error: \(error?.localizedDescription)")
+            }
+        }
+    }
+}
+
+//class WebSocketClass {
+//    let session = URLSession(
+//        configuration: .default,
+//        delegate: self,
+//        delegateQueue: OperationQueue()
+//    )
+//
+//    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
+//        print("open")
+//    }
+//
+//    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+//        print("close")
+//    }
+//}
 
 struct QueryView_Previews: PreviewProvider {
     static var previews: some View {

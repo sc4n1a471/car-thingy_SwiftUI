@@ -8,7 +8,8 @@
 import Foundation
 
 struct CarQueryResponse: Codable {
-    var message: [CarQuery]?
+    var data: [CarQuery]?
     var status: String
     var error: String?
+    var message: String?
 }
