@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct WebhookResponse: Codable {    
+
+struct WebhookResponse: Codable {
     var status: String
     var percentage: Double
     var key: String?

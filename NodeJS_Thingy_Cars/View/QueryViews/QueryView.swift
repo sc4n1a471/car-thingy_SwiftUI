@@ -139,11 +139,7 @@ class Websocket: ObservableObject {
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
     
-    init() {
-//        print("Connected")
-//        self.connect()
-//        ping()
-    }
+    init() {}
     
     func connect() {
         guard let url = URL(string: "ws://10.11.12.250:3001/") else { return }
@@ -168,7 +164,6 @@ class Websocket: ObservableObject {
             case .success(let message):
                 switch message {
                 case .string(let text):
-//                    self.messages.append(text)
                     
                     let jsonData = Data(text.utf8)
                     
@@ -182,7 +177,6 @@ class Websocket: ObservableObject {
                             self.messages.append(Message(response: safeResponse))
                             self.percentage = safeResponse.percentage
 //                            self.ping()
-//                            print(self.percentage)
                         }
                     }
                     if let safeError {
@@ -231,22 +225,6 @@ class Websocket: ObservableObject {
         }
     }
 }
-
-//class WebSocketClass {
-//    let session = URLSession(
-//        configuration: .default,
-//        delegate: self,
-//        delegateQueue: OperationQueue()
-//    )
-//
-//    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-//        print("open")
-//    }
-//
-//    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-//        print("close")
-//    }
-//}
 
 struct QueryView_Previews: PreviewProvider {
     static var previews: some View {
