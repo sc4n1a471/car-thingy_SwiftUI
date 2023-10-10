@@ -12,7 +12,10 @@ struct QueryView: View {
     
     @FocusState private var lpTextFieldFocused: Bool
     
-    @ObservedObject var websocket: Websocket = Websocket()
+    @StateObject var websocket: Websocket = Websocket()
+    
+    @State private var showingPopover: Bool = false
+    @State private var percentage: Double = 0.0
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -40,6 +43,7 @@ struct QueryView: View {
                         .frame(maxWidth: 400)
                         .focused($lpTextFieldFocused)
                 }
+                
                 Button {
                     Task {
                         lpTextFieldFocused = false
@@ -51,9 +55,9 @@ struct QueryView: View {
                 }
                 .buttonStyle(.borderless)
                 .foregroundColor(.white)
-                .background(!querySharedData.isLoading ? Color.blue : Color.gray)
+                .background(!websocket.isLoading ? Color.blue : Color.gray)
                 .cornerRadius(10)
-                .disabled(querySharedData.isLoading)
+                .disabled(websocket.isLoading)
                 
                 Button {
                     Task {
@@ -65,19 +69,37 @@ struct QueryView: View {
                 }
                 .buttonStyle(.borderless)
                 .foregroundColor(.white)
-                .background(!querySharedData.isLoading ? Color.blue : Color.gray)
+                .background(!websocket.isLoading ? Color.blue : Color.gray)
                 .cornerRadius(10)
-                .disabled(querySharedData.isLoading)
+                .disabled(websocket.isLoading)
             }
             .padding()
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!querySharedData.isLoading)
+                
+                    Button(action: {
+                        showingPopover = true
+                    }) {
+                        Gauge(value: websocket.percentage, in: 0...17) {}
+                            .gaugeStyle(.accessoryCircularCapacity)
+                            .tint(.blue)
+                            .scaleEffect(0.5)
+                            .frame(width: 25, height: 25)
+                        
+                    }.popover(isPresented: $showingPopover) {
+                        ForEach(websocket.messages, id: \.id) { message in
+                            if let safeValue = message.response.value {
+                                Text(safeValue)
+                            }
+                        }
+                        .presentationCompactAdaptation((.popover))
+                    }
+                    .isHidden(!websocket.isLoading)
+                    
+                        
                     
                     Link(destination:
-                            URL(string:"https://magyarorszag.hu/jszp_szuf")!
+                        URL(string:"https://magyarorszag.hu/jszp_szuf")!
                     ) {
                         Image(systemName: "link")
                     }
@@ -94,33 +116,25 @@ struct QueryView: View {
             Task {}
         }) {
             QuerySheetView(queriedCar: querySharedData.queriedCar ?? testCar)
+                .presentationDetents([.medium, .large])
         }
     }
     
     func queryCarButton(requestedCar: String) async {
-        querySharedData.isLoading.toggle()
-        
         websocket.connect()
         websocket.sendMessage(requestedCar)
-        
-//        let (safeCar, safeCarError) = await queryCar(license_plate: requestedCar)
-//        if let safeCar {
-//            querySharedData.queriedCar = safeCar
-//            querySharedData.isQueriedCarLoaded.toggle()
-//            print(querySharedData.isQueriedCarLoaded)
-//        }
-//
-//        if let safeCarError {
-//            MyCarsView().haptic(type: .error)
-//            querySharedData.error = safeCarError
-//            querySharedData.showAlert = true
-//        }
-        querySharedData.isLoading.toggle()
     }
 }
 
+struct Message: Identifiable {
+    var id = UUID()
+    var response: WebhookResponse
+}
+
 class Websocket: ObservableObject {
-    @Published var messages = String()
+    @Published var messages = [Message]()
+    @Published var percentage = Double()
+    @Published var isLoading = Bool()
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
@@ -132,17 +146,14 @@ class Websocket: ObservableObject {
     }
     
     func connect() {
-        guard let url = URL(string: "ws://127.0.0.1:3001/") else { return }
+        guard let url = URL(string: "ws://10.11.12.250:3001/") else { return }
         let request = URLRequest(url: url)
-//        let session = URLSession(
-//            configuration: .default,
-//            delegate: self,
-//            delegateQueue: OperationQueue()
-//        )
+
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
         receiveMessage()
         print("Connected")
+        self.isLoading.toggle()
     }
     
     private func receiveMessage() {
@@ -161,19 +172,21 @@ class Websocket: ObservableObject {
                     
                     let jsonData = Data(text.utf8)
                     
-                    let (safeCar, safeMessage, safeCarError) = initCarQuery(dataCuccli: jsonData)
+                    let (safeResponse, safeError) = initWebhookResponse(dataCuccli: jsonData)
                     
-                    if let safeCar {
-                        print("Received car successfully")
-                        self.close()
-                        return
+                    if let safeResponse {
+                        if safeResponse.status == "success" {
+                            self.close()
+                            return
+                        } else {
+                            self.messages.append(Message(response: safeResponse))
+                            self.percentage = safeResponse.percentage
+//                            self.ping()
+//                            print(self.percentage)
+                        }
                     }
-                    if let safeMessage {
-                        print("Message")
-                        self.ping()
-                    }
-                    if let safeCarError {
-                        print("error")
+                    if let safeError {
+                        print("error: \(safeError)")
                     }
                 case .data(let data):
                     // Handle binary data
@@ -206,6 +219,8 @@ class Websocket: ObservableObject {
     func close() {
         webSocketTask?.cancel(with: .goingAway, reason: "Query ended".data(using: .utf8))
         print("Disconnected")
+        self.percentage = 0.0
+        self.isLoading.toggle()
     }
     
     func ping() {

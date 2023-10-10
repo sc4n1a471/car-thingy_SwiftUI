@@ -219,8 +219,31 @@ func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, message: String?,
     }
 }
 
+func initWebhookResponse(dataCuccli: Data) -> (response: WebhookResponse?, error: String?) {
+    var decodedData: WebhookResponse
+    
+    do {
+        decodedData = try JSONDecoder().decode(WebhookResponse.self, from: dataCuccli)
+        
+        if (decodedData.status == "success") {
+            print("status (query): \(decodedData)")
+            return (decodedData, nil)
+        } else if (decodedData.status == "pending") {
+            print("status (query): \(decodedData)")
+            return (decodedData, nil)
+        } else {
+            print("Failed response: No error message from server")
+            return (nil, "No error message from server")
+        }
+        
+    } catch {
+        print("initWebhookResponse error: \(error)")
+        return (nil, error.localizedDescription)
+    }
+}
 
-//MARK: Brands
+
+// MARK: Brands
 func loadBrands() async -> (brands: [Brand]?, error: String?) {
     if !brandsLoaded {
         let url = getURL(whichUrl: "brands")

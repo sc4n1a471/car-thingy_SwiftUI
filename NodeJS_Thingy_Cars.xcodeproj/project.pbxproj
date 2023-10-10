@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		570409582AD5A77F00D26228 /* WebhookResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570409572AD5A77F00D26228 /* WebhookResponse.swift */; };
 		5724D1AA28B0F9A7004768B8 /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5724D1A928B0F9A7004768B8 /* Brand.swift */; };
 		572F0ABD2A1EB48600D73E15 /* Accident.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572F0ABC2A1EB48500D73E15 /* Accident.swift */; };
 		57563E842A1A78E30051B0F1 /* CarQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E832A1A78E30051B0F1 /* CarQuery.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		570409572AD5A77F00D26228 /* WebhookResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebhookResponse.swift; sourceTree = "<group>"; };
 		5724D1A928B0F9A7004768B8 /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 		572F0ABC2A1EB48500D73E15 /* Accident.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accident.swift; sourceTree = "<group>"; };
 		57563E832A1A78E30051B0F1 /* CarQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarQuery.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				57563E882A1A7D320051B0F1 /* CarQueryResponse.swift */,
 				57563E952A1AC2290051B0F1 /* Mileage.swift */,
 				572F0ABC2A1EB48500D73E15 /* Accident.swift */,
+				570409572AD5A77F00D26228 /* WebhookResponse.swift */,
 			);
 			path = Query;
 			sourceTree = "<group>";
@@ -290,6 +293,7 @@
 				57D80CE92A59F3BF0000CCFB /* QuerySharedData.swift in Sources */,
 				57BD24782A4F37AF000508A3 /* InspectionImageViewer.swift in Sources */,
 				57563E892A1A7D320051B0F1 /* CarQueryResponse.swift in Sources */,
+				570409582AD5A77F00D26228 /* WebhookResponse.swift in Sources */,
 				57563E8F2A1A94830051B0F1 /* QuerySheetView.swift in Sources */,
 				578428E62A214DE500AE3589 /* Restriction.swift in Sources */,
 				57BD24742A4EE6A6000508A3 /* InspectionView.swift in Sources */,
@@ -437,6 +441,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -471,6 +476,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
