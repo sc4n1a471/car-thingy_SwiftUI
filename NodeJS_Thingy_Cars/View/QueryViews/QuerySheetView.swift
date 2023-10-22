@@ -75,10 +75,8 @@ struct QuerySheetView: View {
                         SpecView(header: "Accidents", accidents: websocket.accidents)
                     }
                     
-                    if let safeMileage = queriedCar.mileage {
-                        Section {
-                            MileageView(mileageData: safeMileage)
-                        }
+                    Section {
+                        MileageView(onChangeMileageData: websocket.mileage, mileageData: websocket.mileage)
                     }
                 }
                 

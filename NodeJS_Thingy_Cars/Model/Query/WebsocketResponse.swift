@@ -41,6 +41,9 @@ struct WebsocketResponse: Decodable {
                 case .restrictions:
                     let restrictions = try container.decode([String].self, forKey: .value)
                     self.value = .restrictions(restrictions)
+                case .mileage:
+                    let mileage = try container.decode([Mileage].self, forKey: .value)
+                    self.value = .mileage(mileage)
                 case .message:
                     let message = try container.decode(String.self, forKey: .message)
                 default:
@@ -67,6 +70,7 @@ enum CarDataType: String, Codable, CodingKey {
     case year
     case accidents
     case restrictions
+    case mileage
     
     case message
 }
@@ -74,6 +78,7 @@ enum CarDataType: String, Codable, CodingKey {
 enum WebsocketResponseType: Decodable {
     case accidents([Accident])
     case restrictions([String])
+    case mileage([Mileage])
     case stringValue(String)
     case message(String)
     case error(String)

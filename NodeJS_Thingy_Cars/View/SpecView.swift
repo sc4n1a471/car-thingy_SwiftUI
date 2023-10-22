@@ -58,6 +58,9 @@ struct SpecView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .animation(.default, value: content)
+            .animation(.default, value: contents)
+            .animation(.default, value: accidents)
         }
     }
 }

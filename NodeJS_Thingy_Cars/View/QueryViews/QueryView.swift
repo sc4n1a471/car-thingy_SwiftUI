@@ -61,7 +61,6 @@ struct QueryView: View {
                 
                 Button {
                     Task {
-                        websocket.setLoading(true)
                         await queryCarButton(requestedCar: "test111")
                     }
                 } label: {
@@ -159,6 +158,7 @@ struct Message: Identifiable {
     
     @Published var accidents = [Accident()]
     @Published var restrictions = [String()]
+    @Published var mileage = [Mileage()]
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
@@ -184,6 +184,9 @@ struct Message: Identifiable {
                 self.accidents = accidents
             case .restrictions(let restrictions):
                 self.restrictions = restrictions
+            case .mileage(let mileage):
+                print(mileage)
+                self.mileage = mileage
             case .stringValue(let stringValue):
                 switch key {
                     case CarDataType.brand:
@@ -234,6 +237,26 @@ struct Message: Identifiable {
         }
     }
     
+    func clearValues() {
+        self.brand = String()
+        self.color = String()
+        self.engine_size = String()
+        self.first_reg = String()
+        self.first_reg_hun = String()
+        self.fuel_type = String()
+        self.gearbox = String()
+        self.model = String()
+        self.num_of_owners = String()
+        self.performance = String()
+        self.status = String()
+        self.type_code = String()
+        self.year = String()
+        
+        self.accidents = [Accident()]
+        self.restrictions = [String()]
+        self.mileage = [Mileage()]
+    }
+    
     func connect() {
         self.setLoading(true)
         guard let url = URL(string: getURLasString(whichUrl: "carWebsocket")) else { return }
@@ -242,6 +265,7 @@ struct Message: Identifiable {
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
         self.counter = 0
+        self.clearValues()
         receiveMessage()
         print("Connected")
     }
@@ -275,9 +299,6 @@ struct Message: Identifiable {
                                     if let safeKey = safeResponse.key {
                                         if let safeValue = safeResponse.value {
                                             self.setValues(safeValue, key: safeKey)
-                                            
-                                            print("Key: \(safeKey)")
-                                            print("Value: \(safeValue)")
                                         }
                                     }
                                     self.percentage = safeResponse.percentage
@@ -319,6 +340,7 @@ struct Message: Identifiable {
         webSocketTask?.cancel(with: .goingAway, reason: "Query ended".data(using: .utf8))
         print("Disconnected")
         self.percentage = 0.0
+        self.counter = 0
         self.setLoading(false)
     }
     

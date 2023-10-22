@@ -10,6 +10,7 @@ import Charts
 
 struct MileageView: View {
     
+    var onChangeMileageData: [Mileage]
     @State var mileageData: [Mileage]
     @State var currentActiveMileage: Mileage?
     @State var hideLabels: Bool = false
@@ -22,18 +23,21 @@ struct MileageView: View {
                     Text("Mileage")
                         .font(.footnote)
                         .foregroundColor(Color.gray)
-                    HStack {
-                        Text("\(mileageData.last?.mileage ?? 0)")
-                            .font(.system(size: 25)).bold()
-                        Text("km")
-                            .font(.body.bold())
-                            .foregroundColor(Color.gray)
-                            .padding(.top, 2)
-                    }
+                    
+                        HStack {
+                            Text("\(mileageData.last?.mileage ?? 0)")
+                                .font(.system(size: 25)).bold()
+                            Text("km")
+                                .font(.body.bold())
+                                .foregroundColor(Color.gray)
+                                .padding(.top, 2)
+                        }
+                    
                     withAnimation {
-                        Text("\(calculateAvgMileage(_:mileageData)) km / year")
+                        Text("\(calculateAvgMileage(mileageData)) km / year")
                             .font(.footnote)
                             .foregroundColor(Color.gray)
+                            .animation(.easeIn)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -67,7 +71,7 @@ struct MileageView: View {
             .frame(height: 250)
             .padding(.leading)
             .onAppear {
-                // MARK: Animating chart
+                    // MARK: Animating chart
                 for (index, _) in mileageData.enumerated() {
                     DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
                         withAnimation(
@@ -77,20 +81,33 @@ struct MileageView: View {
                     }
                 }
             }
+            .onChange(of: onChangeMileageData) { newMileageData in
+                if newMileageData[0].mileage_date.contains(".") {
+                    mileageData = newMileageData
+                    for (index, _) in mileageData.enumerated() {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
+                            withAnimation(
+                                .interactiveSpring(response: 0.6, dampingFraction: 0.9, blendDuration: 0.1)) {
+                                    mileageData[index].animate = true
+                                }
+                        }
+                    }
+                }
+            }
             .chartOverlay { proxy in
-                // MARK: Getting data on drag
-                // https://developer.apple.com/documentation/charts/chartproxy
+                    // MARK: Getting data on drag
+                    // https://developer.apple.com/documentation/charts/chartproxy
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
                                     let location = value.location
-                                    // Get the x (date) and y (mileage) value from the location.
+                                        // Get the x (date) and y (mileage) value from the location.
                                     if let date: Date = proxy.value(atX: location.x) {
                                         let calendar = Calendar.current
                                         let components = calendar.dateComponents([.year, .month], from: date)
-                                                                    
+                                        
                                         if let currentMileageData = mileageData.first(where: { item in
                                             item.getYear() == components.year
                                         }) {
@@ -125,23 +142,23 @@ struct MileageView: View {
                 ZStack(alignment: .topLeading) {
                     GeometryReader { geo in
                         if let currentActiveMileage {
-                            // Find date span for the selected interval
+                                // Find date span for the selected interval
                             let dateInterval = Calendar.current.dateInterval(of: .day, for: currentActiveMileage.getDate())!
-                            // Map date to chart X position
+                                // Map date to chart X position
                             let startPositionX = proxy.position(forX: dateInterval.start) ?? 0
-                            // Offset the chart X position by chart frame
+                                // Offset the chart X position by chart frame
                             let midStartPositionX = startPositionX + geo[proxy.plotAreaFrame].origin.x
                             let lineHeight = geo[proxy.plotAreaFrame].maxY
                             let boxWidth: CGFloat = 150
                             let boxOffset = max(0, min(geo.size.width - boxWidth, midStartPositionX - boxWidth / 2))
                             
-                            // Draw the scan line
-//                            Rectangle()
-//                                .fill(.quaternary)
-//                                .frame(width: 2, height: lineHeight)
-//                                .position(x: midStartPositionX, y: lineHeight / 2)
+                                // Draw the scan line
+                                //                            Rectangle()
+                                //                                .fill(.quaternary)
+                                //                                .frame(width: 2, height: lineHeight)
+                                //                                .position(x: midStartPositionX, y: lineHeight / 2)
                             
-                            // Draw the data info box
+                                // Draw the data info box
                             VStack(alignment: .leading) {
                                 Text("CURRENT")
                                     .font(.system(size: 14).bold())
@@ -193,8 +210,8 @@ struct MileageView: View {
     }
 }
 
-struct MileageView_Previews: PreviewProvider {
-    static var previews: some View {
-        MileageView(mileageData: testCar.mileage!)
-    }
-}
+//struct MileageView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MileageView(mileageData: testCar.mileage!)
+//    }
+//}

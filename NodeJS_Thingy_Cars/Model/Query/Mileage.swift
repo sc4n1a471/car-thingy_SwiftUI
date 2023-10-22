@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Mileage: Codable, Identifiable {
+struct Mileage: Codable, Identifiable, Equatable {
     
     var id: String {
         String(mileage)
@@ -17,24 +17,34 @@ struct Mileage: Codable, Identifiable {
     var mileage_date: String
     var animate: Bool?
     
-    init(mileage: Int, mileageDate: String) {
+    init(mileage: Int = Int(), mileageDate: String = String()) {
         self.mileage_date = mileageDate
         self.mileage = mileage
     }
     
     func getDate(_ yearMonthOnly: Bool = false) -> Date {
         let calendar = Calendar.autoupdatingCurrent
-        let dateSeperated = mileage_date.split(separator: ".")
-        if yearMonthOnly {
-            return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1])))!
-        } else {
-            return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
+        if mileage_date.contains(".") {
+            let dateSeperated = mileage_date.split(separator: ".")
+            if yearMonthOnly {
+                return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1])))!
+            } else {
+                return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
+            }
         }
+        return Date.now
     }
     
     func getYear() -> Int {
-        let dateSeperated = mileage_date.split(separator: ".")
-        return Int(dateSeperated[0])!
+        if mileage_date.contains(".") {
+            let dateSeperated = mileage_date.split(separator: ".")
+            return Int(dateSeperated[0])!
+        }
+        return 0
+    }
+    
+    func hasValidMileage() -> Bool {
+        return mileage_date.contains(".")
     }
     
     func getDateComponents() -> DateComponents {

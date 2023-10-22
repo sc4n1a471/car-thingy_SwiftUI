@@ -128,7 +128,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "182"
             endingLineNumber = "182"
-            landmarkName = "setValues(_:)"
+            landmarkName = "setValues(_:key:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -191,7 +191,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "183"
             endingLineNumber = "183"
-            landmarkName = "setValues(_:)"
+            landmarkName = "setValues(_:key:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -223,6 +223,181 @@
                   startingLineNumber = "182"
                   endingLineNumber = "182"
                   offsetFromSymbolStart = "124">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8B8881B5-87DA-44FB-91DF-DE12891F446A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "468D50F1-BCAE-4159-8826-7DAF7B51E372"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "468D50F1-BCAE-4159-8826-7DAF7B51E372 - f1450a1154de17fe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "632">
+               </Location>
+               <Location
+                  uuid = "468D50F1-BCAE-4159-8826-7DAF7B51E372 - f1450a1154de17fe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "620">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6CBBC8DD-E131-4F3C-8125-21764B3C5D13"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "6CBBC8DD-E131-4F3C-8125-21764B3C5D13 - 6244abec777d9094"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 (Swift.Array&lt;NodeJS_Thingy_Cars.Mileage&gt;) -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(minWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, minHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.chartBackground&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: (Charts.ChartProxy) -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0)&gt; in NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "83"
+                  endingLineNumber = "83"
+                  offsetFromSymbolStart = "604">
+               </Location>
+               <Location
+                  uuid = "6CBBC8DD-E131-4F3C-8125-21764B3C5D13 - 6244abec777d9094"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 (Swift.Array&lt;NodeJS_Thingy_Cars.Mileage&gt;) -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(minWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, minHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.chartBackground&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: (Charts.ChartProxy) -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0)&gt; in NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "83"
+                  endingLineNumber = "83"
+                  offsetFromSymbolStart = "580">
+               </Location>
+               <Location
+                  uuid = "6CBBC8DD-E131-4F3C-8125-21764B3C5D13 - 6244abec777d9094"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 (Swift.Array&lt;NodeJS_Thingy_Cars.Mileage&gt;) -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(minWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, minHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.chartBackground&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: (Charts.ChartProxy) -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0)&gt; in NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "83"
+                  endingLineNumber = "83"
+                  offsetFromSymbolStart = "616">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "931B9BA4-3823-4FA4-8805-DFEF47C78F1F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "931B9BA4-3823-4FA4-8805-DFEF47C78F1F - 6244abec777d90cb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 (Swift.Array&lt;NodeJS_Thingy_Cars.Mileage&gt;) -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(minWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, minHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.chartBackground&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: (Charts.ChartProxy) -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0)&gt; in NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "84"
+                  endingLineNumber = "84"
+                  offsetFromSymbolStart = "688">
+               </Location>
+               <Location
+                  uuid = "931B9BA4-3823-4FA4-8805-DFEF47C78F1F - 6244abec777d90cb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 (Swift.Array&lt;NodeJS_Thingy_Cars.Mileage&gt;) -&gt; () in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.frame(minWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxWidth: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, minHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, idealHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, maxHeight: Swift.Optional&lt;CoreGraphics.CGFloat&gt;, alignment: SwiftUI.Alignment) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.chartBackground&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: (Charts.ChartProxy) -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0)&gt; in NodeJS_Thingy_Cars.MileageView.body.getter : some"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/View/QueryViews/MileageView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "84"
+                  endingLineNumber = "84"
+                  offsetFromSymbolStart = "696">
                </Location>
             </Locations>
          </BreakpointContent>
