@@ -219,11 +219,20 @@ func initCarQuery(dataCuccli: Data) -> (queriedCar: CarQuery?, message: String?,
     }
 }
 
-func initWebhookResponse(dataCuccli: Data) -> (response: WebhookResponse?, error: String?) {
-    var decodedData: WebhookResponse
+func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, error: String?) {
+    var decodedData: WebsocketResponse
     
     do {
-        decodedData = try JSONDecoder().decode(WebhookResponse.self, from: dataCuccli)
+        decodedData = try JSONDecoder().decode(WebsocketResponse.self, from: dataCuccli)
+        
+//        switch decodedData {
+//            case .accidents(let accidents):
+//                return (accidents, nil)
+//            case .stringValue(let stringValue):
+//                return (stringValue, nil)
+//            default:
+//                return (nil, "No error message from server")
+//        }
         
         if (decodedData.status == "success") {
             print("status (query): \(decodedData)")

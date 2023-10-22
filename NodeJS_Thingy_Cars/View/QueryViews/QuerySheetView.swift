@@ -29,9 +29,12 @@ enum CarQueryData: String {
 }
 
 struct QuerySheetView: View {
+    @EnvironmentObject var websocket: Websocket
+    
     @State var queriedCar: CarQuery
     @State private var isRestrictionsExpanded = false
     @State private var isAccidentsExpanded = false
+    @State private var showingPopover = false
     
     @State var inspectionsOnly = false
     @State private var enableScrollView = false
@@ -43,33 +46,33 @@ struct QuerySheetView: View {
             List {
                 if !inspectionsOnly {
                     Section {
-                        SpecView(header: "Brand", content: queriedCar.brand)
-                        SpecView(header: "Model", content: queriedCar.model)
-                        SpecView(header: "Type Code", content: queriedCar.type_code)
+                        SpecView(header: "Brand", content: websocket.brand)
+                        SpecView(header: "Model", content: websocket.model)
+                        SpecView(header: "Type Code", content: websocket.type_code)
                     }
                     
                     Section {
-                        SpecView(header: "Status", content: queriedCar.status)
-                        SpecView(header: "First registration", content: queriedCar.first_reg)
-                        SpecView(header: "First registration in 🇭🇺", content: queriedCar.first_reg_hun)
-                        SpecView(header: "Number of owners", content: String(queriedCar.num_of_owners))
+                        SpecView(header: "Status", content: websocket.status)
+                        SpecView(header: "First registration", content: websocket.first_reg)
+                        SpecView(header: "First registration in 🇭🇺", content: websocket.first_reg_hun)
+                        SpecView(header: "Number of owners", content: String(websocket.num_of_owners))
                     }
                     
                     Section {
-                        SpecView(header: "Year", content: String(queriedCar.year))
-                        SpecView(header: "Engine size", content: String(queriedCar.engine_size), note: "cm3")
-                        SpecView(header: "Performance", content: String(queriedCar.performance), note: "HP")
-                        SpecView(header: "Fuel type", content: String(queriedCar.fuel_type))
-                        SpecView(header: "Gearbox", content: String(queriedCar.gearbox))
-                        SpecView(header: "Color", content: String(queriedCar.color))
+                        SpecView(header: "Year", content: websocket.year)
+                        SpecView(header: "Engine size", content: String(websocket.engine_size), note: "cm3")
+                        SpecView(header: "Performance", content: String(websocket.performance), note: "HP")
+                        SpecView(header: "Fuel type", content: String(websocket.fuel_type))
+                        SpecView(header: "Gearbox", content: String(websocket.gearbox))
+                        SpecView(header: "Color", content: String(websocket.color))
                     }
                     
                     Section {
-                        SpecView(header: "Restrictions", contents: queriedCar.restrictions)
+                        SpecView(header: "Restrictions", contents: websocket.restrictions)
                     }
                     
                     Group {
-                        SpecView(header: "Accidents", accidents: queriedCar.accidents)
+                        SpecView(header: "Accidents", accidents: websocket.accidents)
                     }
                     
                     if let safeMileage = queriedCar.mileage {
@@ -126,7 +129,25 @@ struct QuerySheetView: View {
             // MARK: Toolbar items
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading, content: {
-                    close
+//                    close
+                    Button(action: {
+                        showingPopover = true
+                    }) {
+                        Gauge(value: websocket.percentage, in: 0...17) {}
+                            .gaugeStyle(.accessoryCircularCapacity)
+                            .tint(.blue)
+                            .scaleEffect(0.5)
+                            .frame(width: 25, height: 25)
+                        
+                    }.popover(isPresented: $showingPopover) {
+                        ForEach(websocket.messages, id: \.id) { message in
+                            if let safeValue = message.response.value {
+//                                Text(safeValue)
+                            }
+                        }
+                        .presentationCompactAdaptation((.popover))
+                    }
+                    .isHidden(!websocket.isLoading)
                 })
             }
             .navigationTitle(queriedCar.getLP())

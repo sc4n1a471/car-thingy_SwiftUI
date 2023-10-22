@@ -8,6 +8,6 @@
 import Foundation
 
 struct Accident: Codable, Hashable {
-    var accident_date: String
-    var role: String
+    var accident_date: String = String()
+    var role: String = String()
 }

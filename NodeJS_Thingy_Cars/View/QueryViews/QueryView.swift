@@ -1,9 +1,9 @@
-//
-//  QueryView.swift
-//  NodeJS_Thingy_Cars
-//
-//  Created by Martin Terhes on 5/21/23.
-//
+    //
+    //  QueryView.swift
+    //  NodeJS_Thingy_Cars
+    //
+    //  Created by Martin Terhes on 5/21/23.
+    //
 
 import SwiftUI
 
@@ -19,16 +19,16 @@ struct QueryView: View {
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
-            Binding<String>(
-                get: {
-                    return querySharedData.requestedLicensePlate
-                    
+        Binding<String>(
+            get: {
+                return querySharedData.requestedLicensePlate
+                
             },
-                set: { newString in
-                    querySharedData.requestedLicensePlate = newString.uppercased()
-                    querySharedData.requestedLicensePlate.removeAll(where: {
-                        removableCharacters.contains($0)
-                    })
+            set: { newString in
+                querySharedData.requestedLicensePlate = newString.uppercased()
+                querySharedData.requestedLicensePlate.removeAll(where: {
+                    removableCharacters.contains($0)
+                })
             })
     }
     
@@ -61,6 +61,7 @@ struct QueryView: View {
                 
                 Button {
                     Task {
+                        websocket.setLoading(true)
                         await queryCarButton(requestedCar: "test111")
                     }
                 } label: {
@@ -76,9 +77,9 @@ struct QueryView: View {
             .padding()
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                
+                    
                     Button(action: {
-                        showingPopover = true
+                        websocket.openSheet()
                     }) {
                         Gauge(value: websocket.percentage, in: 0...17) {}
                             .gaugeStyle(.accessoryCircularCapacity)
@@ -89,17 +90,17 @@ struct QueryView: View {
                     }.popover(isPresented: $showingPopover) {
                         ForEach(websocket.messages, id: \.id) { message in
                             if let safeValue = message.response.value {
-                                Text(safeValue)
+                                    //                                Text(safeValue)
                             }
                         }
                         .presentationCompactAdaptation((.popover))
                     }
                     .isHidden(!websocket.isLoading)
                     
-                        
+                    
                     
                     Link(destination:
-                        URL(string:"https://magyarorszag.hu/jszp_szuf")!
+                            URL(string:"https://magyarorszag.hu/jszp_szuf")!
                     ) {
                         Image(systemName: "link")
                     }
@@ -112,11 +113,14 @@ struct QueryView: View {
                 print("alert confirmed")
             }
         })
-        .sheet(isPresented: $querySharedData.isQueriedCarLoaded, onDismiss: {
-            Task {}
+        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
+            Task {
+                websocket.dismissSheet()
+            }
         }) {
             QuerySheetView(queriedCar: querySharedData.queriedCar ?? testCar)
                 .presentationDetents([.medium, .large])
+                .environmentObject(websocket)
         }
     }
     
@@ -128,28 +132,118 @@ struct QueryView: View {
 
 struct Message: Identifiable {
     var id = UUID()
-    var response: WebhookResponse
+    var response: WebsocketResponse
 }
 
-class Websocket: ObservableObject {
+
+@MainActor class Websocket: ObservableObject {
     @Published var messages = [Message]()
     @Published var percentage = Double()
     @Published var isLoading = Bool()
+    @Published var dataSheetOpened = false
+    
+        // TODO: Maybe create a class for these attributes and set individual setters for them
+    @Published var brand = String()
+    @Published var color = String()
+    @Published var engine_size = String()
+    @Published var first_reg = String()
+    @Published var first_reg_hun = String()
+    @Published var fuel_type = String()
+    @Published var gearbox = String()
+    @Published var model = String()
+    @Published var num_of_owners = String()
+    @Published var performance = String()
+    @Published var status = String()
+    @Published var type_code = String()
+    @Published var year = String()
+    
+    @Published var accidents = [Accident()]
+    @Published var restrictions = [String()]
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
     
     init() {}
     
+    func openSheet() {
+        self.dataSheetOpened = true
+    }
+    
+    func dismissSheet() {
+        self.dataSheetOpened = false
+    }
+    
+    func setLoading(_ newStatus: Bool) {
+        self.isLoading = newStatus
+        print("isLoading is now: \(newStatus)")
+    }
+    
+    func setValues(_ value: WebsocketResponseType, key: CarDataType = .brand) {
+        switch value {
+            case .accidents(let accidents):
+                self.accidents = accidents
+            case .restrictions(let restrictions):
+                self.restrictions = restrictions
+            case .stringValue(let stringValue):
+                switch key {
+                    case CarDataType.brand:
+                        self.brand = stringValue
+                        break
+                    case CarDataType.color:
+                        self.color = stringValue
+                        break
+                    case CarDataType.engine_size:
+                        self.engine_size = stringValue
+                        break
+                    case CarDataType.first_reg:
+                        self.first_reg = stringValue
+                        break
+                    case CarDataType.first_reg_hun:
+                        self.first_reg_hun = stringValue
+                        break
+                    case CarDataType.fuel_type:
+                        self.fuel_type = stringValue
+                        break
+                    case CarDataType.gearbox:
+                        self.gearbox = stringValue
+                        break
+                    case CarDataType.model:
+                        self.model = stringValue
+                        break
+                    case CarDataType.num_of_owners:
+                        self.num_of_owners = stringValue
+                        break
+                    case CarDataType.performance:
+                        self.performance = stringValue
+                        break
+                    case CarDataType.status:
+                        self.status = stringValue
+                        break
+                    case CarDataType.type_code:
+                        self.type_code = stringValue
+                        break
+                    case CarDataType.year:
+                        self.year = stringValue
+                        break
+                    default:
+                        break
+                }
+            default:
+                print(value)
+                break
+        }
+    }
+    
     func connect() {
-        guard let url = URL(string: "ws://10.11.12.250:3001/") else { return }
+        self.setLoading(true)
+        guard let url = URL(string: getURLasString(whichUrl: "carWebsocket")) else { return }
         let request = URLRequest(url: url)
-
+        
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
+        self.counter = 0
         receiveMessage()
         print("Connected")
-        self.isLoading.toggle()
     }
     
     private func receiveMessage() {
@@ -157,39 +251,50 @@ class Websocket: ObservableObject {
         counter += 1
         webSocketTask?.receive(completionHandler: { result in
             switch result {
-            case .failure(let error):
-                print("Received error: \(error.localizedDescription)")
-                self.close()
-                return
-            case .success(let message):
-                switch message {
-                case .string(let text):
-                    
-                    let jsonData = Data(text.utf8)
-                    
-                    let (safeResponse, safeError) = initWebhookResponse(dataCuccli: jsonData)
-                    
-                    if let safeResponse {
-                        if safeResponse.status == "success" {
-                            self.close()
-                            return
-                        } else {
-                            self.messages.append(Message(response: safeResponse))
-                            self.percentage = safeResponse.percentage
-//                            self.ping()
-                        }
+                case .failure(let error):
+                    print("Received error: \(error.localizedDescription)")
+                    self.close()
+                    return
+                case .success(let message):
+                    switch message {
+                        case .string(let text):
+                            
+                            let jsonData = Data(text.utf8)
+                            
+                            let (safeResponse, safeError) = initWebsocketResponse(dataCuccli: jsonData)
+                            
+                            if let safeResponse {
+                                if safeResponse.status == "success" {
+                                    self.close()
+                                    if !self.dataSheetOpened {
+                                        self.openSheet()
+                                    }
+                                    return
+                                } else {
+                                    self.messages.append(Message(response: safeResponse))
+                                    if let safeKey = safeResponse.key {
+                                        if let safeValue = safeResponse.value {
+                                            self.setValues(safeValue, key: safeKey)
+                                            
+                                            print("Key: \(safeKey)")
+                                            print("Value: \(safeValue)")
+                                        }
+                                    }
+                                    self.percentage = safeResponse.percentage
+                                        //                            self.ping()
+                                }
+                            }
+                            if let safeError {
+                                print("error: \(safeError)")
+                            }
+                        case .data(let data):
+                                // Handle binary data
+                            print(data)
+                            
+                            break
+                        @unknown default:
+                            break
                     }
-                    if let safeError {
-                        print("error: \(safeError)")
-                    }
-                case .data(let data):
-                    // Handle binary data
-                    print(data)
-                    
-                    break
-                @unknown default:
-                    break
-                }
             }
             
             if self.counter < 100 {
@@ -214,7 +319,7 @@ class Websocket: ObservableObject {
         webSocketTask?.cancel(with: .goingAway, reason: "Query ended".data(using: .utf8))
         print("Disconnected")
         self.percentage = 0.0
-        self.isLoading.toggle()
+        self.setLoading(false)
     }
     
     func ping() {

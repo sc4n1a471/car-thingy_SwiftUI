@@ -8,6 +8,6 @@
 import Foundation
 
 struct Restriction: Codable, Hashable {
-    var id = UUID()
-    var name: String
+    var id: UUID = UUID()
+    var name: String = String()
 }
