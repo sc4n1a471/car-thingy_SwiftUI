@@ -60,6 +60,6 @@ struct InspectionImageViewer: View {
 
 struct InspectionImageViewer_Previews: PreviewProvider {
     static var previews: some View {
-        InspectionImageViewer(imageIndex: 1, images: testCar.inspections![0].images)
+        InspectionImageViewer(imageIndex: 1, images: testCar.inspections![0].base_64)
     }
 }

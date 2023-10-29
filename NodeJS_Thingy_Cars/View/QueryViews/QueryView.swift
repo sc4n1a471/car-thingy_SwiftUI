@@ -112,6 +112,12 @@ struct QueryView: View {
                 print("alert confirmed")
             }
         })
+        .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
+            Button("Websocket got it") {
+                websocket.disableAlert()
+                print("websocket alert confirmed")
+            }
+        })
         .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
             Task {
                 websocket.dismissSheet()
@@ -124,8 +130,9 @@ struct QueryView: View {
     }
     
     func queryCarButton(requestedCar: String) async {
-        websocket.connect()
-        websocket.sendMessage(requestedCar)
+        await websocket.connect(requestedCar)
+        print("success?")
+//        websocket.sendMessage(requestedCar)
     }
 }
 
@@ -139,26 +146,32 @@ struct Message: Identifiable {
     @Published var messages = [Message]()
     @Published var percentage = Double()
     @Published var isLoading = Bool()
+    @Published var isSuccess = false
     @Published var dataSheetOpened = false
+    @Published var error = String()
+    @Published var showAlert = false
+    
+    @Published var license_plate = String()
     
         // TODO: Maybe create a class for these attributes and set individual setters for them
     @Published var brand = String()
     @Published var color = String()
-    @Published var engine_size = String()
+    @Published var engine_size = Int()
     @Published var first_reg = String()
     @Published var first_reg_hun = String()
     @Published var fuel_type = String()
     @Published var gearbox = String()
     @Published var model = String()
-    @Published var num_of_owners = String()
-    @Published var performance = String()
+    @Published var num_of_owners = Int()
+    @Published var performance = Int()
     @Published var status = String()
     @Published var type_code = String()
-    @Published var year = String()
+    @Published var year = Int()
     
     @Published var accidents = [Accident()]
     @Published var restrictions = [String()]
     @Published var mileage = [Mileage()]
+    @Published var inspections = [Inspection()]
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
@@ -175,7 +188,6 @@ struct Message: Identifiable {
     
     func setLoading(_ newStatus: Bool) {
         self.isLoading = newStatus
-        print("isLoading is now: \(newStatus)")
     }
     
     func setValues(_ value: WebsocketResponseType, key: CarDataType = .brand) {
@@ -185,7 +197,6 @@ struct Message: Identifiable {
             case .restrictions(let restrictions):
                 self.restrictions = restrictions
             case .mileage(let mileage):
-                print(mileage)
                 self.mileage = mileage
             case .stringValue(let stringValue):
                 switch key {
@@ -194,9 +205,6 @@ struct Message: Identifiable {
                         break
                     case CarDataType.color:
                         self.color = stringValue
-                        break
-                    case CarDataType.engine_size:
-                        self.engine_size = stringValue
                         break
                     case CarDataType.first_reg:
                         self.first_reg = stringValue
@@ -213,20 +221,28 @@ struct Message: Identifiable {
                     case CarDataType.model:
                         self.model = stringValue
                         break
-                    case CarDataType.num_of_owners:
-                        self.num_of_owners = stringValue
-                        break
-                    case CarDataType.performance:
-                        self.performance = stringValue
-                        break
                     case CarDataType.status:
                         self.status = stringValue
                         break
                     case CarDataType.type_code:
                         self.type_code = stringValue
                         break
+                    default:
+                        break
+                }
+            case .intValue(let intValue):
+                switch key {
+                    case CarDataType.engine_size:
+                        self.engine_size = intValue
+                        break
+                    case CarDataType.num_of_owners:
+                        self.num_of_owners = intValue
+                        break
+                    case CarDataType.performance:
+                        self.performance = intValue
+                        break
                     case CarDataType.year:
-                        self.year = stringValue
+                        self.year = intValue
                         break
                     default:
                         break
@@ -240,24 +256,45 @@ struct Message: Identifiable {
     func clearValues() {
         self.brand = String()
         self.color = String()
-        self.engine_size = String()
         self.first_reg = String()
         self.first_reg_hun = String()
         self.fuel_type = String()
         self.gearbox = String()
         self.model = String()
-        self.num_of_owners = String()
-        self.performance = String()
         self.status = String()
         self.type_code = String()
-        self.year = String()
+        
+        self.num_of_owners = Int()
+        self.performance = Int()
+        self.engine_size = Int()
+        self.year = Int()
         
         self.accidents = [Accident()]
         self.restrictions = [String()]
         self.mileage = [Mileage()]
     }
     
-    func connect() {
+    func getInspections(_ licensePlate: String) async {
+        let (inspections, error) = await loadInspections(license_plate: licensePlate)
+        if let safeInspections = inspections {
+            self.inspections = safeInspections
+        }
+        if let safeError = error {
+            self.enableAlert(error: safeError)
+        }
+    }
+    
+    func enableAlert(error: String) {
+        self.error = error
+        self.showAlert = true
+    }
+    
+    func disableAlert() {
+        self.error = String()
+        self.showAlert = false
+    }
+
+    func connect(_ requestedCar: String) async {
         self.setLoading(true)
         guard let url = URL(string: getURLasString(whichUrl: "carWebsocket")) else { return }
         let request = URLRequest(url: url)
@@ -266,7 +303,13 @@ struct Message: Identifiable {
         webSocketTask?.resume()
         self.counter = 0
         self.clearValues()
-        receiveMessage()
+        
+        self.license_plate = requestedCar
+        
+        self.sendMessage(requestedCar)
+        
+//        receiveMessage()
+        await setReceiveHandler()
         print("Connected")
     }
     
@@ -325,6 +368,65 @@ struct Message: Identifiable {
                 self.close()
             }
         })
+    }
+    
+    func setReceiveHandler() async {
+        guard webSocketTask?.closeCode == .invalid else {
+            return
+        }
+        
+        do {
+            let message = try await webSocketTask?.receive()
+            
+            switch message {
+                case .string(let text):
+                    
+                    let jsonData = Data(text.utf8)
+                    
+                    let (safeResponse, safeError) = initWebsocketResponse(dataCuccli: jsonData)
+                    
+                    if let safeResponse {
+                        if safeResponse.status == "success" {
+                            self.close()
+                            await self.getInspections(self.license_plate)
+                            if !self.dataSheetOpened {
+                                self.openSheet()
+                            }
+                            return
+                        } else {
+                            self.messages.append(Message(response: safeResponse))
+                            if let safeKey = safeResponse.key {
+                                if let safeValue = safeResponse.value {
+                                    self.setValues(safeValue, key: safeKey)
+                                }
+                            }
+                            self.percentage = safeResponse.percentage
+                                //                            self.ping()
+                        }
+                    }
+                    if let safeError {
+                        print("error: \(safeError)")
+                    }
+                case .data(let data):
+                        // Handle binary data
+                    print(data)
+                    
+                    break
+                @unknown default:
+                    break
+            }
+            
+            if self.counter < 100 {
+                self.receiveMessage()
+            } else {
+                print("Forced close")
+                self.close()
+            }
+            
+            await setReceiveHandler()
+        } catch {
+            print(error)
+        }
     }
     
     func sendMessage(_ message: String) {

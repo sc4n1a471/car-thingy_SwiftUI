@@ -291,3 +291,38 @@ func initBrand(dataCuccli: Data) -> (brands: [Brand]?, error: String?) {
     }
 }
 
+func loadInspections(license_plate: String) async -> (inspections: [Inspection]?, error: String?) {
+    let url = URL(string: getURLasString(whichUrl: "carInspections") + "/" + license_plate.uppercased())!
+    
+    do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+//            return (nil, "Could not reach Inspection API (502)")
+//        }
+        
+        return initInspections(dataCuccli: data)
+    } catch {
+        print("Invalid inspection data")
+        return (nil, error.localizedDescription)
+    }
+}
+
+func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: String?) {
+    var decodedInspections: InspectionResponse
+    
+    do {
+        decodedInspections = try JSONDecoder().decode(InspectionResponse.self, from: dataCuccli)
+        
+        if (decodedInspections.isSuccess()) {
+            print("status (Inspections): \(decodedInspections.isSuccess())")
+            return (decodedInspections.message, nil)
+        } else {
+            return (nil, "No error message from server (?)")
+        }
+        
+    } catch {
+        print("initInspections error: \(error)")
+        return (nil, error.localizedDescription)
+    }
+}

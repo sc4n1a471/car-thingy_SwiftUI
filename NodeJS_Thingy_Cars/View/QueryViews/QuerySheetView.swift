@@ -59,12 +59,16 @@ struct QuerySheetView: View {
                     }
                     
                     Section {
-                        SpecView(header: "Year", content: websocket.year)
+                        SpecView(header: "Year", content: String(websocket.year))
                         SpecView(header: "Engine size", content: String(websocket.engine_size), note: "cm3")
                         SpecView(header: "Performance", content: String(websocket.performance), note: "HP")
                         SpecView(header: "Fuel type", content: String(websocket.fuel_type))
                         SpecView(header: "Gearbox", content: String(websocket.gearbox))
                         SpecView(header: "Color", content: String(websocket.color))
+                    }
+                    
+                    Section {
+                        MileageView(onChangeMileageData: websocket.mileage, mileageData: websocket.mileage)
                     }
                     
                     Section {
@@ -74,53 +78,90 @@ struct QuerySheetView: View {
                     Group {
                         SpecView(header: "Accidents", accidents: websocket.accidents)
                     }
-                    
-                    Section {
-                        MileageView(onChangeMileageData: websocket.mileage, mileageData: websocket.mileage)
-                    }
                 }
                 
                 ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
-                if let safeInspections = queriedCar.inspections {
-                    if enableScrollView {
-                        Section {
-                            if safeInspections.count == 1 {
-                                ForEach(safeInspections, id: \.self) { safeInspection in
-                                    Section {
-                                        InspectionView(inspection: safeInspection)
-                                            .frame(width: 391, height: 300)
-                                    }
-                                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+//                if let safeInspections = websocket.inspections {
+//                    if enableScrollView {
+//                        Section {
+//                            if safeInspections.count == 1 {
+//                                ForEach(safeInspections, id: \.self) { safeInspection in
+//                                    Section {
+//                                        InspectionView(inspection: safeInspection)
+//                                            .frame(width: 391, height: 300)
+//                                    }
+//                                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+//                                }
+//                            } else {
+//                                ScrollView(.horizontal) {
+//                                    HStack {
+//                                        ForEach(safeInspections, id: \.self) { safeInspection in
+//                                            Section {
+//                                                InspectionView(inspection: safeInspection)
+//                                                    .frame(width: 300, height: 300)
+//                                            }
+//                                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+//                                        }
+//                                        .listStyle(.plain)
+//                                    }
+//                                }
+//                            }
+//                        } header: {
+//                            Text("Inspections")
+//                        }
+//                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+//                        .edgesIgnoringSafeArea(.all)
+//                        .listStyle(GroupedListStyle()) // or PlainListStyle()
+//                        /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
+//                    } else {
+//                        ForEach(safeInspections, id: \.self) { safeInspection in
+//                            Section {
+//                                InspectionView(inspection: safeInspection)
+//                                    .frame(height: 300)
+//                            }
+//                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+//                        }
+//                    }
+//                }
+                
+                if enableScrollView {
+                    Section {
+                        if websocket.inspections.count == 1 {
+                            ForEach(websocket.inspections, id: \.self) { inspection in
+                                Section {
+                                    InspectionView(inspection: inspection)
+                                        .frame(width: 391, height: 300)
                                 }
-                            } else {
-                                ScrollView(.horizontal) {
-                                    HStack {
-                                        ForEach(safeInspections, id: \.self) { safeInspection in
-                                            Section {
-                                                InspectionView(inspection: safeInspection)
-                                                    .frame(width: 300, height: 300)
-                                            }
-                                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            }
+                        } else {
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    ForEach(websocket.inspections, id: \.self) { inspection in
+                                        Section {
+                                            InspectionView(inspection: inspection)
+                                                .frame(width: 300, height: 300)
                                         }
-                                        .listStyle(.plain)
+                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                                     }
+                                    .listStyle(.plain)
                                 }
                             }
-                        } header: {
-                            Text("Inspections")
+                        }
+                    } header: {
+                        Text("Inspections")
+                    }
+                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    .edgesIgnoringSafeArea(.all)
+                    .listStyle(GroupedListStyle()) // or PlainListStyle()
+                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
+                } else {
+                    ForEach(websocket.inspections, id: \.self) { inspection in
+                        Section {
+                            InspectionView(inspection: inspection)
+                                .frame(height: 300)
                         }
                         .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .edgesIgnoringSafeArea(.all)
-                        .listStyle(GroupedListStyle()) // or PlainListStyle()
-                        /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                    } else {
-                        ForEach(safeInspections, id: \.self) { safeInspection in
-                            Section {
-                                InspectionView(inspection: safeInspection)
-                                    .frame(height: 300)
-                            }
-                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        }
                     }
                 }
             }

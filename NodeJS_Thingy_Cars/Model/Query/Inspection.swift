@@ -8,7 +8,7 @@
 import Foundation
 
 struct Inspection: Codable, Hashable {
-//    var id = UUID()?
-    var images: [String]
-    var name: String
+    var license_plate = String()
+    var name: String = String()
+    var base_64: [String] = [String()]
 }
