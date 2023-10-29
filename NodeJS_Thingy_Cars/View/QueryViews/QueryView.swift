@@ -80,20 +80,19 @@ struct QueryView: View {
                     Button(action: {
                         websocket.openSheet()
                     }) {
-                        Gauge(value: websocket.percentage, in: 0...17) {}
+                        Gauge(value: websocket.percentage, in: 0...100) {}
                             .gaugeStyle(.accessoryCircularCapacity)
                             .tint(.blue)
                             .scaleEffect(0.5)
                             .frame(width: 25, height: 25)
                         
-                    }.popover(isPresented: $showingPopover) {
-                        ForEach(websocket.messages, id: \.id) { message in
-                            if let safeValue = message.response.value {
-                                    //                                Text(safeValue)
-                            }
-                        }
-                        .presentationCompactAdaptation((.popover))
                     }
+//                    .popover(isPresented: $showingPopover) {
+//                        ForEach(websocket.messages, id: \.self) { message in
+//                            Text(message)
+//                        }
+//                        .presentationCompactAdaptation((.popover))
+//                    }
                     .isHidden(!websocket.isLoading)
                     
                     
@@ -136,14 +135,8 @@ struct QueryView: View {
     }
 }
 
-struct Message: Identifiable {
-    var id = UUID()
-    var response: WebsocketResponse
-}
-
-
 @MainActor class Websocket: ObservableObject {
-    @Published var messages = [Message]()
+    @Published var messages = [String]()
     @Published var percentage = Double()
     @Published var isLoading = Bool()
     @Published var isSuccess = false
@@ -177,6 +170,29 @@ struct Message: Identifiable {
     private var counter = 0
     
     init() {}
+    
+    func getLP() -> String {
+        var formattedLicensePlate = self.license_plate.uppercased()
+        
+        if (formattedLicensePlate != "ERROR") {
+            var numOfLetters = 0
+            
+            for char in formattedLicensePlate {
+                if (char.isLetter) {
+                    numOfLetters += 1
+                }
+            }
+            
+            formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
+            
+                // if it's the new license plate
+            if (self.license_plate.count > 6) {
+                formattedLicensePlate.insert(contentsOf: " ", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 2))
+            }
+        }
+        
+        return formattedLicensePlate
+    }
     
     func openSheet() {
         self.dataSheetOpened = true
@@ -247,8 +263,12 @@ struct Message: Identifiable {
                     default:
                         break
                 }
+            case .message(let message):
+                self.messages.append(message)
+                print("Message: \(message)")
+                break
             default:
-                print(value)
+                print("default value: \(value)")
                 break
         }
     }
@@ -272,6 +292,9 @@ struct Message: Identifiable {
         self.accidents = [Accident()]
         self.restrictions = [String()]
         self.mileage = [Mileage()]
+        self.inspections = [Inspection()]
+        
+        self.messages = [String()]
     }
     
     func getInspections(_ licensePlate: String) async {
@@ -313,62 +336,60 @@ struct Message: Identifiable {
         print("Connected")
     }
     
-    private func receiveMessage() {
-        print("Listening... (\(self.counter))")
-        counter += 1
-        webSocketTask?.receive(completionHandler: { result in
-            switch result {
-                case .failure(let error):
-                    print("Received error: \(error.localizedDescription)")
-                    self.close()
-                    return
-                case .success(let message):
-                    switch message {
-                        case .string(let text):
-                            
-                            let jsonData = Data(text.utf8)
-                            
-                            let (safeResponse, safeError) = initWebsocketResponse(dataCuccli: jsonData)
-                            
-                            if let safeResponse {
-                                if safeResponse.status == "success" {
-                                    self.close()
-                                    if !self.dataSheetOpened {
-                                        self.openSheet()
-                                    }
-                                    return
-                                } else {
-                                    self.messages.append(Message(response: safeResponse))
-                                    if let safeKey = safeResponse.key {
-                                        if let safeValue = safeResponse.value {
-                                            self.setValues(safeValue, key: safeKey)
-                                        }
-                                    }
-                                    self.percentage = safeResponse.percentage
-                                        //                            self.ping()
-                                }
-                            }
-                            if let safeError {
-                                print("error: \(safeError)")
-                            }
-                        case .data(let data):
-                                // Handle binary data
-                            print(data)
-                            
-                            break
-                        @unknown default:
-                            break
-                    }
-            }
-            
-            if self.counter < 100 {
-                self.receiveMessage()
-            } else {
-                print("Forced close")
-                self.close()
-            }
-        })
-    }
+//    private func receiveMessage() {
+//        print("Listening... (\(self.counter))")
+//        counter += 1
+//        webSocketTask?.receive(completionHandler: { result in
+//            switch result {
+//                case .failure(let error):
+//                    print("Received error: \(error.localizedDescription)")
+//                    self.close()
+//                    return
+//                case .success(let message):
+//                    switch message {
+//                        case .string(let text):
+//                            
+//                            let jsonData = Data(text.utf8)
+//                            
+//                            let (safeResponse, safeError) = initWebsocketResponse(dataCuccli: jsonData)
+//                            
+//                            if let safeResponse {
+//                                if safeResponse.status == "success" {
+//                                    self.close()
+//                                    if !self.dataSheetOpened {
+//                                        self.openSheet()
+//                                    }
+//                                    return
+//                                } else {
+//                                    if let safeKey = safeResponse.key {
+//                                        if let safeValue = safeResponse.value {
+//                                            self.setValues(safeValue, key: safeKey)
+//                                        }
+//                                    }
+//                                    self.percentage = safeResponse.percentage
+//                                }
+//                            }
+//                            if let safeError {
+//                                print("error: \(safeError)")
+//                            }
+//                        case .data(let data):
+//                                // Handle binary data
+//                            print(data)
+//                            
+//                            break
+//                        @unknown default:
+//                            break
+//                    }
+//            }
+//            
+//            if self.counter < 100 {
+//                self.receiveMessage()
+//            } else {
+//                print("Forced close")
+//                self.close()
+//            }
+//        })
+//    }
     
     func setReceiveHandler() async {
         guard webSocketTask?.closeCode == .invalid else {
@@ -394,7 +415,6 @@ struct Message: Identifiable {
                             }
                             return
                         } else {
-                            self.messages.append(Message(response: safeResponse))
                             if let safeKey = safeResponse.key {
                                 if let safeValue = safeResponse.value {
                                     self.setValues(safeValue, key: safeKey)
@@ -417,13 +437,12 @@ struct Message: Identifiable {
             }
             
             if self.counter < 100 {
-                self.receiveMessage()
+                print("===========================")
+                await setReceiveHandler()
             } else {
                 print("Forced close")
                 self.close()
             }
-            
-            await setReceiveHandler()
         } catch {
             print(error)
         }

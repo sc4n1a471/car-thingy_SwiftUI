@@ -15,14 +15,14 @@ struct WebsocketResponse: Decodable {
     var value: WebsocketResponseType?
 //    var stringValue: String?
 //    var accidents: [AccidentType]?
-    var message: String?
+//    var message: String?
     
     enum CodingKeys: String, CodingKey {
         case status
         case percentage
         case key
         case value
-        case message
+//        case message
     }
     
     init(from decoder: Decoder) throws {
@@ -45,13 +45,18 @@ struct WebsocketResponse: Decodable {
                     let mileage = try container.decode([Mileage].self, forKey: .value)
                     self.value = .mileage(mileage)
                 case .message:
-                    let message = try container.decode(String.self, forKey: .message)
+                    let messageCuccli = try container.decode(String.self, forKey: .value)
+                    self.value = .message(messageCuccli)
                 case .engine_size, .num_of_owners, .performance, .year:
                     let intCuccli = try container.decode(Int.self, forKey: .value)
                     self.value = .intValue(intCuccli)
-                default:
+                case .brand, .color, .first_reg, .first_reg_hun, .fuel_type, .gearbox, .model, .status, .type_code:
                     let stringCuccli = try container.decode(String.self, forKey: .value)
                     self.value = .stringValue(stringCuccli)
+                default:
+                    let messageCuccli = try container.decode(String.self, forKey: .value)
+//                    self.value = messageCuccli
+                    break
             }
         }
     }

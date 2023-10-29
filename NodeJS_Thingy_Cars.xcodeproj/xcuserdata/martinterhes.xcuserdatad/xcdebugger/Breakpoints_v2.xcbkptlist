@@ -126,8 +126,8 @@
             filePath = "NodeJS_Thingy_Cars/View/QueryViews/QueryView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "194"
-            endingLineNumber = "194"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
             landmarkName = "setValues(_:key:)"
             landmarkType = "7">
             <Locations>
@@ -189,8 +189,8 @@
             filePath = "NodeJS_Thingy_Cars/View/QueryViews/QueryView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "195"
-            endingLineNumber = "195"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
             landmarkName = "setValues(_:key:)"
             landmarkType = "7">
             <Locations>
@@ -412,8 +412,8 @@
             filePath = "NodeJS_Thingy_Cars/View/QueryViews/QueryView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "391"
-            endingLineNumber = "391"
+            startingLineNumber = "412"
+            endingLineNumber = "412"
             landmarkName = "setReceiveHandler()"
             landmarkType = "7">
             <Locations>
@@ -681,6 +681,134 @@
             endingLineNumber = "21"
             landmarkName = "body"
             landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "37B96D78-7ED9-47BC-9608-92D05EB5C03E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "37B96D78-7ED9-47BC-9608-92D05EB5C03E - 2a83fe5c79c8c13b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NodeJS_Thingy_Cars.WebsocketResponse.init(from: Swift.Decoder) throws -&gt; NodeJS_Thingy_Cars.WebsocketResponse"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "2232">
+               </Location>
+               <Location
+                  uuid = "37B96D78-7ED9-47BC-9608-92D05EB5C03E - 2a83fe5c79c8c13b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NodeJS_Thingy_Cars.WebsocketResponse.init(from: Swift.Decoder) throws -&gt; NodeJS_Thingy_Cars.WebsocketResponse"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "2136">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DA15C2ED-38C7-461B-A1CF-8ECD86479AE5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "DA15C2ED-38C7-461B-A1CF-8ECD86479AE5 - 2a83fe5c79c8c222"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NodeJS_Thingy_Cars.WebsocketResponse.init(from: Swift.Decoder) throws -&gt; NodeJS_Thingy_Cars.WebsocketResponse"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "1692">
+               </Location>
+               <Location
+                  uuid = "DA15C2ED-38C7-461B-A1CF-8ECD86479AE5 - 2a83fe5c79c8c260"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NodeJS_Thingy_Cars.WebsocketResponse.init(from: Swift.Decoder) throws -&gt; NodeJS_Thingy_Cars.WebsocketResponse"
+                  moduleName = "NodeJS_Thingy_Cars"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/martinterhes/Nextcloud/Projects/car-thingy/car-thingy_SwiftUI/NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48"
+                  offsetFromSymbolStart = "1712">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ECBF3EC5-3ABA-430E-ACE9-4981042C1CBE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/View/QueryViews/QueryView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "268"
+            endingLineNumber = "268"
+            landmarkName = "setValues(_:key:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "046CE2AA-B7B8-4230-B2A6-4B7A205398AF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NodeJS_Thingy_Cars/Model/Query/WebsocketResponse.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

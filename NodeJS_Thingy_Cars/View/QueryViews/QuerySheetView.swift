@@ -172,24 +172,22 @@ struct QuerySheetView: View {
                     Button(action: {
                         showingPopover = true
                     }) {
-                        Gauge(value: websocket.percentage, in: 0...17) {}
+                        Gauge(value: websocket.percentage, in: 0...100) {}
                             .gaugeStyle(.accessoryCircularCapacity)
                             .tint(.blue)
                             .scaleEffect(0.5)
                             .frame(width: 25, height: 25)
                         
                     }.popover(isPresented: $showingPopover) {
-                        ForEach(websocket.messages, id: \.id) { message in
-                            if let safeValue = message.response.value {
-//                                Text(safeValue)
-                            }
+                        ForEach(websocket.messages, id: \.self) { message in
+                            Text(message)
                         }
                         .presentationCompactAdaptation((.popover))
                     }
                     .isHidden(!websocket.isLoading)
                 })
             }
-            .navigationTitle(queriedCar.getLP())
+            .navigationTitle(websocket.getLP())
         }
         .onAppear {
             MyCarsView().haptic(type: .notification)
