@@ -30,21 +30,13 @@ enum CarQueryData: String {
 
 struct QuerySheetView: View {
     @EnvironmentObject var websocket: Websocket
-    
-    @State var queriedCar: CarQuery
-    @State private var isRestrictionsExpanded = false
-    @State private var isAccidentsExpanded = false
-    @State private var showingPopover = false
-    
-    @State var inspectionsOnly = false
-    @State private var enableScrollView = false
-    
+    @StateObject private var viewModel = ViewModel()
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationStack {
             List {
-                if !inspectionsOnly {
+                if !viewModel.inspectionsOnly {
                     Section {
                         SpecView(header: "Brand", content: websocket.brand)
                         SpecView(header: "Model", content: websocket.model)
@@ -124,7 +116,7 @@ struct QuerySheetView: View {
 //                    }
 //                }
                 
-                if enableScrollView {
+                if viewModel.enableScrollView {
                     Section {
                         if websocket.inspections.count == 1 {
                             ForEach(websocket.inspections, id: \.self) { inspection in
@@ -170,7 +162,7 @@ struct QuerySheetView: View {
                 ToolbarItem(placement: .navigationBarLeading, content: {
 //                    close
                     Button(action: {
-                        showingPopover = true
+                        viewModel.setPopover(true)
                     }) {
                         Gauge(value: websocket.percentage, in: 0...100) {}
                             .gaugeStyle(.accessoryCircularCapacity)
@@ -178,13 +170,18 @@ struct QuerySheetView: View {
                             .scaleEffect(0.5)
                             .frame(width: 25, height: 25)
                         
-                    }.popover(isPresented: $showingPopover) {
+                    }.popover(isPresented: $viewModel.showingPopover) {
                         ForEach(websocket.messages, id: \.self) { message in
                             Text(message)
                         }
                         .presentationCompactAdaptation((.popover))
                     }
                     .isHidden(!websocket.isLoading)
+                })
+                
+                ToolbarItem(placement: .navigationBarTrailing, content: {
+                    closeConnection
+                        .isHidden(!websocket.isLoading)
                 })
             }
             .navigationTitle(websocket.getLP())
@@ -201,10 +198,18 @@ struct QuerySheetView: View {
             Text("Close")
         })
     }
-}
-
-struct QuerySheetView_Previews: PreviewProvider {
-    static var previews: some View {
-        QuerySheetView(queriedCar: testCar)
+    
+    var closeConnection: some View {
+        Button(action: {
+            websocket.close()
+        }, label: {
+            Image(systemName: "xmark.circle.fill")
+        })
     }
 }
+
+//struct QuerySheetView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        QuerySheetView(queriedCar: testCar)
+//    }
+//}

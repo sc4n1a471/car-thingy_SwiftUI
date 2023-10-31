@@ -15,6 +15,8 @@ struct DetailView: View {
     
     @State private var selectedCar: Car
     @State private var region: MKCoordinateRegion
+    
+    @StateObject var websocket: Websocket = Websocket()
         
     init(selectedCar: Car, region: MKCoordinateRegion) {
         self.selectedCar = selectedCar
@@ -67,19 +69,24 @@ struct DetailView: View {
 #if os(iOS)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!querySharedData.isLoading)
-                    .isHidden(sharedViewData.isLoading)
+//                ProgressView()
+//                    .progressViewStyle(CircularProgressViewStyle())
+//                    .isHidden(!querySharedData.isLoading)
+//                    .isHidden(sharedViewData.isLoading)
+                Button(action: {
+                    websocket.openSheet()
+                }) {
+                    Gauge(value: websocket.percentage, in: 0...100) {}
+                        .gaugeStyle(.accessoryCircularCapacity)
+                        .tint(.blue)
+                        .scaleEffect(0.5)
+                        .frame(width: 25, height: 25)
+                    
+                }
+                .isHidden(!websocket.isLoading)
                 
                 queryButton
-                    .disabled(querySharedData.isLoading)
-                
-                Link(destination:
-                    URL(string:"https://magyarorszag.hu/jszp_szuf")!
-                ) {
-                    Image(systemName: "link")
-                }
+                    .disabled(websocket.isLoading)
                 
                 editButton
                     .disabled(sharedViewData.isLoading)
@@ -115,6 +122,15 @@ struct DetailView: View {
         }) {
             NewCar(isUpload: false)
         }
+        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
+            Task {
+                websocket.dismissSheet()
+            }
+        }) {
+            QuerySheetView()
+                .presentationDetents([.medium, .large])
+                .environmentObject(websocket)
+        }
         .onAppear() {
             sharedViewData.existingCar = selectedCar
             sharedViewData.region = region
@@ -135,7 +151,8 @@ struct DetailView: View {
     var queryButton: some View {
         Button(action: {
             Task {
-                await queryCarButton(requestedCar: selectedCar.license_plate)
+//                await queryCarButton(requestedCar: selectedCar.license_plate)
+                await websocket.connect(_:selectedCar.license_plate)
             }
         }, label: {
             Image(systemName: "magnifyingglass")

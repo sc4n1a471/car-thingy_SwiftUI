@@ -72,9 +72,9 @@ struct InspectionView: View {
     }
 }
 
-struct InspectionView_Previews: PreviewProvider {
-    static var previews: some View {
+//struct InspectionView_Previews: PreviewProvider {
+//    static var previews: some View {
 //        InspectionView(inspection: testCar.inspections![0])
-        QuerySheetView(queriedCar: testCar, inspectionsOnly: true)
-    }
-}
+//        QuerySheetView(queriedCar: testCar, inspectionsOnly: true)
+//    }
+//}

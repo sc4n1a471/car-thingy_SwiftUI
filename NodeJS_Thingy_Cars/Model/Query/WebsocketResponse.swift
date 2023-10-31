@@ -13,16 +13,12 @@ struct WebsocketResponse: Decodable {
     var percentage: Double
     var key: CarDataType?
     var value: WebsocketResponseType?
-//    var stringValue: String?
-//    var accidents: [AccidentType]?
-//    var message: String?
     
     enum CodingKeys: String, CodingKey {
         case status
         case percentage
         case key
         case value
-//        case message
     }
     
     init(from decoder: Decoder) throws {

@@ -33,11 +33,11 @@ struct ContentView: View {
 //            ContentView2()
             #endif
         }
-        .sheet(isPresented: $querySharedData.isQueriedCarLoaded, onDismiss: {
-            Task {}
-        }) {
-            QuerySheetView(queriedCar: querySharedData.queriedCar!)
-        }
+//        .sheet(isPresented: $querySharedData.isQueriedCarLoaded, onDismiss: {
+//            Task {}
+//        }) {
+//            QuerySheetView(queriedCar: querySharedData.queriedCar!)
+//        }
         
     }
 }
