@@ -1,9 +1,9 @@
-//
-//  WebhookResponse.swift
-//  NodeJS_Thingy_Cars
-//
-//  Created by Martin Terhes on 10/10/23.
-//
+    //
+    //  WebhookResponse.swift
+    //  NodeJS_Thingy_Cars
+    //
+    //  Created by Martin Terhes on 10/10/23.
+    //
 
 import Foundation
 
@@ -13,12 +13,14 @@ struct WebsocketResponse: Decodable {
     var percentage: Double
     var key: CarDataType?
     var value: WebsocketResponseType?
+    var errorMessage: String?
     
     enum CodingKeys: String, CodingKey {
         case status
         case percentage
         case key
         case value
+        case errorMessage
     }
     
     init(from decoder: Decoder) throws {
@@ -27,7 +29,7 @@ struct WebsocketResponse: Decodable {
         self.status = try container.decode(String.self, forKey: .status)
         self.percentage = try container.decode(Double.self, forKey: .percentage)
         
-        if self.status != "success" {
+        if self.status == "pending" {
             self.key = try container.decode(CarDataType.self, forKey: .key)
             
             switch self.key {
@@ -46,14 +48,17 @@ struct WebsocketResponse: Decodable {
                 case .engine_size, .num_of_owners, .performance, .year:
                     let intCuccli = try container.decode(Int.self, forKey: .value)
                     self.value = .intValue(intCuccli)
-                case .brand, .color, .first_reg, .first_reg_hun, .fuel_type, .gearbox, .model, .status, .type_code:
+                case .brand, .color, .first_reg, .first_reg_hun, .fuel_type, .gearbox, .model, .status, .type_code, .license_plate:
                     let stringCuccli = try container.decode(String.self, forKey: .value)
                     self.value = .stringValue(stringCuccli)
                 default:
                     let messageCuccli = try container.decode(String.self, forKey: .value)
-//                    self.value = messageCuccli
+                        //                    self.value = messageCuccli
                     break
             }
+        } else if self.status == "fail" {
+            let messageCuccli = try container.decode(String.self, forKey: .value)
+            self.errorMessage = messageCuccli
         }
     }
 }
@@ -75,8 +80,10 @@ enum CarDataType: String, Codable, CodingKey {
     case accidents
     case restrictions
     case mileage
+    case license_plate
     
     case message
+    case fail
 }
 
 enum WebsocketResponseType: Decodable {
@@ -86,5 +93,5 @@ enum WebsocketResponseType: Decodable {
     case intValue(Int)
     case stringValue(String)
     case message(String)
-    case error(String)
+    case errorMessage(String)
 }

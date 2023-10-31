@@ -40,7 +40,40 @@ import Foundation
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
     
-    init() {}
+    init(preview: Bool = false) {
+        if preview {
+            license_plate = testCar.license_plate
+            brand = testCar.brand
+            color = testCar.color
+            engine_size = testCar.engine_size
+            first_reg = testCar.first_reg
+            first_reg_hun = testCar.first_reg_hun
+            fuel_type = testCar.fuel_type
+            gearbox = testCar.gearbox
+            model = testCar.model
+            num_of_owners = testCar.num_of_owners
+            performance = testCar.performance
+            status = testCar.status
+            year = testCar.year
+            
+            accidents = testCar.accidents!
+            restrictions = testCar.restrictions!
+            mileage = testCar.mileage!
+            inspections = testCar.inspections!
+            
+            isLoading = true
+            messages = [
+                "Message 1",
+                "Message 2",
+                "Message 3",
+                "Message 4",
+                "Message 5",
+                "Message 6",
+                "Message 7",
+                "Message 8"
+            ]
+        }
+    }
     
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.uppercased()
@@ -114,6 +147,9 @@ import Foundation
                     case CarDataType.type_code:
                         self.type_code = stringValue
                         break
+                    case CarDataType.license_plate:
+                        self.license_plate = license_plate
+                        break
                     default:
                         break
                 }
@@ -181,6 +217,8 @@ import Foundation
     func enableAlert(error: String) {
         self.error = error
         self.showAlert = true
+        self.isLoading = false
+        self.close()
     }
     
     func disableAlert() {
@@ -243,6 +281,7 @@ import Foundation
                     }
                     if let safeError {
                         print("error: \(safeError)")
+                        self.enableAlert(error: safeError)
                     }
                 case .data(let data):
                         // Handle binary data

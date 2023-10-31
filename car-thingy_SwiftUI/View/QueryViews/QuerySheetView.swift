@@ -7,27 +7,6 @@
 
 import SwiftUI
 
-enum CarQueryData: String {
-    case accidents = "Accidents"
-    case brand = "Brand"
-    case color = "Color"
-    case engine_size = "Engine Size (cm3)"
-    case first_reg = "First Registration Date / in Hungary"
-    case first_reg_hun = "First Registration Date in Hungary"
-    case fuel_type = "Fuel Type"
-    case gearbox = "Gearbox"
-    case inspections = "Inspections"
-    case license_plate = "License Plate"
-    case mileage = "Mileage"
-    case model = "Model"
-    case num_of_owners = "Number of owners"
-    case performance = "Performance (HP)"
-    case restrictions = "Restrictions"
-    case status = "Status"
-    case type_code = "Type Code"
-    case year = "Year"
-}
-
 struct QuerySheetView: View {
     @EnvironmentObject var websocket: Websocket
     @StateObject private var viewModel = ViewModel()
@@ -175,6 +154,7 @@ struct QuerySheetView: View {
                             Text(message)
                         }
                         .presentationCompactAdaptation((.popover))
+                        .padding(10)
                     }
                     .isHidden(!websocket.isLoading)
                 })
@@ -208,8 +188,9 @@ struct QuerySheetView: View {
     }
 }
 
-//struct QuerySheetView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        QuerySheetView(queriedCar: testCar)
-//    }
-//}
+struct QuerySheetView_Previews: PreviewProvider {
+    static var previews: some View {
+        QuerySheetView()
+            .environmentObject(Websocket(preview: true))
+    }
+}

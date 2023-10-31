@@ -232,6 +232,9 @@ func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, e
         } else if (decodedData.status == "pending") {
             print("status (query): \(decodedData)")
             return (decodedData, nil)
+        } else if (decodedData.status == "fail") {
+            print("status (query): \(decodedData)")
+            return (nil, decodedData.errorMessage)
         } else {
             print("Failed response: No error message from server")
             return (nil, "No error message from server")

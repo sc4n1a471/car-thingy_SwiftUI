@@ -114,10 +114,8 @@
 			children = (
 				57563E8A2A1A826F0051B0F1 /* QueryView.swift */,
 				57563E8E2A1A94830051B0F1 /* QuerySheetView.swift */,
-				57563E912A1ABD530051B0F1 /* MileageView.swift */,
-				57BD24732A4EE6A6000508A3 /* InspectionView.swift */,
+				57F0D3BB2AF1844C00764447 /* Subviews */,
 				57BD24752A4EF455000508A3 /* TestCar.swift */,
-				57BD24772A4F37AF000508A3 /* InspectionImageViewer.swift */,
 				57B343A32AF05EB20092AB78 /* QueryViewModel.swift */,
 				57B343A52AF065D20092AB78 /* QuerySheetViewModel.swift */,
 			);
@@ -215,6 +213,16 @@
 				57D80CEC2A59FF680000CCFB /* SharedViewData.swift */,
 			);
 			path = SharedData;
+			sourceTree = "<group>";
+		};
+		57F0D3BB2AF1844C00764447 /* Subviews */ = {
+			isa = PBXGroup;
+			children = (
+				57563E912A1ABD530051B0F1 /* MileageView.swift */,
+				57BD24732A4EE6A6000508A3 /* InspectionView.swift */,
+				57BD24772A4F37AF000508A3 /* InspectionImageViewer.swift */,
+			);
+			path = Subviews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
