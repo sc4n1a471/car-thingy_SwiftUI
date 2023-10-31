@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5795FA90286E1288007E60DF"
-               BuildableName = "NodeJS_Thingy_Cars.app"
-               BlueprintName = "NodeJS_Thingy_Cars"
-               ReferencedContainer = "container:NodeJS_Thingy_Cars.xcodeproj">
+               BuildableName = "car-thingy_SwiftUI.app"
+               BlueprintName = "car-thingy_SwiftUI"
+               ReferencedContainer = "container:car-thingy_SwiftUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -44,9 +44,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5795FA90286E1288007E60DF"
-            BuildableName = "NodeJS_Thingy_Cars.app"
-            BlueprintName = "NodeJS_Thingy_Cars"
-            ReferencedContainer = "container:NodeJS_Thingy_Cars.xcodeproj">
+            BuildableName = "car-thingy_SwiftUI.app"
+            BlueprintName = "car-thingy_SwiftUI"
+            ReferencedContainer = "container:car-thingy_SwiftUI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -61,9 +61,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5795FA90286E1288007E60DF"
-            BuildableName = "NodeJS_Thingy_Cars.app"
-            BlueprintName = "NodeJS_Thingy_Cars"
-            ReferencedContainer = "container:NodeJS_Thingy_Cars.xcodeproj">
+            BuildableName = "car-thingy_SwiftUI.app"
+            BlueprintName = "car-thingy_SwiftUI"
+            ReferencedContainer = "container:car-thingy_SwiftUI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
