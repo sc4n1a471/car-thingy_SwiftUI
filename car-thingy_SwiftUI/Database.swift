@@ -7,7 +7,7 @@
 
 import Foundation
 
-let urlCars = "http://10.11.12.169/cars"
+let urlCars = "http://10.11.12.169:3011/cars"
 //let urlCars = "http://10.11.12.109:3000/cars"
 let urlBrands = "http://10.11.12.169/carBrands"
 //let urlBrands = "http://10.11.12.109:3000/carBrands"
@@ -16,34 +16,37 @@ let urlCarQuery = "http://10.11.12.169:3001"
 //let urlWebsocket = "ws://10.11.12.14:3001/"
 let urlWebsocket = "ws://10.11.12.169:3006/"
 let urlInspections = "http://10.11.12.169:3011/inspections"
+let urlLicensePlate = "http://localhost:3000/license_plate"
 
-func getURL(whichUrl: String) -> URL {
-    if (whichUrl == "cars") {
-        return URL(string: urlCars)!
-    } else if (whichUrl == "brands") {
-        return URL(string: urlBrands)!
-    } else if (whichUrl == "carQuery") {
-        return URL(string: urlCarQuery)!
-    } else if (whichUrl == "carWebsocket") {
-        return URL(string: urlWebsocket)!
-    } else if (whichUrl == "carInspections") {
-        return URL(string: urlInspections)!
-    }
-    return URL(string: "http://google.com")!
+enum urls {
+    case cars
+    case query
+    case inspections
+    case licensePlate
 }
 
-func getURLasString(whichUrl: String) -> String {
-    if (whichUrl == "cars") {
-        return urlCars
-    } else if (whichUrl == "brands") {
-        return urlBrands
-    } else if (whichUrl == "carQuery") {
-        return urlCarQuery
-    } else if (whichUrl == "carWebsocket") {
-        return urlWebsocket
-    } else if (whichUrl == "carInspections") {
-        return urlInspections
+func getURL(_ whichURL: urls) -> URL {
+    switch whichURL {
+        case .cars:
+            return URL(string: urlCars)!
+        case .query:
+            return URL(string: urlWebsocket)!
+        case .inspections:
+            return URL(string: urlInspections)!
+        case .licensePlate:
+            return URL(string: urlLicensePlate)!
     }
-    return "http://duckduckgo.com"
-    
+}
+
+func getURLasString(_ whichURL: urls) -> String {
+    switch whichURL {
+        case .cars:
+            return urlCars
+        case .query:
+            return urlCarQuery
+        case .inspections:
+            return urlInspections
+        case .licensePlate:
+            return urlLicensePlate
+    }
 }

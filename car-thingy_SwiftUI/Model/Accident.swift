@@ -8,6 +8,7 @@
 import Foundation
 
 struct Accident: Codable, Hashable {
+    var license_plate: String = String()
     var accident_date: String = String()
     var role: String = String()
 }

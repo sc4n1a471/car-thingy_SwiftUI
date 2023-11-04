@@ -9,7 +9,6 @@ import Foundation
 import MapKit
 
 class SharedViewData: ObservableObject {
-    @Published var brands = [Brand]()
     @Published var cars = [Car]()
     @Published var error: String?
     
@@ -18,8 +17,8 @@ class SharedViewData: ObservableObject {
     @Published var isNewCarPresented = false
     @Published var isEditCarPresented = false
     
-    @Published var newCar = MyCarsView().createEmptyCar()
-    @Published var existingCar = MyCarsView().createEmptyCar()
+    @Published var newCar: Car = Car()
+    @Published var existingCar: Car = Car()
     
     @Published var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
@@ -31,8 +30,17 @@ class SharedViewData: ObservableObject {
           longitudeDelta: 0.01
        )
     )
-    @Published var selectedBrand = 1
     @Published var is_new: Bool = true
     var oldLicensePlate = ""
     var yearAsString = ""
+    
+    init() {}
+    
+    func clearNewCar() {
+        self.newCar = Car()
+    }
+    
+    func clearExistingCar() {
+        self.existingCar = Car()
+    }
 }

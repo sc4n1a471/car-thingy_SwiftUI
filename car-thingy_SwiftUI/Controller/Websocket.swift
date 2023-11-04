@@ -228,7 +228,7 @@ import Foundation
     
     func connect(_ requestedCar: String) async {
         self.setLoading(true)
-        guard let url = URL(string: getURLasString(whichUrl: "carWebsocket")) else { return }
+        guard let url = URL(string: getURLasString(.query)) else { return }
         let request = URLRequest(url: url)
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)

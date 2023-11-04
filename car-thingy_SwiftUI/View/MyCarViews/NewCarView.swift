@@ -28,9 +28,7 @@ struct NewCar: View {
     
     @FocusState private var focusedField: Field?
     
-    @State private var year: String = ""     // TODO: Figure out why I have textYearBinding for year
-    @State private var ezLenniCar = MyCarsView().createEmptyCar()
-    @State private var isNewBrand = false
+    @State private var ezLenniCar: Car = Car()
     @State private var oldLicensePlate = ""
     
     @StateObject var locationManager = LocationManager()
@@ -42,7 +40,6 @@ struct NewCar: View {
     
     init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
         self.isUpload = isUpload
-        self._isNewBrand = isNewBrand
         self._selectedMap = {
             if (isUpload) {
                 return State(initialValue: MapType.current)
@@ -58,77 +55,23 @@ struct NewCar: View {
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
                 get: {
-                    return ezLenniCar.license_plate
+                    return ezLenniCar.specs.license_plate
                     
             },
                 set: { newString in
-                    self.ezLenniCar.license_plate = newString.uppercased()
-                    self.ezLenniCar.license_plate.removeAll(where: {
+                    self.ezLenniCar.specs.license_plate = newString.uppercased()
+                    self.ezLenniCar.specs.license_plate.removeAll(where: {
                         removableCharacters.contains($0)
                     })
-            })
-    }
-    var textBindingBrand: Binding<String> {
-            Binding<String>(
-                get: {
-                    if (self.ezLenniCar.brand == "DEFAULT_VALUE") {
-                        return ""
-                    }
-                    return self.ezLenniCar.brand
-                    
-            },
-                set: { newString in
-                    self.ezLenniCar.brand = newString
-            })
-    }
-    var textBindingModel: Binding<String> {
-            Binding<String>(
-                get: {
-                    if (self.ezLenniCar.model == "DEFAULT_VALUE") {
-                        return ""
-                    }
-                    return self.ezLenniCar.model
-                    
-            },
-                set: { newString in
-                    self.ezLenniCar.model = newString
-            })
-    }
-    var textBindingCodename: Binding<String> {
-            Binding<String>(
-                get: {
-                    if (self.ezLenniCar.codename == "DEFAULT_VALUE") {
-                        return ""
-                    }
-                    return self.ezLenniCar.codename
-                    
-            },
-                set: { newString in
-                    self.ezLenniCar.codename = newString
-            })
-    }
-    var textBindingYear: Binding<String> {
-            Binding<String>(
-                get: {
-                    if Int(self.year) == 1901 {
-                        return ""
-                    }
-                    return self.year
-            },
-                set: { newString in
-                    self.year = newString
             })
     }
     var textBindingComment: Binding<String> {
             Binding<String>(
                 get: {
-                    if self.ezLenniCar.comment == "DEFAULT_VALUE" {
-                        return ""
-                    }
-                    return self.ezLenniCar.comment
+                    return self.ezLenniCar.specs.comment
             },
                 set: { newString in
-                    self.ezLenniCar.comment = newString
+                    self.ezLenniCar.specs.comment = newString
             })
     }
     
@@ -180,52 +123,10 @@ struct NewCar: View {
                     .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
                 
-                Toggle("Unknown car", isOn: $sharedViewData.is_new)
-                if !sharedViewData.is_new {
-                    Section {
-                        Toggle("Unknown brand", isOn: $isNewBrand)
-                        if isNewBrand {
-                            TextField("Brand", text: textBindingBrand)
-                        } else {
-                            Picker("Brand", selection: $sharedViewData.selectedBrand) {
-                                ForEach(sharedViewData.brands, id: \.brand_id) { brand in
-                                    if (brand.brand != "DEFAULT_VALUE" && brand.brand != "ERROR") {
-                                        Text(brand.brand)
-                                    }
-                                }
-                            }
-                        }
-                    } header: {
-                        Text("Brand")
-                    }
-                    
-//                    let _ = Self._printChanges()
-//                    Text("What could possibly go wrong?")
-                    
-                    Section {
-                        TextField("Model", text: textBindingModel)
-                    } header: {
-                        Text("Model")
-                    }
-                    
-                    Section {
-                        TextField("Codename", text: textBindingCodename)
-                    } header: {
-                        Text("Codename")
-                    }
-                    
-                    Section {
-                        TextField("Year", text: textBindingYear)
-                            .keyboardType(.decimalPad)
-                    } header: {
-                        Text("Year")
-                    }
-                    
-                    Section {
-                        TextField("Comment", text: textBindingComment)
-                    } header: {
-                        Text("Comment")
-                    }
+                Section {
+                    TextField("Comment", text: textBindingComment)
+                } header: {
+                    Text("Comment")
                 }
             }
             .alert("Error", isPresented: $sharedViewData.showAlert, actions: {
@@ -255,16 +156,14 @@ struct NewCar: View {
             MyCarsView().haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
-                self.year = String(sharedViewData.existingCar.year)
             } else {
                 self.ezLenniCar = sharedViewData.newCar
-                sharedViewData.selectedBrand = 1
                 sharedViewData.is_new = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(1)) {
                     focusedField = .newLicensePlate
                 }
             }
-            oldLicensePlate = sharedViewData.existingCar.license_plate
+            oldLicensePlate = sharedViewData.existingCar.specs.license_plate
         }
     }
     
@@ -275,48 +174,30 @@ struct NewCar: View {
                 sharedViewData.isLoading = true
                 
                 if (selectedMap == MapType.custom) {
-//                    print("customMap")
-                    ezLenniCar.latitude = Double(customLatitude) ?? 37.789467
-                    ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
+                    ezLenniCar.general.latitude = Double(customLatitude) ?? 37.789467
+                    ezLenniCar.general.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-//                    print("currentMap")
-                    ezLenniCar.latitude = locationManager.region.center.latitude
-                    ezLenniCar.longitude = locationManager.region.center.longitude
-                }
-//                print(ezLenniCar)
-                
-                if (!isNewBrand) {
-                    for brand in sharedViewData.brands {
-                        if (brand.brand_id == sharedViewData.selectedBrand) {
-                            ezLenniCar.brand = brand.brand
-                        }
-                    }
-                }
-                
-                ezLenniCar.year = Int(year) ?? 1901
-                if (sharedViewData.is_new) {
-                    ezLenniCar.is_new = 1
-                } else {
-                    ezLenniCar.is_new = 0
+                    ezLenniCar.general.latitude = locationManager.region.center.latitude
+                    ezLenniCar.general.longitude = locationManager.region.center.longitude
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
                 oldLicensePlate.removeAll(where: {
                     removableCharacters.contains($0)
                 })
-//                print("oldLicensePlate: \(oldLicensePlate)")
                 
-                var ezLenniCarData = CarData(car: ezLenniCar, oldLicensePlate: ezLenniCar.license_plate)
-//                print("ezLenniCarData1: \(ezLenniCarData)")
+                ezLenniCar.general.license_plate = ezLenniCar.specs.license_plate
                 
-                if (oldLicensePlate != ezLenniCar.license_plate) {
-                    ezLenniCarData.oldLicensePlate = oldLicensePlate
-                    sharedViewData.existingCar.license_plate = ezLenniCar.license_plate
-                }
-//                print("ezLenniCarData2: \(ezLenniCarData)")
+//                var ezLenniCarData = CarData(car: ezLenniCar, oldLicensePlate: ezLenniCar.license_plate)
+//                
+//                if (oldLicensePlate != ezLenniCar.license_plate) {
+//                    ezLenniCarData.oldLicensePlate = oldLicensePlate
+//                    sharedViewData.existingCar.license_plate = ezLenniCar.license_plate
+//                }
                 
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCarData, isUpload: isUpload, isNewBrand: isNewBrand)
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCar, isUpload: isUpload)
                 sharedViewData.isLoading = false
+                
                 if successfullyUploaded {
                     sharedViewData.isEditCarPresented = false
                     presentationMode.wrappedValue.dismiss()

@@ -13,6 +13,7 @@ struct Mileage: Codable, Identifiable, Equatable {
         String(mileage)
     }
     
+    var license_plate: String?
     var mileage: Int
     var mileage_date: String
     var animate: Bool?

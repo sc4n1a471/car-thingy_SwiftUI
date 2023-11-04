@@ -7,6 +7,46 @@
 
 import Foundation
 
+var previewCar: Car = Car(
+    accidents: testCar.accidents!,
+    specs: Specs(
+        license_plate: testCar.license_plate,
+        brand: testCar.brand,
+        color: testCar.color,
+        engine_size: testCar.engine_size,
+        first_reg: testCar.first_reg,
+        first_reg_hun: testCar.first_reg_hun,
+        fuel_type: testCar.fuel_type,
+        gearbox: testCar.gearbox,
+        model: testCar.model,
+        num_of_owners: testCar.num_of_owners,
+        performance: testCar.performance,
+        status: testCar.status,
+        year: testCar.year
+    ),
+    restrictions: [
+        Restriction(
+            license_plate: testCar.license_plate,
+            restriction: testCar.restrictions![0]
+        ),
+        Restriction(
+            license_plate: testCar.license_plate,
+            restriction: testCar.restrictions![1]
+        ),
+        Restriction(
+            license_plate: testCar.license_plate,
+            restriction: testCar.restrictions![2]
+        )
+    ],
+    mileage: testCar.mileage!,
+    general: General(
+        license_plate: testCar.license_plate,
+        latitude: 37.789467,
+        longitude: -122.416772
+    ),
+    inspections: testCar.inspections!
+)
+
 var testCar: CarQuery = CarQuery(
     accidents: [
         Accident(accident_date: "1978.01.01", role: "Károkozó"),

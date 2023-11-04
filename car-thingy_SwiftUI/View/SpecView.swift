@@ -13,6 +13,7 @@ struct SpecView: View {
     var note: String?
     var contents: [String]?
     var accidents: [Accident]?
+    var restrictions: [Restriction]?
     
     var body: some View {
         HStack {
@@ -51,6 +52,15 @@ struct SpecView: View {
                                         .font(.body.bold())
                                         .foregroundColor(Color.gray)
                                         .padding(.top, 2)
+                                }
+                            }
+                        }
+                    } else if let safeRestrictions = self.restrictions {
+                        VStack {
+                            ForEach(safeRestrictions, id: \.id) { item in
+                                HStack {
+                                    Text(item.restriction)
+                                        .font(.system(size: 22)).bold()
                                 }
                             }
                         }

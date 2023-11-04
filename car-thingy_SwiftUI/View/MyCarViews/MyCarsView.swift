@@ -17,27 +17,24 @@ struct MyCarsView: View {
     @EnvironmentObject var sharedViewData: SharedViewData
     @EnvironmentObject var querySharedData: QuerySharedData
 
-    @State private var searchCar = ""
+    @State private var searchCar = String()
     
     var body: some View {
         NavigationView {
-            
             List {
-                ForEach(searchCars, id: \.license_plate) { result in
+                ForEach(searchCars, id: \.id) { resultCar in
                     NavigationLink {
-                        DetailView(selectedCar: result, region: result.getLocation())
+                        DetailView(selectedCar: resultCar)
                     } label: {
                         VStack(alignment: .leading) {
-                            Text(result.getLP())
+                            Text(resultCar.getLP())
                                 .font(.headline)
                             HStack {
-                                if (result.is_new == 1) {
-                                    Text("New car!")
+                                if (resultCar.specs.brand != String()) {
+                                    Text(resultCar.specs.model)
+                                    Text(resultCar.specs.type_code)
                                 } else {
-                                    Text(result.model)
-                                    if result.hasCodename {
-                                        Text(result.codename)
-                                    }
+                                    Text("New car!")
                                 }
                             }
                         }
@@ -93,8 +90,9 @@ struct MyCarsView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .isHidden(!querySharedData.isLoading)
                     
-                    plusButton.disabled(sharedViewData.isLoading)
-                    })
+                    plusButton
+                        .disabled(sharedViewData.isLoading)
+                })
             }
             #endif
             
@@ -111,22 +109,17 @@ struct MyCarsView: View {
         .sheet(isPresented: $sharedViewData.isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
-//                sharedViewData.newCar = createEmptyCar()
-                sharedViewData.selectedBrand = 1
             }
         }) {
             NewCar(isUpload: true)
-//                .environmentObject(sharedViewData)
         }
-//        .environmentObject(sharedViewData)
-//        .environmentObject(querySharedData)
     }
     
     var plusButton: some View {
         Button (action: {
             sharedViewData.isNewCarPresented.toggle()
         }, label: {
-            Image(systemName: "plus")
+            Image(systemName: "plus.circle.fill")
         })
     }
     
@@ -136,37 +129,29 @@ struct MyCarsView: View {
         } else {
             if self.searchCar.localizedStandardContains("new") {
                 return sharedViewData.cars.filter {
-                    $0.is_new == 1
+                    $0.specs.brand == String()
                 }
             }
             return sharedViewData.cars.filter {
-                $0.license_plate.contains(self.searchCar.uppercased()) ||
-                $0.brand.localizedStandardContains(self.searchCar) ||
-                $0.model.localizedStandardContains(self.searchCar)
+                $0.specs.license_plate.contains(self.searchCar.uppercased()) ||
+                $0.specs.brand.localizedStandardContains(self.searchCar) ||
+                $0.specs.model.localizedStandardContains(self.searchCar) ||
+                $0.specs.type_code.localizedStandardContains(self.searchCar)
             }
         }
     }
     
     func loadViewData(_ refresh: Bool = false) async {
         sharedViewData.isLoading = true
-        let (safeCars, safeCarError) = await loadData(refresh)
+        let (safeCars, safeCarError) = await loadCars(refresh)
         if let safeCars {
             withAnimation {
                 sharedViewData.cars = safeCars
             }
         }
-        let (safeBrands, safeBrandError) = await loadBrands()
-        if let safeBrands {
-            sharedViewData.brands = safeBrands
-        }
         
         if let safeCarError {
             sharedViewData.error = safeCarError
-            sharedViewData.showAlert = true
-            haptic(type: .error)
-        }
-        if let safeBrandError {
-            sharedViewData.error = safeBrandError
             sharedViewData.showAlert = true
             haptic(type: .error)
         }
@@ -190,10 +175,6 @@ struct MyCarsView: View {
             generator.prepare()
             generator.notificationOccurred(.error)
         }
-    }
-    
-    func createEmptyCar() -> Car {
-        return Car(license_plate: "", brand_id: 1, brand: "", model: "", codename: "", year: 0, comment: "", is_new: 1, latitude: 37.332914, longitude: -122.005202)
     }
 }
 

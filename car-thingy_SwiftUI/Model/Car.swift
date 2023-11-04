@@ -10,59 +10,17 @@ import MapKit
 
 struct Car: Codable, Identifiable {
     var id: String {
-        license_plate
+        specs.license_plate
     }
-    var license_plate: String
-    
-    var brand_id: Int
-    var brand: String
-    var model: String
-    var codename: String
-    var year: Int
-    var comment: String
-    var is_new: Int
-    var latitude: Double
-    var longitude: Double
-//    var created_at: String = "1990-01-01"
-    
-    var hasBrand: Bool {
-        if (brand != "DEFAULT_VALUE" && brand != "") {
-            return true
-        } else {
-            return false
-        }
-    }
-    var hasModel: Bool {
-        if (model != "DEFAULT_VALUE" && model != "") {
-            return true
-        } else {
-            return false
-        }
-    }
-    var hasCodename: Bool {
-        if (codename != "DEFAULT_VALUE" && codename != "") {
-            return true
-        } else {
-            return false
-        }
-    }
-    var hasYear: Bool {
-        if (year != 1901 && year != Int("")) {
-            return true
-        } else {
-            return false
-        }
-    }
-    var hasComment: Bool {
-        if (comment != "DEFAULT_VALUE" && comment != "") {
-            return true
-        } else {
-            return false
-        }
-    }
+    var accidents: [Accident]?
+    var specs: Specs = Specs()
+    var restrictions: [Restriction]?
+    var mileage: [Mileage]?
+    var general: General = General()
+    var inspections: [Inspection]?
     
     func getLP() -> String {
-        var formattedLicensePlate = self.license_plate.uppercased()
+        var formattedLicensePlate = self.specs.license_plate.uppercased()
         
         if (formattedLicensePlate != "ERROR") {
             var numOfLetters = 0
@@ -75,24 +33,18 @@ struct Car: Codable, Identifiable {
             
             formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
             
-            // if it's the new license plate
-            if (self.license_plate.count > 6) {
+                // if it's the new license plate
+            if (self.specs.license_plate.count > 6) {
                 formattedLicensePlate.insert(contentsOf: " ", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 2))
             }
         }
         
         return formattedLicensePlate
     }
-    func isNew() -> Bool {
-        if (is_new == 1) {
-            return true
-        } else {
-            return false
-        }
-    }
+    
     func getLocation() -> MKCoordinateRegion {
         return MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude),
+            center: CLLocationCoordinate2D(latitude: self.general.latitude, longitude: self.general.longitude),
             span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         )
     }
