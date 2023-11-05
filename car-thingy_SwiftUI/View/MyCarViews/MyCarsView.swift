@@ -24,15 +24,15 @@ struct MyCarsView: View {
             List {
                 ForEach(searchCars, id: \.id) { resultCar in
                     NavigationLink {
-                        DetailView(selectedCar: resultCar)
+                        DetailView(selectedCar: resultCar, region: resultCar.getLocation())
                     } label: {
                         VStack(alignment: .leading) {
                             Text(resultCar.getLP())
                                 .font(.headline)
                             HStack {
                                 if (resultCar.specs.brand != String()) {
-                                    Text(resultCar.specs.model)
-                                    Text(resultCar.specs.type_code)
+                                    Text(resultCar.specs.model ?? "No model")
+                                    Text(resultCar.specs.type_code ?? "No type_code")
                                 } else {
                                     Text("New car!")
                                 }
@@ -133,10 +133,11 @@ struct MyCarsView: View {
                 }
             }
             return sharedViewData.cars.filter {
-                $0.specs.license_plate.contains(self.searchCar.uppercased()) ||
-                $0.specs.brand.localizedStandardContains(self.searchCar) ||
-                $0.specs.model.localizedStandardContains(self.searchCar) ||
-                $0.specs.type_code.localizedStandardContains(self.searchCar)
+                $0.license_plate.license_plate.contains(self.searchCar.uppercased())
+//                ||
+//                (($0.specs.brand?.localizedStandardContains(self.searchCar)) != nil) ||
+//                (($0.specs.model?.localizedStandardContains(self.searchCar)) != nil) ||
+//                (($0.specs.type_code?.localizedStandardContains(self.searchCar)) != nil)
             }
         }
     }

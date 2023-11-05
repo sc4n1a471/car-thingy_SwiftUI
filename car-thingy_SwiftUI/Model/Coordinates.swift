@@ -7,9 +7,8 @@
 
 import Foundation
 
-struct General: Codable {
+struct Coordinates: Codable {
     var license_plate: String = String()
     var latitude: Double = Double()
     var longitude: Double = Double()
-    var created_at: String = String()
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		570409582AD5A77F00D26228 /* WebsocketResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570409572AD5A77F00D26228 /* WebsocketResponse.swift */; };
+		570618502AF7F58C0083F62E /* LicensePlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706184F2AF7F58C0083F62E /* LicensePlate.swift */; };
 		572F0ABD2A1EB48600D73E15 /* Accident.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572F0ABC2A1EB48500D73E15 /* Accident.swift */; };
 		57563E842A1A78E30051B0F1 /* CarQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E832A1A78E30051B0F1 /* CarQuery.swift */; };
 		57563E862A1A7BDC0051B0F1 /* Inspection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E852A1A7BDC0051B0F1 /* Inspection.swift */; };
@@ -18,7 +19,7 @@
 		57563E962A1AC2290051B0F1 /* Mileage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E952A1AC2290051B0F1 /* Mileage.swift */; };
 		577C65442895958500397961 /* HTTPController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTPController.swift */; };
 		578406802AF6CDD20045D4BB /* Specs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784067F2AF6CDD20045D4BB /* Specs.swift */; };
-		578406822AF6CF6C0045D4BB /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578406812AF6CF6C0045D4BB /* General.swift */; };
+		578406822AF6CF6C0045D4BB /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578406812AF6CF6C0045D4BB /* Coordinates.swift */; };
 		578406842AF6EBF00045D4BB /* Restriction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578406832AF6EBF00045D4BB /* Restriction.swift */; };
 		578406862AF6FA2C0045D4BB /* DeleteResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578406852AF6FA2C0045D4BB /* DeleteResponse.swift */; };
 		5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795FA94286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift */; };
@@ -46,6 +47,7 @@
 
 /* Begin PBXFileReference section */
 		570409572AD5A77F00D26228 /* WebsocketResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsocketResponse.swift; sourceTree = "<group>"; };
+		5706184F2AF7F58C0083F62E /* LicensePlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensePlate.swift; sourceTree = "<group>"; };
 		572F0ABC2A1EB48500D73E15 /* Accident.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accident.swift; sourceTree = "<group>"; };
 		57563E832A1A78E30051B0F1 /* CarQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarQuery.swift; sourceTree = "<group>"; };
 		57563E852A1A7BDC0051B0F1 /* Inspection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inspection.swift; sourceTree = "<group>"; };
@@ -56,7 +58,7 @@
 		57563E952A1AC2290051B0F1 /* Mileage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mileage.swift; sourceTree = "<group>"; };
 		577C65432895958500397961 /* HTTPController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPController.swift; sourceTree = "<group>"; };
 		5784067F2AF6CDD20045D4BB /* Specs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Specs.swift; sourceTree = "<group>"; };
-		578406812AF6CF6C0045D4BB /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
+		578406812AF6CF6C0045D4BB /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
 		578406832AF6EBF00045D4BB /* Restriction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Restriction.swift; sourceTree = "<group>"; };
 		578406852AF6FA2C0045D4BB /* DeleteResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteResponse.swift; sourceTree = "<group>"; };
 		5795FA91286E1288007E60DF /* car-thingy_SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "car-thingy_SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,9 +183,10 @@
 				57A49F322871EFE2006A2712 /* CarResponse.swift */,
 				57563E872A1A7BE20051B0F1 /* Query */,
 				5784067F2AF6CDD20045D4BB /* Specs.swift */,
-				578406812AF6CF6C0045D4BB /* General.swift */,
+				578406812AF6CF6C0045D4BB /* Coordinates.swift */,
 				578406832AF6EBF00045D4BB /* Restriction.swift */,
 				578406852AF6FA2C0045D4BB /* DeleteResponse.swift */,
+				5706184F2AF7F58C0083F62E /* LicensePlate.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -314,12 +317,13 @@
 				57D80CED2A59FF680000CCFB /* SharedViewData.swift in Sources */,
 				57A49F312871EEA0006A2712 /* Car.swift in Sources */,
 				57BD24762A4EF455000508A3 /* TestCar.swift in Sources */,
-				578406822AF6CF6C0045D4BB /* General.swift in Sources */,
+				578406822AF6CF6C0045D4BB /* Coordinates.swift in Sources */,
 				57B343A62AF065D20092AB78 /* QuerySheetViewModel.swift in Sources */,
 				572F0ABD2A1EB48600D73E15 /* Accident.swift in Sources */,
 				57D80CE92A59F3BF0000CCFB /* QuerySharedData.swift in Sources */,
 				57BD24782A4F37AF000508A3 /* InspectionImageViewer.swift in Sources */,
 				57563E892A1A7D320051B0F1 /* CarQueryResponse.swift in Sources */,
+				570618502AF7F58C0083F62E /* LicensePlate.swift in Sources */,
 				570409582AD5A77F00D26228 /* WebsocketResponse.swift in Sources */,
 				57563E8F2A1A94830051B0F1 /* QuerySheetView.swift in Sources */,
 				57B343A42AF05EB20092AB78 /* QueryViewModel.swift in Sources */,

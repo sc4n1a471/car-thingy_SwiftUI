@@ -39,7 +39,7 @@ var previewCar: Car = Car(
         )
     ],
     mileage: testCar.mileage!,
-    general: General(
+    coordinates: Coordinates(
         license_plate: testCar.license_plate,
         latitude: 37.789467,
         longitude: -122.416772

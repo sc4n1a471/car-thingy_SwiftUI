@@ -101,9 +101,9 @@ func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
     do {
         let (data, _) = try await URLSession.shared.data(from: url)
         
-        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-            return (nil, "Could not reach API (502)")
-        }
+//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
+//            return (nil, "Could not reach API (502)")
+//        }
         
         return initData(dataCuccli: data, carOnly: true)
     } catch {
@@ -137,24 +137,25 @@ func initData(dataCuccli: Data, carOnly: Bool = false) -> (cars: [Car]?, error: 
     }
 }
 
-func saveData(uploadableCarData: Car, isUpload: Bool, isNewBrand: Bool = false) async -> Bool {
-    print(uploadableCarData)
+func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -> Bool {
+    uploadableCarData.toString()
+    
     guard let encoded = try? JSONEncoder().encode(uploadableCarData) else {
         print("Failed to encode order")
         return false
     }
     
     var url: URL
-    url = isUpload ? getURL(.licensePlate) : URL(string: getURLasString(.cars) + "/" + uploadableCarData.specs.license_plate.uppercased())!
+    url = lpOnly ? getURL(.licensePlate) : getURL(.cars)
     var request = URLRequest(url: url)
     
-    request.httpMethod = isUpload ? "POST" : "PUT"
+    request.httpMethod = isPost ? "POST" : "PUT"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+        
     do {
         let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
             //        print(String(decoding: request.httpBody ?? Data(), as: UTF8.self))
-        print(String(data: data, encoding: .utf8))
+        print(String(data: data, encoding: .utf8) ?? "???")
         carsLoaded = false
         return true
     } catch {
@@ -212,7 +213,7 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?
     
     let cars: [Car]? = cars
     
-    let url1 = getURLasString(.cars) + "/" + (cars![offsets.first!].specs.license_plate).uppercased()
+    let url1 = getURLasString(.cars) + "/" + (cars![offsets.first!].license_plate.license_plate).uppercased()
     let urlFormatted = URL(string: url1)
     var request = URLRequest(url: urlFormatted!)
     request.httpMethod = "DELETE"

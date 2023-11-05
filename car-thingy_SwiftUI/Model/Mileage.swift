@@ -18,9 +18,10 @@ struct Mileage: Codable, Identifiable, Equatable {
     var mileage_date: String
     var animate: Bool?
     
-    init(mileage: Int = Int(), mileageDate: String = String()) {
+    init(mileage: Int = Int(), mileageDate: String = String(), license_plate: String = String()) {
         self.mileage_date = mileageDate
         self.mileage = mileage
+        self.license_plate = license_plate
     }
     
     func getDate(_ yearMonthOnly: Bool = false) -> Date {

@@ -55,12 +55,12 @@ struct NewCar: View {
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
                 get: {
-                    return ezLenniCar.specs.license_plate
+                    return ezLenniCar.license_plate.license_plate
                     
             },
                 set: { newString in
-                    self.ezLenniCar.specs.license_plate = newString.uppercased()
-                    self.ezLenniCar.specs.license_plate.removeAll(where: {
+                    self.ezLenniCar.license_plate.license_plate = newString.uppercased()
+                    self.ezLenniCar.license_plate.license_plate.removeAll(where: {
                         removableCharacters.contains($0)
                     })
             })
@@ -68,10 +68,10 @@ struct NewCar: View {
     var textBindingComment: Binding<String> {
             Binding<String>(
                 get: {
-                    return self.ezLenniCar.specs.comment
+                    return self.ezLenniCar.license_plate.comment
             },
                 set: { newString in
-                    self.ezLenniCar.specs.comment = newString
+                    self.ezLenniCar.license_plate.comment = newString
             })
     }
     
@@ -163,7 +163,7 @@ struct NewCar: View {
                     focusedField = .newLicensePlate
                 }
             }
-            oldLicensePlate = sharedViewData.existingCar.specs.license_plate
+            oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
         }
     }
     
@@ -174,11 +174,11 @@ struct NewCar: View {
                 sharedViewData.isLoading = true
                 
                 if (selectedMap == MapType.custom) {
-                    ezLenniCar.general.latitude = Double(customLatitude) ?? 37.789467
-                    ezLenniCar.general.longitude = Double(customLongitude) ?? -122.416772
+                    ezLenniCar.coordinates.latitude = Double(customLatitude) ?? 37.789467
+                    ezLenniCar.coordinates.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-                    ezLenniCar.general.latitude = locationManager.region.center.latitude
-                    ezLenniCar.general.longitude = locationManager.region.center.longitude
+                    ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
+                    ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -186,16 +186,10 @@ struct NewCar: View {
                     removableCharacters.contains($0)
                 })
                 
-                ezLenniCar.general.license_plate = ezLenniCar.specs.license_plate
+                ezLenniCar.coordinates.license_plate = ezLenniCar.license_plate.license_plate
+                ezLenniCar.license_plate.created_at = Date.now.ISO8601Format()
                 
-//                var ezLenniCarData = CarData(car: ezLenniCar, oldLicensePlate: ezLenniCar.license_plate)
-//                
-//                if (oldLicensePlate != ezLenniCar.license_plate) {
-//                    ezLenniCarData.oldLicensePlate = oldLicensePlate
-//                    sharedViewData.existingCar.license_plate = ezLenniCar.license_plate
-//                }
-                
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCar, isUpload: isUpload)
+                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload, lpOnly: false)
                 sharedViewData.isLoading = false
                 
                 if successfullyUploaded {

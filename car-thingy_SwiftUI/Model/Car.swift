@@ -10,17 +10,18 @@ import MapKit
 
 struct Car: Codable, Identifiable {
     var id: String {
-        specs.license_plate
+        license_plate.license_plate
     }
+    var license_plate: LicensePlate = LicensePlate()
     var accidents: [Accident]?
     var specs: Specs = Specs()
     var restrictions: [Restriction]?
     var mileage: [Mileage]?
-    var general: General = General()
+    var coordinates: Coordinates = Coordinates()
     var inspections: [Inspection]?
     
     func getLP() -> String {
-        var formattedLicensePlate = self.specs.license_plate.uppercased()
+        var formattedLicensePlate = self.license_plate.license_plate.uppercased()
         
         if (formattedLicensePlate != "ERROR") {
             var numOfLetters = 0
@@ -34,7 +35,7 @@ struct Car: Codable, Identifiable {
             formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
             
                 // if it's the new license plate
-            if (self.specs.license_plate.count > 6) {
+            if (self.license_plate.license_plate.count > 6) {
                 formattedLicensePlate.insert(contentsOf: " ", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 2))
             }
         }
@@ -44,8 +45,17 @@ struct Car: Codable, Identifiable {
     
     func getLocation() -> MKCoordinateRegion {
         return MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: self.general.latitude, longitude: self.general.longitude),
+            center: CLLocationCoordinate2D(latitude: self.coordinates.latitude, longitude: self.coordinates.longitude),
             span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         )
+    }
+    
+    func toString() {
+        print(self.license_plate)
+        print(self.accidents as Any)
+        print(self.specs)
+        print(self.restrictions as Any)
+        print(self.mileage as Any)
+        print(self.coordinates)
     }
 }

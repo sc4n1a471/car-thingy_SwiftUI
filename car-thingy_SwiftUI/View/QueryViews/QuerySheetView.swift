@@ -160,8 +160,10 @@ struct QuerySheetView: View {
                 })
                 
                 ToolbarItem(placement: .navigationBarTrailing, content: {
-                    closeConnection
-                        .isHidden(!websocket.isLoading)
+//                    closeConnection
+//                        .isHidden(!websocket.isLoading)
+                    saveCar
+                        .isHidden(websocket.isLoading)
                 })
             }
             .navigationTitle(websocket.getLP())
@@ -186,6 +188,20 @@ struct QuerySheetView: View {
             Image(systemName: "xmark.circle.fill")
         })
     }
+    
+    var saveCar: some View {
+        Button(action: {
+            Task {
+                if await viewModel.saveCar(websocket: websocket) {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+        }, label: {
+            Image(systemName: "square.and.arrow.down.fill")
+        })
+    }
+    
+
 }
 
 struct QuerySheetView_Previews: PreviewProvider {
