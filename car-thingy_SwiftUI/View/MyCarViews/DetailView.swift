@@ -18,11 +18,6 @@ struct DetailView: View {
     @State private var enableScrollView: Bool = true
     
     @StateObject var websocket: Websocket = Websocket()
-        
-//    init(selectedCar: Car) {
-//        self.selectedCar = selectedCar
-//        self.region = selectedCar.getLocation()
-//    }
     
     var body: some View {
         List {

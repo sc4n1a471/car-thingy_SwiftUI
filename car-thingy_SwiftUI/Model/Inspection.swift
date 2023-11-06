@@ -10,5 +10,5 @@ import Foundation
 struct Inspection: Codable, Hashable {
     var license_plate = String()
     var name: String = String()
-    var base_64: [String] = [String()]
+    var base_64: [String]?
 }
