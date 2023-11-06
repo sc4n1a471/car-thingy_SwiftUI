@@ -137,12 +137,12 @@ func initData(dataCuccli: Data, carOnly: Bool = false) -> (cars: [Car]?, error: 
     }
 }
 
-func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -> Bool {
+func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -> (response: String?, error: String?) {
     uploadableCarData.toString()
     
     guard let encoded = try? JSONEncoder().encode(uploadableCarData) else {
-        print("Failed to encode order")
-        return false
+        print("Failed to encode car")
+        return (nil, "Failed to encode car")
     }
     
     var url: URL
@@ -155,12 +155,36 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
     do {
         let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
             //        print(String(decoding: request.httpBody ?? Data(), as: UTF8.self))
-        print(String(data: data, encoding: .utf8) ?? "???")
+//        print(String(data: data, encoding: .utf8) ?? "???")
+                
         carsLoaded = false
-        return true
+        return initSaveResponse(dataCuccli: data)
     } catch {
         print("Checkout failed.")
-        return false
+        return (nil, "Checkout failed")
+    }
+}
+
+func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
+    var decodedData: GoResponse
+    
+    do {
+        decodedData = try JSONDecoder().decode(GoResponse.self, from: dataCuccli)
+        print(decodedData)
+        
+        switch decodedData.status {
+            case "success":
+                print("status (saveCar) success: \(decodedData.status)")
+                return (decodedData.message, nil)
+            case "failed":
+                print("status (saveCar) failed: \(decodedData.message)")
+                return (nil, "Server error: \(decodedData.message)")
+            default:
+                return (nil, "Status is not success or failed?")
+        }
+    } catch {
+        print("initData error: \(error)")
+        return (nil, error.localizedDescription)
     }
 }
 

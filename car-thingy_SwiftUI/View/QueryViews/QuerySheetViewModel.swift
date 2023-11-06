@@ -48,7 +48,18 @@ extension QuerySheetView {
                 mileage: parseMileage(websocket.mileage, websocket.license_plate)
             )
             
-            return await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)
+            let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)
+            
+            if let safeMessage {
+                print(safeMessage)
+                return true
+            }
+            
+            if let safeError {
+                websocket.enableAlert(error: safeError)
+                return false
+            }
+            return false
         }
         
         func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {

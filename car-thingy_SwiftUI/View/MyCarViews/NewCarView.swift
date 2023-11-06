@@ -189,22 +189,22 @@ struct NewCar: View {
                 ezLenniCar.coordinates.license_plate = ezLenniCar.license_plate.license_plate
                 ezLenniCar.license_plate.created_at = Date.now.ISO8601Format()
                 
-                let successfullyUploaded = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload, lpOnly: false)
+                let (safeMessage, safeError) = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload, lpOnly: false)
                 sharedViewData.isLoading = false
                 
-                if successfullyUploaded {
+                if let safeMessage {
                     sharedViewData.isEditCarPresented = false
-                    presentationMode.wrappedValue.dismiss()
                     MyCarsView().haptic()
-                    print("Success: Upload")
-                } else {
-                    sharedViewData.error = "Failed: Upload"
+                    print("Upload was successful")
+                    presentationMode.wrappedValue.dismiss()
+                }
+                
+                if let safeError {
+                    sharedViewData.error = "Upload failed: \(safeError)"
                     sharedViewData.showAlert = true
                     MyCarsView().haptic(type: .error)
-                    print("Failed: Upload")
+                    print("Upload failed: \(safeError)")
                 }
-                presentationMode.wrappedValue.dismiss()
-                
             }
         }, label: {
             Text("Save")
