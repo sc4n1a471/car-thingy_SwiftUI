@@ -86,10 +86,6 @@ struct MyCarsView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .isHidden(!sharedViewData.isLoading)
                     
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!querySharedData.isLoading)
-                    
                     plusButton
                         .disabled(sharedViewData.isLoading)
                 })

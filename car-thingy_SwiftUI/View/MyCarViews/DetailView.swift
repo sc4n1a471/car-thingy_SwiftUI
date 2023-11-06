@@ -175,6 +175,10 @@ struct DetailView: View {
                 }
                 .isHidden(!websocket.isLoading)
                 
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .isHidden(!sharedViewData.isLoading)
+                
                 queryButton
                     .disabled(websocket.isLoading)
                 
