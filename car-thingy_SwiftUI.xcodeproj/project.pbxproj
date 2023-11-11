@@ -44,6 +44,7 @@
 		57C5F1632B000EF3005F40CC /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C5F1622B000EF3005F40CC /* MapView.swift */; };
 		57C5F1652B0010AB005F40CC /* CoordinateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C5F1642B0010AB005F40CC /* CoordinateResponse.swift */; };
 		57C5F1672B001162005F40CC /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C5F1662B001162005F40CC /* MapViewModel.swift */; };
+		57C5F16A2B00279D005F40CC /* MapDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C5F1692B00279D005F40CC /* MapDetailView.swift */; };
 		57D3DE832AF9072F005A172E /* GoResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D3DE822AF9072F005A172E /* GoResponse.swift */; };
 		57D80CEB2A59FF4D0000CCFB /* MyCarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D80CEA2A59FF4D0000CCFB /* MyCarsView.swift */; };
 		57D80CED2A59FF680000CCFB /* SharedViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D80CEC2A59FF680000CCFB /* SharedViewData.swift */; };
@@ -88,6 +89,7 @@
 		57C5F1622B000EF3005F40CC /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		57C5F1642B0010AB005F40CC /* CoordinateResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateResponse.swift; sourceTree = "<group>"; };
 		57C5F1662B001162005F40CC /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
+		57C5F1692B00279D005F40CC /* MapDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailView.swift; sourceTree = "<group>"; };
 		57D3DE822AF9072F005A172E /* GoResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoResponse.swift; sourceTree = "<group>"; };
 		57D80CEA2A59FF4D0000CCFB /* MyCarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCarsView.swift; sourceTree = "<group>"; };
 		57D80CEC2A59FF680000CCFB /* SharedViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViewData.swift; sourceTree = "<group>"; };
@@ -208,10 +210,19 @@
 				57D80D082A5A13170000CCFB /* MyCarViews */,
 				57563E902A1ABD240051B0F1 /* QueryViews */,
 				57BA6B162A5466F6005C447C /* SpecView.swift */,
-				57C5F1622B000EF3005F40CC /* MapView.swift */,
-				57C5F1662B001162005F40CC /* MapViewModel.swift */,
+				57C5F1682B00277F005F40CC /* MapViews */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		57C5F1682B00277F005F40CC /* MapViews */ = {
+			isa = PBXGroup;
+			children = (
+				57C5F1622B000EF3005F40CC /* MapView.swift */,
+				57C5F1662B001162005F40CC /* MapViewModel.swift */,
+				57C5F1692B00279D005F40CC /* MapDetailView.swift */,
+			);
+			path = MapViews;
 			sourceTree = "<group>";
 		};
 		57D80D082A5A13170000CCFB /* MyCarViews */ = {
@@ -347,6 +358,7 @@
 				57BD24742A4EE6A6000508A3 /* InspectionView.swift in Sources */,
 				57563E862A1A7BDC0051B0F1 /* Inspection.swift in Sources */,
 				57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */,
+				57C5F16A2B00279D005F40CC /* MapDetailView.swift in Sources */,
 				5795FA95286E1288007E60DF /* NodeJS_Thingy_CarsApp.swift in Sources */,
 				57A49F332871EFE2006A2712 /* CarResponse.swift in Sources */,
 				57A979322878B2980024EAA0 /* NewCarView.swift in Sources */,

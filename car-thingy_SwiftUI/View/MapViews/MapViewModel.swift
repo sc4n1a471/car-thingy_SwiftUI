@@ -10,7 +10,7 @@ import MapKit
 
 extension MapView {
     @Observable class ViewModel {
-        var region = MKCoordinateRegion(
+        var position = MKCoordinateRegion(
             center:  CLLocationCoordinate2D(
                 latitude: 46.252273,
                 longitude: 20.152104
@@ -22,5 +22,6 @@ extension MapView {
         )
         
         var coordinates: [Coordinates] = [Coordinates()]
+        var infoSheet: Bool = false
     }
 }
