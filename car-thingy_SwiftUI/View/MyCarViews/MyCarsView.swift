@@ -14,12 +14,14 @@ enum HapticType: String {
 }
 
 struct MyCarsView: View {
-    @EnvironmentObject var sharedViewData: SharedViewData
-    @EnvironmentObject var querySharedData: QuerySharedData
+    @Environment(SharedViewData.self) private var sharedViewData
 
     @State private var searchCar = String()
     
     var body: some View {
+        // required because can't use environment as binding
+        @Bindable var sharedViewDataBindable = sharedViewData
+        
         NavigationView {
             List {
                 ForEach(searchCars, id: \.id) { resultCar in
@@ -97,12 +99,12 @@ struct MyCarsView: View {
             }
             .searchable(text: $searchCar)
         }
-        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewData.showAlert) {
+        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
             Button("Got it") {
                 print("alert confirmed")
             }
         }
-        .sheet(isPresented: $sharedViewData.isNewCarPresented, onDismiss: {
+        .sheet(isPresented: $sharedViewDataBindable.isNewCarPresented, onDismiss: {
             Task {
                 await loadViewData()
             }
@@ -130,10 +132,12 @@ struct MyCarsView: View {
             }
             return sharedViewData.cars.filter {
                 $0.license_plate.license_plate.contains(self.searchCar.uppercased())
-//                ||
-//                (($0.specs.brand?.localizedStandardContains(self.searchCar)) != nil) ||
-//                (($0.specs.model?.localizedStandardContains(self.searchCar)) != nil) ||
-//                (($0.specs.type_code?.localizedStandardContains(self.searchCar)) != nil)
+                ||
+                $0.specs.brand!.contains(self.searchCar.uppercased())
+                ||
+                $0.specs.model!.contains(self.searchCar.uppercased())
+                ||
+                $0.specs.type_code!.contains(self.searchCar.uppercased())
             }
         }
     }
@@ -178,5 +182,6 @@ struct MyCarsView: View {
 struct MyCarsView_Previews: PreviewProvider {
     static var previews: some View {
         MyCarsView()
+            .environment(SharedViewData())
     }
 }

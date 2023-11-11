@@ -10,16 +10,18 @@ import CoreLocation
 import MapKit
 
 struct DetailView: View {
-    @EnvironmentObject var sharedViewData: SharedViewData
-    @EnvironmentObject var querySharedData: QuerySharedData
-    
+    @Environment(SharedViewData.self) private var sharedViewData
+
     @State var selectedCar: Car
     @State var region: MKCoordinateRegion
     @State private var enableScrollView: Bool = true
     
-    @StateObject var websocket: Websocket = Websocket()
+    @State var websocket: Websocket = Websocket()
     
     var body: some View {
+        // required because can't use environment as binding
+        @Bindable var sharedViewDataBindable = sharedViewData
+        
         List {
             if selectedCar.specs.license_plate != String() {
                 Section {
@@ -45,7 +47,7 @@ struct DetailView: View {
                 }
                 
                 Section {
-                    MileageView(onChangeMileageData: websocket.mileage, mileageData: selectedCar.mileage!)
+                    MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
                 }
                 
                 Section {
@@ -187,7 +189,7 @@ struct DetailView: View {
             })
         }
 #endif
-        .sheet(isPresented: $sharedViewData.isEditCarPresented, onDismiss: {
+        .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
             Task {
                 await loadSelectedCar()
             }
@@ -200,9 +202,8 @@ struct DetailView: View {
                 await loadSelectedCar()
             }
         }) {
-            QuerySheetView()
+            QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
-                .environmentObject(websocket)
         }
         .onAppear() {
             sharedViewData.existingCar = selectedCar
@@ -252,7 +253,6 @@ struct DetailView: View {
 struct View2_Previews: PreviewProvider {
     static var previews: some View {
         DetailView(selectedCar: previewCar, region: previewCar.getLocation())
-        .environmentObject(SharedViewData())
-        .environmentObject(QuerySharedData())
+            .environment(SharedViewData())
     }
 }

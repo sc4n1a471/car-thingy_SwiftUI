@@ -12,6 +12,7 @@ struct NodeJS_Thingy_CarsApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(SharedViewData())
         }
     }
 }

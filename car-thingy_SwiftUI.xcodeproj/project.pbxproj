@@ -40,8 +40,8 @@
 		57BD24742A4EE6A6000508A3 /* InspectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24732A4EE6A6000508A3 /* InspectionView.swift */; };
 		57BD24762A4EF455000508A3 /* TestCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24752A4EF455000508A3 /* TestCar.swift */; };
 		57BD24782A4F37AF000508A3 /* InspectionImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24772A4F37AF000508A3 /* InspectionImageViewer.swift */; };
+		57C5F1612B000037005F40CC /* NewCarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C5F1602B000037005F40CC /* NewCarViewModel.swift */; };
 		57D3DE832AF9072F005A172E /* GoResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D3DE822AF9072F005A172E /* GoResponse.swift */; };
-		57D80CE92A59F3BF0000CCFB /* QuerySharedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D80CE82A59F3BF0000CCFB /* QuerySharedData.swift */; };
 		57D80CEB2A59FF4D0000CCFB /* MyCarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D80CEA2A59FF4D0000CCFB /* MyCarsView.swift */; };
 		57D80CED2A59FF680000CCFB /* SharedViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D80CEC2A59FF680000CCFB /* SharedViewData.swift */; };
 /* End PBXBuildFile section */
@@ -81,8 +81,8 @@
 		57BD24732A4EE6A6000508A3 /* InspectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionView.swift; sourceTree = "<group>"; };
 		57BD24752A4EF455000508A3 /* TestCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCar.swift; sourceTree = "<group>"; };
 		57BD24772A4F37AF000508A3 /* InspectionImageViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionImageViewer.swift; sourceTree = "<group>"; };
+		57C5F1602B000037005F40CC /* NewCarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCarViewModel.swift; sourceTree = "<group>"; };
 		57D3DE822AF9072F005A172E /* GoResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoResponse.swift; sourceTree = "<group>"; };
-		57D80CE82A59F3BF0000CCFB /* QuerySharedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuerySharedData.swift; sourceTree = "<group>"; };
 		57D80CEA2A59FF4D0000CCFB /* MyCarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCarsView.swift; sourceTree = "<group>"; };
 		57D80CEC2A59FF680000CCFB /* SharedViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViewData.swift; sourceTree = "<group>"; };
 		57F0F257288BEEFA0052D566 /* car-thingy_SwiftUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "car-thingy_SwiftUI.entitlements"; sourceTree = "<group>"; };
@@ -211,6 +211,7 @@
 				57A49F2E2871EC85006A2712 /* DetailView.swift */,
 				57A979312878B2980024EAA0 /* NewCarView.swift */,
 				57D80CEA2A59FF4D0000CCFB /* MyCarsView.swift */,
+				57C5F1602B000037005F40CC /* NewCarViewModel.swift */,
 			);
 			path = MyCarViews;
 			sourceTree = "<group>";
@@ -218,7 +219,6 @@
 		57D80D092A5A13320000CCFB /* SharedData */ = {
 			isa = PBXGroup;
 			children = (
-				57D80CE82A59F3BF0000CCFB /* QuerySharedData.swift */,
 				57D80CEC2A59FF680000CCFB /* SharedViewData.swift */,
 			);
 			path = SharedData;
@@ -308,6 +308,7 @@
 				57563E8B2A1A826F0051B0F1 /* QueryView.swift in Sources */,
 				57D80CEB2A59FF4D0000CCFB /* MyCarsView.swift in Sources */,
 				5795FA97286E1288007E60DF /* ContentView.swift in Sources */,
+				57C5F1612B000037005F40CC /* NewCarViewModel.swift in Sources */,
 				57A49F2F2871EC85006A2712 /* DetailView.swift in Sources */,
 				578406862AF6FA2C0045D4BB /* DeleteResponse.swift in Sources */,
 				578406802AF6CDD20045D4BB /* Specs.swift in Sources */,
@@ -324,7 +325,6 @@
 				57B343A62AF065D20092AB78 /* QuerySheetViewModel.swift in Sources */,
 				572F0ABD2A1EB48600D73E15 /* Accident.swift in Sources */,
 				57D3DE832AF9072F005A172E /* GoResponse.swift in Sources */,
-				57D80CE92A59F3BF0000CCFB /* QuerySharedData.swift in Sources */,
 				57BD24782A4F37AF000508A3 /* InspectionImageViewer.swift in Sources */,
 				57563E892A1A7D320051B0F1 /* CarQueryResponse.swift in Sources */,
 				570618502AF7F58C0083F62E /* LicensePlate.swift in Sources */,
@@ -484,7 +484,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.4;
+				MARKETING_VERSION = 5.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.car-thingy-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -521,7 +521,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.4;
+				MARKETING_VERSION = 5.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.car-thingy-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";

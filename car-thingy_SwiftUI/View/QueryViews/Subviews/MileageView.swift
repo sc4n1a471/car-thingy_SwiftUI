@@ -11,7 +11,7 @@ import Charts
 struct MileageView: View {
     
     var onChangeMileageData: [Mileage]
-    @State var mileageData: [Mileage]
+    @Binding var mileageData: [Mileage]
     @State var currentActiveMileage: Mileage?
     @State var hideLabels: Bool = false
     @State private var firstHaptic: Bool = true
@@ -83,14 +83,16 @@ struct MileageView: View {
                     }
                 }
                 .onChange(of: onChangeMileageData) { newMileageData in
-                    if newMileageData[0].mileage_date.contains(".") {
-                        mileageData = newMileageData
-                        for (index, _) in mileageData.enumerated() {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
-                                withAnimation(
-                                    .interactiveSpring(response: 0.6, dampingFraction: 0.9, blendDuration: 0.1)) {
-                                        mileageData[index].animate = true
-                                    }
+                    if newMileageData.count != 0 {
+                        if newMileageData[0].mileage_date.contains(".") {
+                            mileageData = newMileageData
+                            for (index, _) in mileageData.enumerated() {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
+                                    withAnimation(
+                                        .interactiveSpring(response: 0.6, dampingFraction: 0.9, blendDuration: 0.1)) {
+                                            mileageData[index].animate = true
+                                        }
+                                }
                             }
                         }
                     }

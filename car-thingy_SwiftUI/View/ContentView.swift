@@ -9,12 +9,8 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    @StateObject var sharedViewData = SharedViewData()
-    @StateObject var querySharedData = QuerySharedData()
-        
     var body: some View {
         VStack {
-            #if os(iOS)
             TabView {
                 QueryView()
                     .tabItem {
@@ -25,20 +21,7 @@ struct ContentView: View {
                         Label("My Cars", systemImage: "tray.full")
                     }
             }
-            .environmentObject(querySharedData)
-            .environmentObject(sharedViewData)
-            
-            
-            #elseif os(macOS)
-//            ContentView2()
-            #endif
         }
-//        .sheet(isPresented: $querySharedData.isQueriedCarLoaded, onDismiss: {
-//            Task {}
-//        }) {
-//            QuerySheetView(queriedCar: querySharedData.queriedCar!)
-//        }
-        
     }
 }
 
@@ -55,6 +38,5 @@ extension View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-//            .environmentObject(QuerySharedData())
     }
 }
