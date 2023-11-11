@@ -24,16 +24,18 @@ enum Field: Int, Hashable {
 struct NewCar: View {
     @Environment(\.presentationMode) var presentationMode
     
-    @EnvironmentObject var sharedViewData: SharedViewData
+    @Environment(SharedViewData.self) private var sharedViewData
     
+//    @State private var viewModel = ViewModel()
+
     @FocusState private var focusedField: Field?
     
     @State private var ezLenniCar: Car = Car()
-    @State private var oldLicensePlate = ""
+    @State private var oldLicensePlate = String()
     
     @StateObject var locationManager = LocationManager()
-    @State private var customLatitude: String = ""
-    @State private var customLongitude: String = ""
+    @State private var customLatitude: String = String()
+    @State private var customLongitude: String = String()
     @State private var selectedMap = MapType.custom
     
     private var isUpload: Bool
@@ -76,6 +78,8 @@ struct NewCar: View {
     }
     
     var body: some View {
+        // required because can't use environment as binding
+        @Bindable var sharedViewDataBindable = sharedViewData
         
         NavigationView {
             Form {
@@ -110,7 +114,7 @@ struct NewCar: View {
                             .frame(height: 200)
                         } else if (selectedMap == MapType.existing || !isUpload) {
                             Map(
-                                coordinateRegion: $sharedViewData.region,
+                                coordinateRegion: $sharedViewDataBindable.region,
                                 interactionModes: MapInteractionModes.all,
                                 annotationItems: [ezLenniCar]
                             ) {
@@ -129,7 +133,7 @@ struct NewCar: View {
                     Text("Comment")
                 }
             }
-            .alert("Error", isPresented: $sharedViewData.showAlert, actions: {
+            .alert("Error", isPresented: $sharedViewDataBindable.showAlert, actions: {
                 Button("Got it") {
                     sharedViewData.showAlert = false
                 }
@@ -223,6 +227,6 @@ struct NewCar: View {
 struct NewCar_Previews: PreviewProvider {
     static var previews: some View {
         NewCar(isUpload: false)
-            .environmentObject(SharedViewData())
+            .environment(SharedViewData())
     }
 }

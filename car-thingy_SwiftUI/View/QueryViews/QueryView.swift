@@ -8,21 +8,22 @@
 import SwiftUI
 
 struct QueryView: View {
-    @EnvironmentObject var querySharedData: QuerySharedData
     @FocusState private var lpTextFieldFocused: Bool
-    @StateObject private var viewModel = ViewModel()
-    @StateObject var websocket: Websocket = Websocket()
+    
+    @State private var viewModel = ViewModel()
+    @State var websocket: Websocket = Websocket()
+    @State private var requestedLicensePlate: String = String()
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
         Binding<String>(
             get: {
-                return querySharedData.requestedLicensePlate
+                return requestedLicensePlate
                 
             },
             set: { newString in
-                querySharedData.requestedLicensePlate = newString.uppercased()
-                querySharedData.requestedLicensePlate.removeAll(where: {
+                requestedLicensePlate = newString.uppercased()
+                requestedLicensePlate.removeAll(where: {
                     removableCharacters.contains($0)
                 })
             })
@@ -43,7 +44,7 @@ struct QueryView: View {
                 Button {
                     Task {
                         lpTextFieldFocused = false
-                        await websocket.connect(querySharedData.requestedLicensePlate)
+                        await websocket.connect(requestedLicensePlate)
                     }
                 } label: {
                     Text("Request")
@@ -102,11 +103,6 @@ struct QueryView: View {
             }
             .navigationTitle("Car Query")
         }
-        .alert(querySharedData.error ?? "No error message??", isPresented: $querySharedData.showAlert, actions: {
-            Button("Got it") {
-                print("alert confirmed")
-            }
-        })
         .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
@@ -118,9 +114,8 @@ struct QueryView: View {
                 websocket.dismissSheet()
             }
         }) {
-            QuerySheetView()
+            QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
-                .environmentObject(websocket)
         }
     }
 }
@@ -128,12 +123,10 @@ struct QueryView: View {
 struct QueryView_Previews: PreviewProvider {
     static var previews: some View {
         QueryView()
-            .previewDevice(PreviewDevice(rawValue: "iPhone SE (3rd generation)"))
-            .previewDisplayName("iPhone SE")
-            .environmentObject(QuerySharedData())
-        QueryView()
-            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
-            .previewDisplayName("Mac Catalyst")
-            .environmentObject(QuerySharedData())
+            .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
+            .previewDisplayName("iPhone 13 Pro")
+//        QueryView()
+//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
+//            .previewDisplayName("Mac Catalyst")
     }
 }

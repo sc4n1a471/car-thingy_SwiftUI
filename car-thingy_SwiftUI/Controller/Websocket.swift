@@ -7,35 +7,35 @@
 
 import Foundation
 
-@MainActor class Websocket: ObservableObject {
-    @Published var messages = [String]()
-    @Published var percentage = Double()
-    @Published var isLoading = Bool()
-    @Published var isSuccess = false
-    @Published var dataSheetOpened = false
-    @Published var error = String()
-    @Published var showAlert = false
+@Observable class Websocket {
+    var messages = [String]()
+    var percentage = Double()
+    var isLoading = Bool()
+    var isSuccess = false
+    var dataSheetOpened = false
+    var error = String()
+    var showAlert = false
     
-    @Published var license_plate = String()
+    var license_plate = String()
     
-    @Published var brand = String()
-    @Published var color = String()
-    @Published var engine_size = Int()
-    @Published var first_reg = String()
-    @Published var first_reg_hun = String()
-    @Published var fuel_type = String()
-    @Published var gearbox = String()
-    @Published var model = String()
-    @Published var num_of_owners = Int()
-    @Published var performance = Int()
-    @Published var status = String()
-    @Published var type_code = String()
-    @Published var year = Int()
+    var brand = String()
+    var color = String()
+    var engine_size = Int()
+    var first_reg = String()
+    var first_reg_hun = String()
+    var fuel_type = String()
+    var gearbox = String()
+    var model = String()
+    var num_of_owners = Int()
+    var performance = Int()
+    var status = String()
+    var type_code = String()
+    var year = Int()
     
-    @Published var accidents = [Accident()]
-    @Published var restrictions = [String()]
-    @Published var mileage = [Mileage()]
-    @Published var inspections = [Inspection()]
+    var accidents = [Accident()]
+    var restrictions = [String()]
+    var mileage = [Mileage()]
+    var inspections = [Inspection()]
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
