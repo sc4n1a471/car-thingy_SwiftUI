@@ -16,146 +16,121 @@ struct MapDetailView: View {
     @State private var enableScrollView: Bool = true
     @State private var websocket: Websocket = Websocket()
     
+    let columns = [
+        GridItem(.flexible(minimum: 100, maximum: 200)),
+        GridItem(.flexible(minimum: 100, maximum: 200)),
+        GridItem(.flexible(minimum: 100, maximum: 200))
+    ]
+    
     var body: some View {
             // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
-        NavigationStack {
-            List {
-                if selectedCar.specs.license_plate != String() {
-                    Section {
-                        SpecView(header: "Brand", content: selectedCar.specs.brand)
-                        SpecView(header: "Model", content: selectedCar.specs.model)
-                        SpecView(header: "Type Code", content: selectedCar.specs.type_code)
-                    }
-                    
-                    Section {
-                        SpecView(header: "Status", content: selectedCar.specs.status)
-                        SpecView(header: "First registration", content: selectedCar.specs.first_reg)
-                        SpecView(header: "First registration in 🇭🇺", content: selectedCar.specs.first_reg_hun)
-                        SpecView(header: "Number of owners", content: String(selectedCar.specs.num_of_owners ?? 99))
-                    }
-                    
-                    Section {
-                        SpecView(header: "Year", content: String(selectedCar.specs.year ?? 1970))
-                        SpecView(header: "Engine size", content: String(selectedCar.specs.engine_size ?? 9999), note: "cm3")
-                        SpecView(header: "Performance", content: String(selectedCar.specs.performance ?? 999), note: "HP")
-                        SpecView(header: "Fuel type", content: selectedCar.specs.fuel_type)
-                        SpecView(header: "Gearbox", content: selectedCar.specs.gearbox)
-                        SpecView(header: "Color", content: selectedCar.specs.color)
-                    }
-                    
-                    Section {
-                        MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
-                    }
-                    
-                    Section {
-                        SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
-                    }
-                    
-                    Group {
-                        SpecView(header: "Accidents", accidents: selectedCar.accidents)
-                    }
-                    
-                    if enableScrollView {
-                        Section {
-                            if let safeInspections = selectedCar.inspections {
-                                if safeInspections.count == 1 {
-                                    ForEach(safeInspections, id: \.self) { inspection in
-                                        Section {
-                                            InspectionView(inspection: inspection)
-                                                .frame(width: 391, height: 300)
-                                        }
-                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                                    }
-                                } else {
-                                    ScrollView(.horizontal) {
-                                        HStack {
-                                            ForEach(safeInspections, id: \.self) { inspection in
-                                                Section {
-                                                    InspectionView(inspection: inspection)
-                                                        .frame(width: 300, height: 300)
-                                                }
-                                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                                            }
-                                            .listStyle(.plain)
-                                        }
-                                    }
-                                }
-                            }
-                        } header: {
-                            Text("Inspections")
-                        }
-                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .edgesIgnoringSafeArea(.all)
-                        .listStyle(GroupedListStyle()) // or PlainListStyle()
-                                                       //                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                            //                } else {
-                            //                    ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                            //                        Section {
-                            //                            InspectionView(inspection: inspection)
-                            //                                .frame(height: 300)
-                            //                        }
-                            //                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                            //                    }
-                    }
+        Text(selectedLicensePlate)
+            .fontWeight(.bold)
+            .font(.title)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 20)
+            .padding(.leading, 20)
+        
+        List {
+            Section {
+                LazyVGrid(columns: columns, content: {
+                    editButton
+                    queryButton
+                    deleteButton
+                })
+//                .padding(.trailing, 20)
+//                .padding(.leading, 20)
+            }
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            
+            if selectedCar.specs.license_plate != String() {
+                Section {
+                    SpecView(header: "Brand", content: selectedCar.specs.brand)
+                    SpecView(header: "Model", content: selectedCar.specs.model)
+                    SpecView(header: "Type Code", content: selectedCar.specs.type_code)
                 }
                 
-                SpecView(header: "Comment", content: selectedCar.license_plate.comment)
-            }
-            .navigationTitle(selectedCar.getLP())
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                    Button(action: {
-                        websocket.openSheet()
-                    }) {
-                        Gauge(value: websocket.percentage, in: 0...100) {}
-                            .gaugeStyle(.accessoryCircularCapacity)
-                            .tint(.blue)
-                            .scaleEffect(0.5)
-                            .frame(width: 25, height: 25)
-                        
-                    }
-                    .isHidden(!websocket.isLoading)
-                    
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!sharedViewData.isLoading)
-                    
-                    queryButton
-                        .disabled(websocket.isLoading)
-                    
-                    editButton
-                        .disabled(sharedViewData.isLoading)
-                })
-            }
-            .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
-                Task {
-                    await loadSelectedCar()
+                Section {
+                    SpecView(header: "Status", content: selectedCar.specs.status)
+                    SpecView(header: "First registration", content: selectedCar.specs.first_reg)
+                    SpecView(header: "First registration in 🇭🇺", content: selectedCar.specs.first_reg_hun)
+                    SpecView(header: "Number of owners", content: String(selectedCar.specs.num_of_owners ?? 99))
                 }
-            }) {
-                NewCar(isUpload: false)
-            }
-            .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
-                Task {
-                    websocket.dismissSheet()
-                    await loadSelectedCar()
+                
+                Section {
+                    SpecView(header: "Year", content: String(selectedCar.specs.year ?? 1970))
+                    SpecView(header: "Engine size", content: String(selectedCar.specs.engine_size ?? 9999), note: "cm3")
+                    SpecView(header: "Performance", content: String(selectedCar.specs.performance ?? 999), note: "HP")
+                    SpecView(header: "Fuel type", content: selectedCar.specs.fuel_type)
+                    SpecView(header: "Gearbox", content: selectedCar.specs.gearbox)
+                    SpecView(header: "Color", content: selectedCar.specs.color)
                 }
-            }) {
-                QuerySheetView(websocket: websocket)
-                    .presentationDetents([.medium, .large])
+                
+                Section {
+                    MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
+                }
+                
+                Section {
+                    SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
+                }
+                
+                Group {
+                    SpecView(header: "Accidents", accidents: selectedCar.accidents)
+                }
+                
+                if let safeInspections = selectedCar.inspections {
+                    InspectionsView(inspections: safeInspections)
+                }
             }
+            
+            SpecView(header: "Comment", content: selectedCar.license_plate.comment)
         }
         .onAppear() {
             Task {
                 await loadSelectedCar()
             }
         }
-        .background(content: {
-            Rectangle()
-                .fill(.ultraThinMaterial)
-                .ignoresSafeArea()
-        })
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                Button(action: {
+                    websocket.openSheet()
+                }) {
+                    Gauge(value: websocket.percentage, in: 0...100) {}
+                        .gaugeStyle(.accessoryCircularCapacity)
+                        .tint(.blue)
+                        .scaleEffect(0.5)
+                        .frame(width: 25, height: 25)
+                    
+                }
+                .isHidden(!websocket.isLoading)
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .isHidden(!sharedViewData.isLoading)
+            })
+        }
+        .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
+            Task {
+                await loadSelectedCar()
+            }
+        }) {
+            NewCar(isUpload: false)
+        }
+        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
+            Task {
+                websocket.dismissSheet()
+                await loadSelectedCar()
+            }
+        }) {
+            QuerySheetView(websocket: websocket)
+                .presentationDetents([.medium, .large])
+        }
+        .background(.ultraThickMaterial)
+        .scrollContentBackground(.hidden)
     }
     
     var editButton: some View {
@@ -163,7 +138,10 @@ struct MapDetailView: View {
             sharedViewData.isEditCarPresented.toggle()
         }, label: {
             Image(systemName: "pencil")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
+        .buttonStyle(.bordered)
+        .disabled(sharedViewData.isLoading)
     }
     
     var queryButton: some View {
@@ -172,11 +150,29 @@ struct MapDetailView: View {
                 await websocket.connect(_:selectedCar.license_plate.license_plate)
             }
         }, label: {
-            Image(systemName: "magnifyingglass.circle.fill")
+            Image(systemName: "magnifyingglass")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
+        .buttonStyle(.borderedProminent)
+        .disabled(websocket.isLoading)
     }
     
-    func loadSelectedCar() async {
+    var deleteButton: some View {
+        // TODO: Make a functioning delete button
+        Button(action: {
+            Task {
+                await websocket.connect(_:selectedCar.license_plate.license_plate)
+            }
+        }, label: {
+            Image(systemName: "trash")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        })
+        .buttonStyle(.bordered)
+        .frame(height: 50)
+        .disabled(true)
+    }
+    
+    private func loadSelectedCar() async {
         sharedViewData.isLoading = true
         let (safeCar, safeCarError) = await loadCar(license_plate: selectedLicensePlate)
         if let safeCar {

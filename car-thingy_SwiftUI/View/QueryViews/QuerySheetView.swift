@@ -51,90 +51,7 @@ struct QuerySheetView: View {
                     }
                 }
                 
-                ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
-//                if let safeInspections = websocket.inspections {
-//                    if enableScrollView {
-//                        Section {
-//                            if safeInspections.count == 1 {
-//                                ForEach(safeInspections, id: \.self) { safeInspection in
-//                                    Section {
-//                                        InspectionView(inspection: safeInspection)
-//                                            .frame(width: 391, height: 300)
-//                                    }
-//                                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                                }
-//                            } else {
-//                                ScrollView(.horizontal) {
-//                                    HStack {
-//                                        ForEach(safeInspections, id: \.self) { safeInspection in
-//                                            Section {
-//                                                InspectionView(inspection: safeInspection)
-//                                                    .frame(width: 300, height: 300)
-//                                            }
-//                                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                                        }
-//                                        .listStyle(.plain)
-//                                    }
-//                                }
-//                            }
-//                        } header: {
-//                            Text("Inspections")
-//                        }
-//                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                        .edgesIgnoringSafeArea(.all)
-//                        .listStyle(GroupedListStyle()) // or PlainListStyle()
-//                        /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-//                    } else {
-//                        ForEach(safeInspections, id: \.self) { safeInspection in
-//                            Section {
-//                                InspectionView(inspection: safeInspection)
-//                                    .frame(height: 300)
-//                            }
-//                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                        }
-//                    }
-//                }
-                
-                if viewModel.enableScrollView {
-                    Section {
-                        if websocket.inspections.count == 1 {
-                            ForEach(websocket.inspections, id: \.self) { inspection in
-                                Section {
-                                    InspectionView(inspection: inspection)
-                                        .frame(width: 391, height: 300)
-                                }
-                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                            }
-                        } else {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    ForEach(websocket.inspections, id: \.self) { inspection in
-                                        Section {
-                                            InspectionView(inspection: inspection)
-                                                .frame(width: 300, height: 300)
-                                        }
-                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                                    }
-                                    .listStyle(.plain)
-                                }
-                            }
-                        }
-                    } header: {
-                        Text("Inspections")
-                    }
-                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    .edgesIgnoringSafeArea(.all)
-                    .listStyle(GroupedListStyle()) // or PlainListStyle()
-                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                } else {
-                    ForEach(websocket.inspections, id: \.self) { inspection in
-                        Section {
-                            InspectionView(inspection: inspection)
-                                .frame(height: 300)
-                        }
-                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    }
-                }
+                InspectionsView(inspections: websocket.inspections)
             }
             // MARK: Toolbar items
             .toolbar {
@@ -196,6 +113,7 @@ struct QuerySheetView: View {
         }, label: {
             Image(systemName: "xmark.circle.fill")
         })
+        .buttonStyle(.bordered)
     }
     
     var saveCar: some View {
@@ -208,13 +126,12 @@ struct QuerySheetView: View {
         }, label: {
             Image(systemName: "square.and.arrow.down.fill")
         })
+        .buttonStyle(.borderedProminent)
     }
     
 
 }
 
-struct QuerySheetView_Previews: PreviewProvider {
-    static var previews: some View {
-        QuerySheetView(websocket: Websocket(preview: true))
-    }
+#Preview {
+    QuerySheetView(websocket: Websocket(preview: true))
 }

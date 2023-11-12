@@ -31,9 +31,12 @@ struct MapView: View {
                     }
                 }
             })
-        .sheet(isPresented: $viewModel.infoSheet, content: {
+        .sheet(isPresented: $viewModel.infoSheet, onDismiss: {
+            // TODO: Deselect marker
+        }, content: {
             MapDetailView(selectedLicensePlate: selectedLicensePlate!)
                 .presentationDetents([.medium, .large])
+                .presentationBackground(.ultraThickMaterial)
         })
         .onChange(of: selectedLicensePlate) {
             if let selectedLicensePlate {

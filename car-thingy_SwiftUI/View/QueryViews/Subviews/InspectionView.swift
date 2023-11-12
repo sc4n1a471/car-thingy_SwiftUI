@@ -17,7 +17,7 @@ struct InspectionView: View {
     
     var body: some View {
         VStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .center) {
                 Text(inspectionName)
                     .font(.footnote)
                     .foregroundColor(Color.gray)
@@ -25,7 +25,7 @@ struct InspectionView: View {
                     .font(.title2)
                     .bold()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
             .padding()
             
             TabView {
@@ -44,6 +44,10 @@ struct InspectionView: View {
             .cornerRadius(10)
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+            .padding(.bottom, 20)
+            .padding(.trailing, 20)
+            .padding(.leading, 20)
+            .shadow(radius: 10)
         }
         .onAppear() {
             Task {
@@ -72,9 +76,6 @@ struct InspectionView: View {
     }
 }
 
-//struct InspectionView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        InspectionView(inspection: testCar.inspections![0])
-//        QuerySheetView(queriedCar: testCar, inspectionsOnly: true)
-//    }
-//}
+#Preview {
+    InspectionView(inspection: testCar.inspections![0])
+}
