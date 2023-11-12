@@ -8,13 +8,13 @@
 import Foundation
 
 extension QuerySheetView {
-    @MainActor class ViewModel: ObservableObject {
+    @Observable class ViewModel {
             //    @State var queriedCar: CarQuery
-        @Published var isRestrictionsExpanded = false
-        @Published var isAccidentsExpanded = false
-        @Published var showingPopover = false
-        @Published var inspectionsOnly = false
-        @Published var enableScrollView = false
+        var isRestrictionsExpanded = false
+        var isAccidentsExpanded = false
+        var showingPopover = false
+        var inspectionsOnly = false
+        var enableScrollView = false
         
         func setPopover(_ newState: Bool) {
             self.showingPopover = newState

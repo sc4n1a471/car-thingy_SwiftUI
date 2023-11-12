@@ -16,7 +16,7 @@ struct Car: Codable, Identifiable {
     var accidents: [Accident]?
     var specs: Specs = Specs()
     var restrictions: [Restriction]?
-    var mileage: [Mileage]?
+    var mileage: [Mileage] = [Mileage()]
     var coordinates: Coordinates = Coordinates()
     var inspections: [Inspection]?
     

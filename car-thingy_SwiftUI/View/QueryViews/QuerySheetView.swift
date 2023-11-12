@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct QuerySheetView: View {
-    @EnvironmentObject var websocket: Websocket
-    @StateObject private var viewModel = ViewModel()
+    @Bindable var websocket: Websocket
+    @State private var viewModel = ViewModel()
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -39,7 +39,7 @@ struct QuerySheetView: View {
                     }
                     
                     Section {
-                        MileageView(onChangeMileageData: websocket.mileage, mileageData: websocket.mileage)
+                        MileageView(onChangeMileageData: websocket.mileage, mileageData: $websocket.mileage)
                     }
                     
                     Section {
@@ -138,8 +138,14 @@ struct QuerySheetView: View {
             }
             // MARK: Toolbar items
             .toolbar {
+#if os(macOS)
                 ToolbarItem(placement: .navigationBarLeading, content: {
-//                    close
+                    close
+                        .disabled(websocket.isLoading)
+                })
+#endif
+                
+                ToolbarItem(placement: .navigationBarLeading, content: {
                     Button(action: {
                         viewModel.setPopover(true)
                     }) {
@@ -160,10 +166,13 @@ struct QuerySheetView: View {
                 })
                 
                 ToolbarItem(placement: .navigationBarTrailing, content: {
-//                    closeConnection
-//                        .isHidden(!websocket.isLoading)
                     saveCar
-                        .isHidden(websocket.isLoading)
+                        .disabled(websocket.isLoading)
+                })
+                
+                ToolbarItem(placement: .navigationBarTrailing, content: {
+                    closeConnection
+                        .disabled(!websocket.isLoading)
                 })
             }
             .navigationTitle(websocket.getLP())
@@ -206,7 +215,6 @@ struct QuerySheetView: View {
 
 struct QuerySheetView_Previews: PreviewProvider {
     static var previews: some View {
-        QuerySheetView()
-            .environmentObject(Websocket(preview: true))
+        QuerySheetView(websocket: Websocket(preview: true))
     }
 }

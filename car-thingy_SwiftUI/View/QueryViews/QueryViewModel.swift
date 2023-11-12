@@ -8,8 +8,8 @@
 import Foundation
 
 extension QueryView {
-    @MainActor class ViewModel: ObservableObject {
-        @Published private var showingPopover: Bool = false
-        @Published private var percentage: Double = 0.0
+    @Observable class ViewModel {
+        var showingPopover: Bool = false
+        var percentage: Double = 0.0
     }
 }
