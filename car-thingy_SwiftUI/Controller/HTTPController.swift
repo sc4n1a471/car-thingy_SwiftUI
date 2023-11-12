@@ -282,6 +282,7 @@ func initCoordinates(dataCuccli: Data) -> (coordinates: [Coordinates]?, error: S
         switch decodedData.status {
             case "success":
                 print("status (Coordinates): \(decodedData.status)")
+                coordinatesLoaded = true
                 return (decodedData.message, nil)
             case "failed":
                 print("Failed response: \(decodedData.message)")

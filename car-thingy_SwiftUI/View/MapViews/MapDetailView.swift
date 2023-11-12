@@ -1,20 +1,20 @@
-//
-//  MapDetailView.swift
-//  car-thingy_SwiftUI
-//
-//  Created by Martin Terhes on 11/11/23.
-//
+    //
+    //  MapDetailView.swift
+    //  car-thingy_SwiftUI
+    //
+    //  Created by Martin Terhes on 11/11/23.
+    //
 
 import SwiftUI
 import MapKit
 
 struct MapDetailView: View {
     @Environment(SharedViewData.self) private var sharedViewData
-
-    @State var selectedCar: Car = Car()
+    
+    @State private var selectedCar: Car = Car()
     @State var selectedLicensePlate: String
     @State private var enableScrollView: Bool = true
-    @State var websocket: Websocket = Websocket()
+    @State private var websocket: Websocket = Websocket()
     
     var body: some View {
             // required because can't use environment as binding
@@ -57,46 +57,48 @@ struct MapDetailView: View {
                         SpecView(header: "Accidents", accidents: selectedCar.accidents)
                     }
                     
-                        //                if enableScrollView {
-                        //                    Section {
-                        //                        if selectedCar.inspections!.count == 1 {
-                        //                            ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                        //                                Section {
-                        //                                    InspectionView(inspection: inspection)
-                        //                                        .frame(width: 391, height: 300)
-                        //                                }
-                        //                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        //                            }
-                        //                        } else {
-                        //                            ScrollView(.horizontal) {
-                        //                                HStack {
-                        //                                    ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                        //                                        Section {
-                        //                                            InspectionView(inspection: inspection)
-                        //                                                .frame(width: 300, height: 300)
-                        //                                        }
-                        //                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        //                                    }
-                        //                                    .listStyle(.plain)
-                        //                                }
-                        //                            }
-                        //                        }
-                        //                    } header: {
-                        //                        Text("Inspections")
-                        //                    }
-                        //                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        //                    .edgesIgnoringSafeArea(.all)
-                        //                    .listStyle(GroupedListStyle()) // or PlainListStyle()
-                        //                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                        //                } else {
-                        //                    ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                        //                        Section {
-                        //                            InspectionView(inspection: inspection)
-                        //                                .frame(height: 300)
-                        //                        }
-                        //                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        //                    }
-                        //                }
+                    if enableScrollView {
+                        Section {
+                            if let safeInspections = selectedCar.inspections {
+                                if safeInspections.count == 1 {
+                                    ForEach(safeInspections, id: \.self) { inspection in
+                                        Section {
+                                            InspectionView(inspection: inspection)
+                                                .frame(width: 391, height: 300)
+                                        }
+                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    }
+                                } else {
+                                    ScrollView(.horizontal) {
+                                        HStack {
+                                            ForEach(safeInspections, id: \.self) { inspection in
+                                                Section {
+                                                    InspectionView(inspection: inspection)
+                                                        .frame(width: 300, height: 300)
+                                                }
+                                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                            }
+                                            .listStyle(.plain)
+                                        }
+                                    }
+                                }
+                            }
+                        } header: {
+                            Text("Inspections")
+                        }
+                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .edgesIgnoringSafeArea(.all)
+                        .listStyle(GroupedListStyle()) // or PlainListStyle()
+                                                       //                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
+                            //                } else {
+                            //                    ForEach(selectedCar.inspections!, id: \.self) { inspection in
+                            //                        Section {
+                            //                            InspectionView(inspection: inspection)
+                            //                                .frame(height: 300)
+                            //                        }
+                            //                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            //                    }
+                    }
                 }
                 
                 SpecView(header: "Comment", content: selectedCar.license_plate.comment)
@@ -170,7 +172,7 @@ struct MapDetailView: View {
                 await websocket.connect(_:selectedCar.license_plate.license_plate)
             }
         }, label: {
-            Image(systemName: "magnifyingglass")
+            Image(systemName: "magnifyingglass.circle.fill")
         })
     }
     
@@ -179,6 +181,8 @@ struct MapDetailView: View {
         let (safeCar, safeCarError) = await loadCar(license_plate: selectedLicensePlate)
         if let safeCar {
             selectedCar = safeCar[0]
+            sharedViewData.existingCar = selectedCar
+            MyCarsView().haptic(type: .notification)
         }
         
         if let safeCarError {
