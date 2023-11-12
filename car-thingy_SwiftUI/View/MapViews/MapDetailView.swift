@@ -129,7 +129,7 @@ struct MapDetailView: View {
             QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
         }
-        .background(.ultraThickMaterial)
+        .background(.clear)
         .scrollContentBackground(.hidden)
     }
     
