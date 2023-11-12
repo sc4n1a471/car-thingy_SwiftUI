@@ -20,6 +20,10 @@ struct ContentView: View {
                     .tabItem {
                         Label("My Cars", systemImage: "tray.full")
                     }
+                MapView()
+                    .tabItem {
+                        Label("Map", systemImage: "map")
+                    }
             }
         }
     }
@@ -35,8 +39,7 @@ extension View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
+        .environment(SharedViewData())
 }

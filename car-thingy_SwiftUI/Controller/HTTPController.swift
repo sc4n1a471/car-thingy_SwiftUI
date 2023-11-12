@@ -8,7 +8,7 @@
 import Foundation
 
 var carsLoaded: Bool = false
-var brandsLoaded: Bool = false
+var coordinatesLoaded: Bool = false
 
 
 // MARK: New Car query
@@ -252,4 +252,46 @@ func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?
             }
         }
     })
+}
+
+// MARK: Map
+func loadCoordinates() async -> (coordinates: [Coordinates]?, error: String?) {
+    if !coordinatesLoaded {
+        let url = getURL(.coordinates)
+        
+        do {
+                // (data, metadata)-ban metadata most nem kell, ezért lehet _
+            let (data, _) = try await URLSession.shared.data(from: url)
+
+            return initCoordinates(dataCuccli: data)
+        } catch {
+            print("Invalid data")
+            return (nil, error.localizedDescription)
+        }
+    }
+    print("Cars are already loaded")
+    return (nil,nil)
+}
+
+func initCoordinates(dataCuccli: Data) -> (coordinates: [Coordinates]?, error: String?) {
+    var decodedData: CoordinateResponse
+    
+    do {
+        decodedData = try JSONDecoder().decode(CoordinateResponse.self, from: dataCuccli)
+        
+        switch decodedData.status {
+            case "success":
+                print("status (Coordinates): \(decodedData.status)")
+                coordinatesLoaded = true
+                return (decodedData.message, nil)
+            case "failed":
+                print("Failed response: \(decodedData.message)")
+                return (nil, "Server error")
+            default:
+                return (nil, "Status is not success or failed?")
+        }
+    } catch {
+        print("initData error: \(error)")
+        return (nil, error.localizedDescription)
+    }
 }
