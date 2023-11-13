@@ -96,7 +96,7 @@ struct MapDetailView: View {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                InspectionsView(inspections: $selectedCar.inspections)
+                InspectionsView(inspections: selectedCar.inspections!)
             }
             
             SpecView(header: "Comment", content: selectedCar.license_plate.comment)

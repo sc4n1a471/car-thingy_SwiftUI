@@ -58,7 +58,7 @@ struct DetailView: View {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                InspectionsView(inspections: $selectedCar.inspections)
+                InspectionsView(inspections: selectedCar.inspections!)
             }
             
                 // MARK: Map
@@ -126,7 +126,7 @@ struct DetailView: View {
             sharedViewData.existingCar = selectedCar
             sharedViewData.region = region
             Task {
-                    //                await loadSelectedCar()
+                await loadSelectedCar()
             }
         }
     }

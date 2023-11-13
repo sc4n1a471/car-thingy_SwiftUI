@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InspectionsView: View {
-    @Binding var inspections: [Inspection]
+    var inspections: [Inspection]
     
     var body: some View {
         Section {
@@ -34,14 +34,14 @@ struct InspectionsView: View {
                     .scrollTargetLayout()
                 }
                 .scrollTargetBehavior(.viewAligned)
-                .safeAreaPadding(.horizontal, 50)
+                .safeAreaPadding(.horizontal, 55)
                 .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             }
         }
     }
 }
 
-//
-//#Preview {
-//    InspectionsView(inspections: testCar.inspections!)
-//}
+
+#Preview {
+    InspectionsView(inspections: testCar.inspections!)
+}

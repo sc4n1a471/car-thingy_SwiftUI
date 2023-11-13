@@ -18,7 +18,7 @@ struct Car: Codable, Identifiable {
     var restrictions: [Restriction]?
     var mileage: [Mileage] = [Mileage()]
     var coordinates: Coordinates = Coordinates()
-    var inspections: [Inspection] = [Inspection()]
+    var inspections: [Inspection]?
     
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.license_plate.uppercased()

@@ -75,7 +75,7 @@ struct QuerySheetView: View {
                     }
                 }
                 
-                InspectionsView(inspections: $websocket.inspections)
+                InspectionsView(inspections: websocket.inspections)
             }
             // MARK: Toolbar items
             .toolbar {
