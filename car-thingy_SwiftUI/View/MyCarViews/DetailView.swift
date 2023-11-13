@@ -155,7 +155,7 @@ struct DetailView: View {
         sharedViewData.isLoading = true
         let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.license_plate.license_plate)
         if let safeCar {
-            sharedViewData.existingCar = safeCar[1]
+            sharedViewData.existingCar = safeCar[0]
             selectedCar = sharedViewData.existingCar
         }
         
