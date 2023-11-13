@@ -26,22 +26,36 @@ struct MapDetailView: View {
             // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
-        Text(selectedLicensePlate)
+        Text(selectedCar.getLP())
             .fontWeight(.bold)
             .font(.title)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 20)
             .padding(.leading, 20)
         
+        Text(selectedCar.license_plate.created_at ?? String())
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 20)
+            .foregroundStyle(.gray)
+                
         List {
             Section {
-                LazyVGrid(columns: columns, content: {
-                    editButton
-                    queryButton
-                    deleteButton
-                })
-//                .padding(.trailing, 20)
-//                .padding(.leading, 20)
+                withAnimation {
+                    LazyVGrid(columns: columns, content: {
+                        if sharedViewData.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            editButton
+                        }
+                        if websocket.isLoading {
+                            openQuerySheet
+                        } else {
+                            queryButton
+                        }
+                        deleteButton
+                    })
+                }
             }
             .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
@@ -82,9 +96,7 @@ struct MapDetailView: View {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                if let safeInspections = selectedCar.inspections {
-                    InspectionsView(inspections: safeInspections)
-                }
+                InspectionsView(inspections: $selectedCar.inspections)
             }
             
             SpecView(header: "Comment", content: selectedCar.license_plate.comment)
@@ -93,25 +105,6 @@ struct MapDetailView: View {
             Task {
                 await loadSelectedCar()
             }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                Button(action: {
-                    websocket.openSheet()
-                }) {
-                    Gauge(value: websocket.percentage, in: 0...100) {}
-                        .gaugeStyle(.accessoryCircularCapacity)
-                        .tint(.blue)
-                        .scaleEffect(0.5)
-                        .frame(width: 25, height: 25)
-                    
-                }
-                .isHidden(!websocket.isLoading)
-                
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!sharedViewData.isLoading)
-            })
         }
         .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
             Task {
@@ -131,6 +124,7 @@ struct MapDetailView: View {
         }
         .background(.clear)
         .scrollContentBackground(.hidden)
+//        .padding(.top, -20)
     }
     
     var editButton: some View {
@@ -142,6 +136,7 @@ struct MapDetailView: View {
         })
         .buttonStyle(.bordered)
         .disabled(sharedViewData.isLoading)
+        .tint(.yellow)
     }
     
     var queryButton: some View {
@@ -170,6 +165,22 @@ struct MapDetailView: View {
         .buttonStyle(.bordered)
         .frame(height: 50)
         .disabled(true)
+        .tint(.red)
+    }
+    
+    var openQuerySheet: some View {
+        Button(action: {
+            websocket.openSheet()
+        }) {
+            Gauge(value: websocket.percentage, in: 0...100) {}
+                .gaugeStyle(.accessoryCircularCapacity)
+                .tint(.blue)
+                .scaleEffect(0.5)
+                .frame(width: 25, height: 25)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .tint(.blue)
     }
     
     private func loadSelectedCar() async {

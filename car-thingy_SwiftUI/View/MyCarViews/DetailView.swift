@@ -58,33 +58,7 @@ struct DetailView: View {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                Section {
-                    if selectedCar.inspections!.count == 1 {
-                        ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                            Section {
-                                InspectionView(inspection: inspection)
-                                    .frame(width: 351, height: 300)
-                            }
-                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        }
-                    } else {
-                        ScrollView(.horizontal) {
-                            LazyHStack {
-                                ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                                    VStack {
-                                        InspectionView(inspection: inspection)
-                                            .frame(width: 250, height: 250)
-                                    }
-                                    .cornerRadius(10)
-                                }
-                            }
-                            .scrollTargetLayout()
-                        }
-                        .scrollTargetBehavior(.viewAligned)
-                        .safeAreaPadding(.horizontal, 50)
-                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    }
-                }                
+                InspectionsView(inspections: $selectedCar.inspections)
             }
             
                 // MARK: Map

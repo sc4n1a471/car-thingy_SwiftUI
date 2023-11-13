@@ -12,10 +12,34 @@ struct QuerySheetView: View {
     @State private var viewModel = ViewModel()
     @Environment(\.presentationMode) var presentationMode
     
+    let columns = [
+        GridItem(.flexible(minimum: 275, maximum: 425)),
+        GridItem(.flexible(minimum: 25, maximum: 75))
+    ]
+    let columns2 = [
+        GridItem(.flexible(minimum: 100, maximum: 400))
+    ]
+    
     var body: some View {
         NavigationStack {
             List {
                 if !viewModel.inspectionsOnly {
+                    Section {
+                        withAnimation {
+                            LazyVGrid(columns: websocket.isLoading ? columns : columns2, content: {
+                                if websocket.isLoading {
+                                    showLogs
+                                    closeConnection
+                                } else {
+                                    saveCar
+                                }
+                            })
+                        }
+                    }
+                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    
                     Section {
                         SpecView(header: "Brand", content: websocket.brand)
                         SpecView(header: "Model", content: websocket.model)
@@ -51,7 +75,7 @@ struct QuerySheetView: View {
                     }
                 }
                 
-                InspectionsView(inspections: websocket.inspections)
+                InspectionsView(inspections: $websocket.inspections)
             }
             // MARK: Toolbar items
             .toolbar {
@@ -61,36 +85,6 @@ struct QuerySheetView: View {
                         .disabled(websocket.isLoading)
                 })
 #endif
-                
-                ToolbarItem(placement: .navigationBarLeading, content: {
-                    Button(action: {
-                        viewModel.setPopover(true)
-                    }) {
-                        Gauge(value: websocket.percentage, in: 0...100) {}
-                            .gaugeStyle(.accessoryCircularCapacity)
-                            .tint(.blue)
-                            .scaleEffect(0.5)
-                            .frame(width: 25, height: 25)
-                        
-                    }.popover(isPresented: $viewModel.showingPopover) {
-                        ForEach(websocket.messages, id: \.self) { message in
-                            Text(message)
-                        }
-                        .presentationCompactAdaptation((.popover))
-                        .padding(10)
-                    }
-                    .isHidden(!websocket.isLoading)
-                })
-                
-                ToolbarItem(placement: .navigationBarTrailing, content: {
-                    saveCar
-                        .disabled(websocket.isLoading)
-                })
-                
-                ToolbarItem(placement: .navigationBarTrailing, content: {
-                    closeConnection
-                        .disabled(!websocket.isLoading)
-                })
             }
             .navigationTitle(websocket.getLP())
         }
@@ -111,9 +105,12 @@ struct QuerySheetView: View {
         Button(action: {
             websocket.close()
         }, label: {
-            Image(systemName: "xmark.circle.fill")
+            Image(systemName: "xmark")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(height: 50)
         })
         .buttonStyle(.bordered)
+        .tint(.red)
     }
     
     var saveCar: some View {
@@ -124,12 +121,35 @@ struct QuerySheetView: View {
                 }
             }
         }, label: {
-            Image(systemName: "square.and.arrow.down.fill")
+            Image(systemName: "square.and.arrow.down")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(height: 50)
         })
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.bordered)
+        .tint(.green)
     }
     
-
+    var showLogs: some View {
+        Button(action: {
+            viewModel.setPopover(true)
+        }) {
+            Gauge(value: websocket.percentage, in: 0...100) {}
+                .gaugeStyle(.accessoryCircularCapacity)
+                .tint(.blue)
+                .scaleEffect(0.5)
+                .frame(width: 25, height: 25)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+        }.popover(isPresented: $viewModel.showingPopover) {
+            ForEach(websocket.messages, id: \.self) { message in
+                Text(message)
+            }
+            .presentationCompactAdaptation((.popover))
+            .padding(10)
+        }
+        .buttonStyle(.bordered)
+        .tint(.blue)
+    }
 }
 
 #Preview {

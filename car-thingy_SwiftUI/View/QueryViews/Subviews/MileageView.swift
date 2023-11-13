@@ -213,9 +213,7 @@ struct MileageView: View {
         return 0
     }
 }
-
-//struct MileageView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MileageView(mileageData: testCar.mileage!)
-//    }
+//
+//#Preview {
+//    MileageView(onChangeMileageData: testCar.mileage!, mileageData: testCar.mileage)
 //}

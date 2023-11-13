@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InspectionsView: View {
-    @State var inspections: [Inspection]
+    @Binding var inspections: [Inspection]
     
     var body: some View {
         Section {
@@ -41,7 +41,7 @@ struct InspectionsView: View {
     }
 }
 
-
-#Preview {
-    InspectionsView(inspections: testCar.inspections!)
-}
+//
+//#Preview {
+//    InspectionsView(inspections: testCar.inspections!)
+//}
