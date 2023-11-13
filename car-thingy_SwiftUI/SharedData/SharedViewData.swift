@@ -43,4 +43,10 @@ import MapKit
     func clearExistingCar() {
         self.existingCar = Car()
     }
+    
+    func showAlert(errorMsg: String) {
+        self.isLoading = false
+        self.showAlert = true
+        self.error = errorMsg
+    }
 }

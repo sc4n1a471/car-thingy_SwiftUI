@@ -175,6 +175,8 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
         switch decodedData.status {
             case "success":
                 print("status (saveCar) success: \(decodedData.status)")
+                coordinatesLoaded = false
+                carsLoaded = false
                 return (decodedData.message, nil)
             case "failed":
                 print("status (saveCar) failed: \(decodedData.message)")
@@ -188,6 +190,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
     }
 }
 
+// Used for deleting car from list
 func deleteHelper (
     request: inout URLRequest,
     cars: [Car],
@@ -218,6 +221,7 @@ func deleteHelper (
             var decodedData: DeleteResponse
             decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
             print(decodedData.message as Any)
+            coordinatesLoaded = false
         } catch {
             print("Error: Trying to convert JSON data to string")
             print("Error during decoding in deleteData. Error: \(error)")
@@ -294,4 +298,66 @@ func initCoordinates(dataCuccli: Data) -> (coordinates: [Coordinates]?, error: S
         print("initData error: \(error)")
         return (nil, error.localizedDescription)
     }
+}
+
+// Used for deleting cars generally
+func deleteCarHelper (
+    request: inout URLRequest,
+    completionHandler: @escaping (_ successMsg: String?, _ errorMsg: String?) -> Void
+) {
+    
+    var successMsg: String?
+    var errorMsg: String?
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        guard error == nil else {
+            print("Error: error calling DELETE")
+            print("deleteData error: \(String(describing: error))")
+            errorMsg = "Error calling DELETE \n \(String(describing: error))"
+            completionHandler(nil, errorMsg)
+            return
+        }
+        guard let data = data else {
+            print("Error: Did not receive data")
+            errorMsg = "Did not receive data in deleteData"
+            completionHandler(nil, errorMsg)
+            return
+        }
+        
+        do {
+            var decodedData: DeleteResponse
+            decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
+            print(decodedData.message as Any)
+            coordinatesLoaded = false
+            carsLoaded = false
+            successMsg = decodedData.message
+        } catch {
+            print("Error: Trying to convert JSON data to string")
+            print("Error during decoding in deleteData. Error: \(error)")
+            errorMsg = "Error during decoding in deleteData \n \(error)"
+            completionHandler(nil, errorMsg)
+            return
+        }
+                
+        completionHandler(successMsg, errorMsg)
+    }.resume()
+}
+
+func deleteCar(licensePlate: String) async throws -> (success: String?, error: String?) {
+    let url1 = getURLasString(.cars) + "/" + licensePlate.uppercased()
+    let urlFormatted = URL(string: url1)
+    var request = URLRequest(url: urlFormatted!)
+    request.httpMethod = "DELETE"
+    
+    return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
+        deleteCarHelper(request: &request) { (deleteSuccess, deleteError) in
+            if let deleteSuccess {
+                continuation.resume(returning: (deleteSuccess, deleteError))
+            }
+            
+            if let deleteError {
+                continuation.resume(returning: (deleteSuccess, deleteError))
+            }
+        }
+    })
 }

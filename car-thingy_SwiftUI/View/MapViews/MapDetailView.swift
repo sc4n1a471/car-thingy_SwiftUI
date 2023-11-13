@@ -124,6 +124,11 @@ struct MapDetailView: View {
             QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
         }
+        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
+            Button("Got it") {
+                print("alert confirmed")
+            }
+        }
         .background(.clear)
         .scrollContentBackground(.hidden)
     }
@@ -154,10 +159,13 @@ struct MapDetailView: View {
     }
     
     var deleteButton: some View {
-        // TODO: Make a functioning delete button
         Button(action: {
             Task {
-                await websocket.connect(_:selectedCar.license_plate.license_plate)
+                let (_, errorMsg) = try await deleteCar(licensePlate: selectedLicensePlate)
+                                
+                if let safeErrorMsg = errorMsg {
+                    sharedViewData.showAlert(errorMsg: safeErrorMsg)
+                }
             }
         }, label: {
             Image(systemName: "trash")
@@ -165,7 +173,6 @@ struct MapDetailView: View {
         })
         .buttonStyle(.bordered)
         .frame(height: 50)
-        .disabled(true)
         .tint(.red)
     }
     
