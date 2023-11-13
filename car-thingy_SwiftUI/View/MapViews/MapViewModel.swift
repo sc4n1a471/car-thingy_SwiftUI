@@ -23,5 +23,18 @@ extension MapView {
         
         var coordinates: [Coordinates] = [Coordinates()]
         var infoSheet: Bool = false
+        
+        func loadCoordinatesToView() async {
+            let (safeData, safeError) = await loadCoordinates()
+            
+            if let safeData {
+                coordinates = safeData
+            }
+            
+            if let safeError {
+                // TODO: Show alert if error
+                print(safeError)
+            }
+        }
     }
 }

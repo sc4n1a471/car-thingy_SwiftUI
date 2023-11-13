@@ -20,27 +20,24 @@ struct MapView: View {
             }
         }.onAppear(perform: {
                 Task {
-                    let (safeData, safeError) = await loadCoordinates()
-                    
-                    if let safeData {
-                        viewModel.coordinates = safeData
-                    }
-                    
-                    if let safeError {
-                        print(safeError)
-                    }
+                    await viewModel.loadCoordinatesToView()
                 }
             })
         .sheet(isPresented: $viewModel.infoSheet, onDismiss: {
-            // TODO: Deselect marker
+            withAnimation(.snappy) {
+                selectedLicensePlate = nil
+            }
         }, content: {
-            MapDetailView(selectedLicensePlate: selectedLicensePlate!)
+            MapDetailView(selectedLicensePlate: $selectedLicensePlate)
                 .presentationDetents([.medium, .large])
                 .presentationBackground(.ultraThickMaterial)
         })
         .onChange(of: selectedLicensePlate) {
             if let selectedLicensePlate {
                 viewModel.infoSheet = true
+            }
+            Task {
+                await viewModel.loadCoordinatesToView()
             }
         }
     }

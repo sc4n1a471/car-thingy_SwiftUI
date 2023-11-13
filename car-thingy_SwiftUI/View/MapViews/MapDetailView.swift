@@ -10,9 +10,10 @@ import MapKit
 
 struct MapDetailView: View {
     @Environment(SharedViewData.self) private var sharedViewData
+    @Environment(\.presentationMode) var presentationMode
     
     @State private var selectedCar: Car = Car()
-    @State var selectedLicensePlate: String
+    @Binding var selectedLicensePlate: String?
     @State private var enableScrollView: Bool = true
     @State private var websocket: Websocket = Websocket()
     
@@ -161,12 +162,19 @@ struct MapDetailView: View {
     var deleteButton: some View {
         Button(action: {
             Task {
-                let (_, errorMsg) = try await deleteCar(licensePlate: selectedLicensePlate)
+                let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedLicensePlate!)
+                
+                if let safeSuccessMsg = successMsg {
+                    withAnimation(.snappy) {
+                        selectedLicensePlate = nil
+                    }
+                }
                                 
                 if let safeErrorMsg = errorMsg {
                     sharedViewData.showAlert(errorMsg: safeErrorMsg)
                 }
             }
+            presentationMode.wrappedValue.dismiss()
         }, label: {
             Image(systemName: "trash")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -193,7 +201,7 @@ struct MapDetailView: View {
     
     private func loadSelectedCar() async {
         sharedViewData.isLoading = true
-        let (safeCar, safeCarError) = await loadCar(license_plate: selectedLicensePlate)
+        let (safeCar, safeCarError) = await loadCar(license_plate: selectedLicensePlate!)
         if let safeCar {
             selectedCar = safeCar[0]
             sharedViewData.existingCar = selectedCar
@@ -210,7 +218,7 @@ struct MapDetailView: View {
     }
 }
 
-#Preview {
-    MapDetailView(selectedLicensePlate: "MIA192")
-        .environment(SharedViewData())
-}
+//#Preview {
+//    MapDetailView(selectedLicensePlate: "MIA192")
+//        .environment(SharedViewData())
+//}
