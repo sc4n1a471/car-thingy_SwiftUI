@@ -89,7 +89,7 @@ struct QuerySheetView: View {
             .navigationTitle(websocket.getLP())
         }
         .onAppear {
-            MyCarsView().haptic(type: .notification)
+            MyCarsView().haptic(type: .standard)
         }
     }
     

@@ -122,6 +122,9 @@ import Foundation
                 switch key {
                     case CarDataType.brand:
                         self.brand = stringValue
+                        if !self.dataSheetOpened {
+                            self.openSheet()
+                        }
                         break
                     case CarDataType.color:
                         self.color = stringValue
@@ -233,16 +236,18 @@ import Foundation
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
+        print("Connected")
+        
+        MyCarsView().haptic(type: .standard)
+        
         self.counter = 0
         self.clearValues()
         
         self.license_plate = requestedCar
-        
         self.sendMessage(requestedCar)
         
             //        receiveMessage()
         await setReceiveHandler()
-        print("Connected")
     }
         
     func setReceiveHandler() async {
@@ -264,10 +269,8 @@ import Foundation
                         if safeResponse.status == "success" {
                             self.close()
                             await self.getInspections(self.license_plate)
-                            if !self.dataSheetOpened {
-                                self.openSheet()
-                            }
                             self.isSuccess = true
+                            MyCarsView().haptic(type: .notification)
                             return
                         } else {
                             if let safeKey = safeResponse.key {
