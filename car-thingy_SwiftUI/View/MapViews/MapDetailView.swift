@@ -182,6 +182,7 @@ struct MapDetailView: View {
         .buttonStyle(.bordered)
         .frame(height: 50)
         .tint(.red)
+        .disabled(sharedViewData.isLoading)
     }
     
     var openQuerySheet: some View {
