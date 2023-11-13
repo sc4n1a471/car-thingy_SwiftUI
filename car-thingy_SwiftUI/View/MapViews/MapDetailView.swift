@@ -96,7 +96,9 @@ struct MapDetailView: View {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                InspectionsView(inspections: selectedCar.inspections!)
+                if let safeInspections = selectedCar.inspections {
+                    InspectionsView(inspections: safeInspections)
+                }
             }
             
             SpecView(header: "Comment", content: selectedCar.license_plate.comment)
