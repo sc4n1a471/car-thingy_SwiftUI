@@ -13,7 +13,7 @@ struct InspectionView: View {
     var inspectionName: String = "Műszaki vizsgálat"
     
     @State private var presentSheet = false
-    @State private var imageIndex: Int?
+    @State private var imageIndex: Int = 0
     
     var body: some View {
         VStack {
@@ -57,7 +57,7 @@ struct InspectionView: View {
         .sheet(isPresented: $presentSheet, onDismiss: {
             Task {}
         }) {
-            InspectionImageViewer(imageIndex: imageIndex ?? 0, images: inspection.base_64!)
+            InspectionImageViewer(imageIndex: imageIndex, images: inspection.base_64!)
         }
     }
     

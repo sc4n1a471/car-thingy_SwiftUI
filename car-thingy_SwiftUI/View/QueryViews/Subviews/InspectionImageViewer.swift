@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import LazyPager
 
 struct InspectionImageViewer: View {
-    @State var imageIndex = 0
+    @State var imageIndex: Int
     @State var images: [String]
     
     @Environment(\.presentationMode) var presentationMode
@@ -16,24 +17,22 @@ struct InspectionImageViewer: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TabView {
-                    ForEach(0..<images.count, id:\.self) { i in
-                        if let safeImage = convertImage(base64: images[i]) {
-                            safeImage
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        }
+                LazyPager(data: images, page: $imageIndex) { element in
+                    if let safeImage = convertImage(base64: element) {
+                        safeImage
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
                     }
                 }
-                .tabViewStyle(PageTabViewStyle())
-                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                .zoomable(min: 1, max: 5)
             }
-            // MARK: Toolbar items
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading, content: {
+                ToolbarItem(placement: .topBarLeading, content: {
                     close
                 })
             }
+            .background(Color.black)
+            .ignoresSafeArea()
         }
     }
     
@@ -53,13 +52,13 @@ struct InspectionImageViewer: View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
         }, label: {
-            Text("Close")
+            Image(systemName: "xmark")
         })
     }
 }
 
 struct InspectionImageViewer_Previews: PreviewProvider {
     static var previews: some View {
-        InspectionImageViewer(imageIndex: 1, images: testCar.inspections![0].base_64!)
+        InspectionImageViewer(imageIndex: 0, images: testCar.inspections![0].base_64!)
     }
 }

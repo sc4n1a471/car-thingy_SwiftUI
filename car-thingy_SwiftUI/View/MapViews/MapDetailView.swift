@@ -126,7 +126,6 @@ struct MapDetailView: View {
         }
         .background(.clear)
         .scrollContentBackground(.hidden)
-//        .padding(.top, -20)
     }
     
     var editButton: some View {

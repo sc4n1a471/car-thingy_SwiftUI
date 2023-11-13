@@ -18,6 +18,7 @@
 		57563E922A1ABD530051B0F1 /* MileageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E912A1ABD530051B0F1 /* MileageView.swift */; };
 		57563E962A1AC2290051B0F1 /* Mileage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E952A1AC2290051B0F1 /* Mileage.swift */; };
 		575DD0FD2B018797001027A9 /* InspectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575DD0FC2B018797001027A9 /* InspectionsView.swift */; };
+		575DD1002B02AAEC001027A9 /* LazyPager in Frameworks */ = {isa = PBXBuildFile; productRef = 575DD0FF2B02AAEC001027A9 /* LazyPager */; };
 		577C65442895958500397961 /* HTTPController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTPController.swift */; };
 		578406802AF6CDD20045D4BB /* Specs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784067F2AF6CDD20045D4BB /* Specs.swift */; };
 		578406822AF6CF6C0045D4BB /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578406812AF6CF6C0045D4BB /* Coordinates.swift */; };
@@ -104,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				575DD1002B02AAEC001027A9 /* LazyPager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +275,9 @@
 			dependencies = (
 			);
 			name = "car-thingy_SwiftUI";
+			packageProductDependencies = (
+				575DD0FF2B02AAEC001027A9 /* LazyPager */,
+			);
 			productName = NodeJS_Thingy_Cars;
 			productReference = 5795FA91286E1288007E60DF /* car-thingy_SwiftUI.app */;
 			productType = "com.apple.product-type.application";
@@ -301,6 +306,9 @@
 				Base,
 			);
 			mainGroup = 5795FA88286E1288007E60DF;
+			packageReferences = (
+				575DD0FE2B02AAEC001027A9 /* XCRemoteSwiftPackageReference "LazyPager" */,
+			);
 			productRefGroup = 5795FA92286E1288007E60DF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -583,6 +591,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		575DD0FE2B02AAEC001027A9 /* XCRemoteSwiftPackageReference "LazyPager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gh123man/LazyPager";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.5;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		575DD0FF2B02AAEC001027A9 /* LazyPager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 575DD0FE2B02AAEC001027A9 /* XCRemoteSwiftPackageReference "LazyPager" */;
+			productName = LazyPager;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5795FA89286E1288007E60DF /* Project object */;
 }
