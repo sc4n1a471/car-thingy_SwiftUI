@@ -9,28 +9,18 @@
 import CoreLocation
 import MapKit
 
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+@Observable
+class LocationManager: NSObject, CLLocationManagerDelegate {
     let manager = CLLocationManager()
     
-    @Published var region = MKCoordinateRegion()
+    var region = MKCoordinateRegion()
 
     override init() {
         super.init()
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
-        manager.stopUpdatingLocation()      // in theory, stops immediately after it starts updating location to prevent location updates more than once
+        manager.requestLocation()
     }
-
-//    func requestLocation() {
-//        manager.requestLocation()
-//    }
-
-//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        region.center.latitude = locations.first!.coordinate.latitude
-//        region.center.longitude = locations.first!.coordinate.longitude
-//        print(locations)
-//    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             locations.last.map {

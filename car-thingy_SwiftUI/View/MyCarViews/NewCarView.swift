@@ -33,7 +33,7 @@ struct NewCar: View {
     @State private var ezLenniCar: Car = Car()
     @State private var oldLicensePlate = String()
     
-    @StateObject var locationManager = LocationManager()
+    @State var locationManager = LocationManager()
     @State private var customLatitude: String = String()
     @State private var customLongitude: String = String()
     @State private var selectedMap = MapType.custom

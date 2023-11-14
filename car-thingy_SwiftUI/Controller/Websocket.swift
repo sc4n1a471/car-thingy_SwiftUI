@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable class Websocket {
-    var messages = [String]()
+    var messages: [String] = []
     var percentage = Double()
     var isLoading = Bool()
     var isSuccess = false

@@ -10,6 +10,7 @@ import SwiftUI
 struct QuerySheetView: View {
     @Bindable var websocket: Websocket
     @State private var viewModel = ViewModel()
+    @State var locationManager = LocationManager()
     @Environment(\.presentationMode) var presentationMode
     
     let columns = [
@@ -88,6 +89,12 @@ struct QuerySheetView: View {
             }
             .navigationTitle(websocket.getLP())
         }
+        .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
+            Button("Websocket got it") {
+                websocket.disableAlert()
+                print("websocket alert confirmed")
+            }
+        })
         .onAppear {
             MyCarsView().haptic(type: .standard)
         }
@@ -116,7 +123,7 @@ struct QuerySheetView: View {
     var saveCar: some View {
         Button(action: {
             Task {
-                if await viewModel.saveCar(websocket: websocket) {
+                if await viewModel.saveCar(websocket: websocket, withCoordinates: true, locationManager: locationManager) {
                     presentationMode.wrappedValue.dismiss()
                 }
             }
