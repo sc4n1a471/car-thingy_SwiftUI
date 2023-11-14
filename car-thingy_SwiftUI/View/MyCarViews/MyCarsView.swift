@@ -32,12 +32,7 @@ struct MyCarsView: View {
                             Text(resultCar.getLP())
                                 .font(.headline)
                             HStack {
-                                if (resultCar.specs.brand != String()) {
-                                    Text(resultCar.specs.model ?? "No model")
-                                    Text(resultCar.specs.type_code ?? "No type_code")
-                                } else {
-                                    Text("New car!")
-                                }
+                                Text(getHeading(resultCar:resultCar))
                             }
                         }
                     }
@@ -139,6 +134,22 @@ struct MyCarsView: View {
                 ||
                 $0.specs.type_code!.contains(self.searchCar.uppercased())
             }
+        }
+    }
+    
+    func getHeading(resultCar: Car) -> String {
+        if (resultCar.specs.brand != String()) {
+            if (resultCar.specs.model == String()) {
+                return resultCar.specs.type_code ?? "No type_code"
+            } else {
+                if (resultCar.specs.model!.contains(resultCar.specs.brand!)) {
+                    return resultCar.specs.model?.replacingOccurrences(of: "\(resultCar.specs.brand!) ", with: "") ?? "No model"
+                } else {
+                    return resultCar.specs.model ?? "No model"
+                }
+            }
+        } else {
+            return "Unknown car!"
         }
     }
     
