@@ -20,7 +20,7 @@ extension QuerySheetView {
             self.showingPopover = newState
         }
         
-        func saveCar(websocket: Websocket, withCoordinates: Bool = false, locationManager: LocationManager = LocationManager()) async -> Bool {
+        func saveCar(websocket: Websocket, knownCarQuery: Bool = true, locationManager: LocationManager = LocationManager()) async -> Bool {
             var saveCar: Car = Car(
                 license_plate:
                     LicensePlate(
@@ -48,7 +48,7 @@ extension QuerySheetView {
                 mileage: parseMileage(websocket.mileage, websocket.license_plate)
             )
             
-            if withCoordinates {
+            if !knownCarQuery {
                 print("Saving car with coordinates...")
                 saveCar.coordinates.license_plate = websocket.license_plate
                 saveCar.coordinates.latitude = locationManager.region.center.latitude

@@ -12,6 +12,7 @@ struct QuerySheetView: View {
     @State private var viewModel = ViewModel()
     @State var locationManager = LocationManager()
     @Environment(\.presentationMode) var presentationMode
+    var knownCarQuery: Bool = true
     
     let columns = [
         GridItem(.flexible(minimum: 275, maximum: 425)),
@@ -123,7 +124,7 @@ struct QuerySheetView: View {
     var saveCar: some View {
         Button(action: {
             Task {
-                if await viewModel.saveCar(websocket: websocket, withCoordinates: true, locationManager: locationManager) {
+                if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
                     presentationMode.wrappedValue.dismiss()
                 }
             }

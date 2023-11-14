@@ -114,7 +114,7 @@ struct QueryView: View {
                 websocket.dismissSheet()
             }
         }) {
-            QuerySheetView(websocket: websocket)
+            QuerySheetView(websocket: websocket, knownCarQuery: false)
                 .presentationDetents([.medium, .large])
         }
     }
