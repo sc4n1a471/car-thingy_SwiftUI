@@ -39,7 +39,6 @@ struct QuerySheetView: View {
                         }
                     }
                     .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                     
                     Section {
@@ -89,6 +88,7 @@ struct QuerySheetView: View {
 #endif
             }
             .navigationTitle(websocket.getLP())
+            .scrollContentBackground(.visible)
         }
         .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
             Button("Websocket got it") {
