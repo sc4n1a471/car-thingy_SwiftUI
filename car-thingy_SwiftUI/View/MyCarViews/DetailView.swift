@@ -11,7 +11,8 @@ import MapKit
 
 struct DetailView: View {
     @Environment(SharedViewData.self) private var sharedViewData
-    
+    @Environment(\.presentationMode) var presentationMode
+
     @State var selectedCar: Car
     @State var region: MKCoordinateRegion
     @State private var enableScrollView: Bool = true
@@ -77,6 +78,13 @@ struct DetailView: View {
             .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             
             SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            
+            Section {
+                deleteButton
+            }
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
         }
         .navigationTitle(selectedCar.getLP())
 #if os(iOS)
@@ -149,6 +157,30 @@ struct DetailView: View {
             Image(systemName: "magnifyingglass")
         })
         .buttonStyle(.borderedProminent)
+    }
+    
+    var deleteButton: some View {
+        Button(action: {
+            Task {
+                let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.license_plate.license_plate)
+                
+                if let safeSuccessMsg = successMsg {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                
+                if let safeErrorMsg = errorMsg {
+                    sharedViewData.showAlert(errorMsg: safeErrorMsg)
+                }
+            }
+            presentationMode.wrappedValue.dismiss()
+        }, label: {
+            Image(systemName: "trash")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        })
+        .buttonStyle(.bordered)
+        .frame(height: 50)
+        .tint(.red)
+        .disabled(sharedViewData.isLoading)
     }
     
     func loadSelectedCar() async {
