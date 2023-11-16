@@ -222,6 +222,7 @@ import Foundation
         self.showAlert = true
         self.isLoading = false
         self.close()
+        MyCarsView().haptic(type: .error)
     }
     
     func disableAlert() {
