@@ -63,7 +63,7 @@ extension QuerySheetView {
             }
             
             if let safeError {
-                websocket.enableAlert(error: safeError)
+                websocket.showAlert(error: safeError)
                 return false
             }
             return false

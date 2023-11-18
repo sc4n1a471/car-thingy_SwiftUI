@@ -103,7 +103,7 @@ struct QueryView: View {
             }
             .navigationTitle("Car Query")
         }
-        .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
                 print("websocket alert confirmed")

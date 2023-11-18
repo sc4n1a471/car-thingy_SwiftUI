@@ -130,7 +130,7 @@ struct DetailView: View {
             QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
         }
-        .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
                 print("websocket alert confirmed")

@@ -90,7 +90,7 @@ struct QuerySheetView: View {
             .navigationTitle(websocket.getLP())
             .scrollContentBackground(.visible)
         }
-        .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
                 print("websocket alert confirmed")
@@ -130,7 +130,7 @@ struct QuerySheetView: View {
                     counter += 1
                 }
                 if counter == 100 {
-                    websocket.enableAlert(error: "The location data was 0, try again...")
+                    websocket.showAlert(error: "The location data was 0, try again...")
                 } else {
                     if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
                         presentationMode.wrappedValue.dismiss()

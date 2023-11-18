@@ -48,6 +48,7 @@ import MapKit
         self.isLoading = false
         self.showAlert = true
         self.error = errorMsg
+        print(errorMsg)
         MyCarsView().haptic(type: .error)
     }
 }

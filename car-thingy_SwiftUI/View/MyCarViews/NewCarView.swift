@@ -181,8 +181,17 @@ struct NewCar: View {
                     ezLenniCar.coordinates.latitude = Double(customLatitude) ?? 37.789467
                     ezLenniCar.coordinates.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-                    ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
-                    ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
+                    var counter = 0
+                    while (locationManager.region.center.latitude == 0 && locationManager.region.center.longitude == 0 && counter != 100) {
+                        print("Location is 0")
+                        counter += 1
+                    }
+                    if counter == 100 {
+                        sharedViewData.showAlert(errorMsg: "The location data was 0, try again...")
+                        
+                        ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
+                        ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
+                    }
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -204,10 +213,7 @@ struct NewCar: View {
                 }
                 
                 if let safeError {
-                    sharedViewData.error = "Upload failed: \(safeError)"
-                    sharedViewData.showAlert = true
-                    MyCarsView().haptic(type: .error)
-                    print("Upload failed: \(safeError)")
+                    sharedViewData.showAlert(errorMsg: "Upload failed: \(safeError)")
                 }
             }
         }, label: {

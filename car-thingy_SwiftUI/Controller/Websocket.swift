@@ -14,7 +14,7 @@ import Foundation
     var isSuccess = false
     var dataSheetOpened = false
     var error = String()
-    var showAlert = false
+    var isAlert = false
     
     var license_plate = String()
     
@@ -213,13 +213,13 @@ import Foundation
             self.inspections = safeInspections
         }
         if let safeError = error {
-            self.enableAlert(error: safeError)
+            self.showAlert(error: safeError)
         }
     }
     
-    func enableAlert(error: String) {
+    func showAlert(error: String) {
         self.error = error
-        self.showAlert = true
+        self.isAlert = true
         self.isLoading = false
         self.close()
         MyCarsView().haptic(type: .error)
@@ -227,7 +227,7 @@ import Foundation
     
     func disableAlert() {
         self.error = String()
-        self.showAlert = false
+        self.isAlert = false
     }
     
     func connect(_ requestedCar: String) async {
@@ -285,7 +285,7 @@ import Foundation
                     }
                     if let safeError {
                         print("error: \(safeError)")
-                        self.enableAlert(error: safeError)
+                        self.showAlert(error: safeError)
                     }
                 case .data(let data):
                         // Handle binary data
