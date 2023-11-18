@@ -52,7 +52,6 @@ struct Mileage: Codable, Identifiable, Equatable {
     func getDateComponents() -> DateComponents {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: getDate())
-        print(components.year)
         return components
     }
 }

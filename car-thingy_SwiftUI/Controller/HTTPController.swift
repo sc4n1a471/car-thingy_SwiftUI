@@ -87,7 +87,7 @@ func loadCars(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
                 //        }
             return initData(dataCuccli: data)
         } catch {
-            print("Invalid data")
+            print("Invalid data in loadCars: \(error)")
             return (nil, error.localizedDescription)
         }
     }
@@ -107,7 +107,7 @@ func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
         
         return initData(dataCuccli: data, carOnly: true)
     } catch {
-        print("Invalid data")
+        print("Invalid data in loadCar: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -269,7 +269,7 @@ func loadCoordinates() async -> (coordinates: [Coordinates]?, error: String?) {
 
             return initCoordinates(dataCuccli: data)
         } catch {
-            print("Invalid data")
+            print("Invalid data in loadCoordinates: \(error)")
             return (nil, error.localizedDescription)
         }
     }

@@ -92,10 +92,16 @@ var testCar: CarQuery = CarQuery(
     mileage: [
         Mileage(mileage: 127973, mileageDate: "2012.10.17."),
         Mileage(mileage: 147050, mileageDate: "2013.06.18."),
+        Mileage(mileage: 355278, mileageDate: "2021.04.14."),
         Mileage(mileage: 249246, mileageDate: "2014.09.25."),
+        Mileage(mileage: 249270, mileageDate: "2014.09.27."),
+        Mileage(mileage: 249300, mileageDate: "2014.10.10."),
         Mileage(mileage: 260900, mileageDate: "2017.04.25."),
         Mileage(mileage: 302876, mileageDate: "2019.04.26."),
+        Mileage(mileage: 302900, mileageDate: "2019.06.26."),
         Mileage(mileage: 355278, mileageDate: "2021.04.13."),
+        Mileage(mileage: 355282, mileageDate: "2021.04.23."),
+        Mileage(mileage: 355300, mileageDate: "2021.05.03."),
         Mileage(mileage: 456294, mileageDate: "2023.03.20.")
     ],
     model: "yas",
