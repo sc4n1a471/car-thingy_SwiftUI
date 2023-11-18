@@ -21,19 +21,22 @@ extension MapView {
             )
         )
         
-        var coordinates: [Coordinates] = [Coordinates()]
         var infoSheet: Bool = false
+        var sharedViewData: SharedViewData?
         
-        func loadCoordinatesToView() async {
-            let (safeData, safeError) = await loadCoordinates()
+        func initViewModel(_ sharedViewData: SharedViewData) {
+            self.sharedViewData = sharedViewData
+        }
+        
+        func loadMarkers() async {
+            let (cars, error) = await loadCars()
             
-            if let safeData {
-                coordinates = safeData
+            if let cars {
+                sharedViewData?.cars = cars
             }
             
-            if let safeError {
-                // TODO: Show alert if error
-                print(safeError)
+            if let error {
+                sharedViewData?.showAlert(errorMsg: error)
             }
         }
     }
