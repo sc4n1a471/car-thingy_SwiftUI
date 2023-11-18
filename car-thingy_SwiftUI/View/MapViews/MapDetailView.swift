@@ -130,6 +130,12 @@ struct MapDetailView: View {
                 print("alert confirmed")
             }
         }
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
+            Button("Websocket got it") {
+                websocket.disableAlert()
+                print("websocket alert confirmed")
+            }
+        })
         .background(.clear)
         .scrollContentBackground(.hidden)
     }
