@@ -216,9 +216,7 @@ struct MapDetailView: View {
         }
         
         if let safeCarError {
-            sharedViewData.error = safeCarError
-            sharedViewData.showAlert = true
-            MyCarsView().haptic(type: .error)
+            sharedViewData.showAlert(errorMsg: safeCarError)
         }
         
         sharedViewData.isLoading = false

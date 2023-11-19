@@ -47,9 +47,7 @@ struct MyCarsView: View {
                         }
                         
                         if let safeError = unsafeError {
-                            sharedViewData.error = safeError
-                            sharedViewData.showAlert = true
-                            haptic(type: .error)
+                            sharedViewData.showAlert(errorMsg: safeError)
                         }
                     }
                 }
@@ -69,22 +67,16 @@ struct MyCarsView: View {
                         Image(systemName: "link")
                     }
                     
-                    Button(action: {
-                        Task {
-                            await loadViewData(true)
-                        }
-                    }, label: {
-                        Image(systemName: "arrow.clockwise")
-                    })
+                    if sharedViewData.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                    } else {
+                        refreshButton
+                    }
                 })
                 
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!sharedViewData.isLoading)
-                    
                     plusButton
-                        .disabled(sharedViewData.isLoading)
                 })
             }
             #endif
@@ -116,6 +108,16 @@ struct MyCarsView: View {
         })
     }
     
+    var refreshButton: some View {
+        Button(action: {
+            Task {
+                await loadViewData(true)
+            }
+        }, label: {
+            Image(systemName: "arrow.clockwise")
+        })
+    }
+    
     var searchCars: [Car] {
         if searchCar.isEmpty {
             return sharedViewData.cars
@@ -123,6 +125,10 @@ struct MyCarsView: View {
             if self.searchCar.localizedStandardContains("new") {
                 return sharedViewData.cars.filter {
                     $0.specs.brand == String()
+                }
+            } else if self.searchCar.localizedStandardContains("for testing purpuses") {
+                return sharedViewData.cars.filter {
+                    $0.license_plate.comment.lowercased().contains("for testing purposes") || $0.license_plate.comment.lowercased().contains("for testing purpuses")
                 }
             }
             return sharedViewData.cars.filter {

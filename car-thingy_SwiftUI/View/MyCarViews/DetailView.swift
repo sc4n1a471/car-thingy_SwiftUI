@@ -19,11 +19,37 @@ struct DetailView: View {
     
     @State var websocket: Websocket = Websocket()
     
+    let columns = [
+        GridItem(.flexible(minimum: 100, maximum: 200)),
+        GridItem(.flexible(minimum: 100, maximum: 200))
+    ]
+    
     var body: some View {
             // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
         List {
+            Section {
+                withAnimation {
+                    LazyVGrid(columns: columns, content: {
+                        if sharedViewData.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            editButton
+                        }
+                        if websocket.isLoading {
+                            openQuerySheet
+                        } else {
+                            queryButton
+                        }
+                    })
+                }
+            }
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            
             if selectedCar.specs.license_plate != String() {
                 Section {
                     SpecView(header: "Brand", content: selectedCar.specs.brand)
@@ -90,27 +116,6 @@ struct DetailView: View {
 #if os(iOS)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                Button(action: {
-                    websocket.openSheet()
-                }) {
-                    Gauge(value: websocket.percentage, in: 0...100) {}
-                        .gaugeStyle(.accessoryCircularCapacity)
-                        .tint(.blue)
-                        .scaleEffect(0.5)
-                        .frame(width: 25, height: 25)
-                    
-                }
-                .isHidden(!websocket.isLoading)
-                
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!sharedViewData.isLoading)
-                
-                queryButton
-                    .disabled(websocket.isLoading)
-                
-                editButton
-                    .disabled(sharedViewData.isLoading)
             })
         }
 #endif
@@ -145,13 +150,31 @@ struct DetailView: View {
         }
     }
     
+    var openQuerySheet: some View {
+        Button(action: {
+            websocket.openSheet()
+        }) {
+            Gauge(value: websocket.percentage, in: 0...100) {}
+                .gaugeStyle(.accessoryCircularCapacity)
+                .tint(.blue)
+                .scaleEffect(0.5)
+                .frame(width: 25, height: 25)
+            
+        }
+        .buttonStyle(.bordered)
+        .tint(.blue)
+        .frame(height: 50)
+    }
+    
     var editButton: some View {
         Button (action: {
             sharedViewData.isEditCarPresented.toggle()
         }, label: {
             Image(systemName: "pencil")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
         .buttonStyle(.bordered)
+        .frame(height: 50)
     }
     
     var queryButton: some View {
@@ -161,8 +184,10 @@ struct DetailView: View {
             }
         }, label: {
             Image(systemName: "magnifyingglass")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
         .buttonStyle(.borderedProminent)
+        .frame(height: 50)
     }
     
     var deleteButton: some View {
