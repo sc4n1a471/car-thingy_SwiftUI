@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct InspectionView: View {
-    var inspection: Inspection
-    @State private var inspectionDate: String = ""
+    @Environment(\.presentationMode) var presentationMode
+
     var inspectionName: String = "Műszaki vizsgálat"
-    
+    var inspection: Inspection
+
+    @State private var inspectionDate: String = ""
     @State private var presentSheet = false
     @State private var imageIndex: Int = 0
     

@@ -113,12 +113,6 @@ struct DetailView: View {
             .listRowBackground(Color.clear)
         }
         .navigationTitle(selectedCar.getLP())
-#if os(iOS)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-            })
-        }
-#endif
         .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
             Task {
                 await loadSelectedCar()
