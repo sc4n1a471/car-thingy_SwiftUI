@@ -93,7 +93,7 @@ struct MapDetailView: View {
                     SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
                 }
                 
-                Group {
+                Section {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
@@ -102,7 +102,9 @@ struct MapDetailView: View {
                 }
             }
             
-            SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            Section {
+                SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            }
         }
         .onAppear() {
             Task {

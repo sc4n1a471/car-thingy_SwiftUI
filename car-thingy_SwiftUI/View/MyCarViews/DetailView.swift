@@ -81,11 +81,13 @@ struct DetailView: View {
                     SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
                 }
                 
-                Group {
+                Section {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                InspectionsView(inspections: selectedCar.inspections!)
+                Section {
+                    InspectionsView(inspections: selectedCar.inspections!)
+                }
             }
             
                 // MARK: Map
@@ -103,7 +105,9 @@ struct DetailView: View {
             .listRowSeparator(.hidden)
             .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             
-            SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            Section {
+                SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            }
             
             Section {
                 deleteButton
