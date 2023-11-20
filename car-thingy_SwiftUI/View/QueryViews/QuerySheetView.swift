@@ -68,10 +68,10 @@ struct QuerySheetView: View {
                     }
                     
                     Section {
-                        SpecView(header: "Restrictions", contents: websocket.restrictions)
+                        SpecView(header: "Restrictions", restrictions: websocket.restrictions)
                     }
                     
-                    Group {
+                    Section {
                         SpecView(header: "Accidents", accidents: websocket.accidents)
                     }
                 }

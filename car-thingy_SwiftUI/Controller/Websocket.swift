@@ -33,7 +33,7 @@ import Foundation
     var year = Int()
     
     var accidents = [Accident()]
-    var restrictions = [String()]
+    var restrictions = [Restriction()]
     var mileage = [Mileage()]
     var inspections = [Inspection()]
     
@@ -57,7 +57,7 @@ import Foundation
             year = testCar.year
             
             accidents = testCar.accidents!
-            restrictions = testCar.restrictions!
+			restrictions = parseRestrictions(testCar.restrictions!, testCar.license_plate)
             mileage = testCar.mileage!
             inspections = testCar.inspections!
             
@@ -115,7 +115,7 @@ import Foundation
             case .accidents(let accidents):
                 self.accidents = accidents
             case .restrictions(let restrictions):
-                self.restrictions = restrictions
+				self.restrictions = parseRestrictions(restrictions, self.license_plate)
             case .mileage(let mileage):
                 self.mileage = mileage
             case .stringValue(let stringValue):
@@ -200,7 +200,7 @@ import Foundation
         self.year = Int()
         
         self.accidents = [Accident()]
-        self.restrictions = [String()]
+        self.restrictions = [Restriction()]
         self.mileage = [Mileage()]
         self.inspections = [Inspection()]
         
@@ -216,6 +216,19 @@ import Foundation
             self.showAlert(error: safeError)
         }
     }
+	
+	func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {
+		var newRestrictions: [Restriction] = []
+		for restriction in stringRestrictions {
+			newRestrictions.append(Restriction(
+				license_plate: licensePlate,
+				restriction: restriction,
+				restriction_date: Date.now.ISO8601Format(),
+				active: true
+			))
+		}
+		return newRestrictions
+	}
     
     func showAlert(error: String) {
         self.error = error

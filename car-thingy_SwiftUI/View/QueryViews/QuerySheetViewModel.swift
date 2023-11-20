@@ -44,7 +44,7 @@ extension QuerySheetView {
                     type_code: websocket.type_code,
                     year: websocket.year
                 ),
-                restrictions: parseRestrictions(websocket.restrictions, websocket.license_plate),
+                restrictions: websocket.restrictions,
                 mileage: parseMileage(websocket.mileage, websocket.license_plate)
             )
             
@@ -67,19 +67,6 @@ extension QuerySheetView {
                 return false
             }
             return false
-        }
-        
-        func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {
-            var newRestrictions: [Restriction] = []
-            for restriction in stringRestrictions {
-                newRestrictions.append(Restriction(
-                    license_plate: licensePlate,
-                    restriction: restriction,
-                    restriction_date: Date.now.ISO8601Format(),
-                    active: true
-                ))
-            }
-            return newRestrictions
         }
         
         func parseMileage(_ oldMileage: [Mileage], _ licensePlate: String) -> [Mileage] {

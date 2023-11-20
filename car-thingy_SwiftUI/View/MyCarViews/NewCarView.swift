@@ -155,6 +155,7 @@ struct NewCar: View {
                         .disabled(sharedViewData.isLoading)
                 })
             }
+			.scrollContentBackground(.visible)
         }
         .onAppear() {
             MyCarsView().haptic(type: .notification)

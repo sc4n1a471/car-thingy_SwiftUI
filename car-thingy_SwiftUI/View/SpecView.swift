@@ -98,11 +98,15 @@ struct SpecView: View {
                             }
                         } else if let safeRestrictions = self.restrictions {
                             VStack {
-                                ForEach(safeRestrictions, id: \.id) { item in
-                                    HStack {
-										Text(item.restriction.lowercased().capitalizedSentence)
-                                            .font(.system(size: 22)).bold()
-                                    }
+								ForEach(Array(safeRestrictions.enumerated()), id: \.offset) { index, item in
+									Text(item.restriction.lowercased().capitalizedSentence)
+										.font(.system(size: 22))
+										.bold()
+										.frame(maxWidth: .infinity, alignment: .leading)
+									
+									if index < safeRestrictions.count - 1 {
+										Divider()
+									}
                                 }
                             }
                         }
@@ -126,5 +130,9 @@ extension String {
 }
 
 #Preview {
-	SpecView(header: "Performance", content: "320", note: "HP")
+//	SpecView(header: "Performance", content: "320", note: "HP")
+	SpecView(header: "Restrictions", restrictions: [
+		Restriction(license_plate: "AAA111", restriction: "HEEEEE", restriction_date: "2021.01.01."),
+		Restriction(license_plate: "AAA111", restriction: "HEEEEEEEE", restriction_date: "2021.01.01.")
+	])
 }
