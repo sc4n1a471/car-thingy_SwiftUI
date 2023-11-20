@@ -226,20 +226,23 @@ struct MileageView: View {
     
     func parseMileageData(_ mileageData: [Mileage]) -> [Mileage] {
         var parsedMileageData: [Mileage] = []
-        parsedMileageData.append(mileageData[0])
-        
-        let sortedMileageData: [Mileage] = mileageData.sorted { $0.getDate() < $1.getDate() }
-        
-        for (index, data) in sortedMileageData.enumerated() {
-            if index == 0 {
-                continue
-            }
-            let prevData = parsedMileageData.last
-            if prevData?.getDateComponents().year == data.getDateComponents().year /*&& prevData?.getDateComponents().month == data.getDateComponents().month*/ {
-                continue
-            }
-            parsedMileageData.append(data)
-        }
+		
+		if !mileageData.isEmpty {
+			parsedMileageData.append(mileageData[0])
+			
+			let sortedMileageData: [Mileage] = mileageData.sorted { $0.getDate() < $1.getDate() }
+			
+			for (index, data) in sortedMileageData.enumerated() {
+				if index == 0 {
+					continue
+				}
+				let prevData = parsedMileageData.last
+				if prevData?.getDateComponents().year == data.getDateComponents().year /*&& prevData?.getDateComponents().month == data.getDateComponents().month*/ {
+					continue
+				}
+				parsedMileageData.append(data)
+			}
+		}
                 
         return parsedMileageData
     }

@@ -19,6 +19,7 @@ import MapKit
     
     var newCar: Car = Car()
     var existingCar: Car = Car()
+	var returnNewCar: Car = Car()
     
     var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(

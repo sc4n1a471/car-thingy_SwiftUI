@@ -37,7 +37,7 @@ struct NewCar: View {
     @State private var customLatitude: String = String()
     @State private var customLongitude: String = String()
     @State private var selectedMap = MapType.custom
-    
+	    
     private var isUpload: Bool
     
     init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
@@ -164,6 +164,7 @@ struct NewCar: View {
             } else {
                 self.ezLenniCar = sharedViewData.newCar
                 sharedViewData.is_new = true
+				sharedViewData.returnNewCar = Car()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(1)) {
                     focusedField = .newLicensePlate
                 }
@@ -187,12 +188,13 @@ struct NewCar: View {
                         print("Location is 0")
                         counter += 1
                     }
-                    if counter == 100 {
-                        sharedViewData.showAlert(errorMsg: "The location data was 0, try again...")
+					if counter == 100 {
+						sharedViewData.showAlert(errorMsg: "The location data was 0, try again...")
+						return
+					}
                         
-                        ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
-                        ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
-                    }
+					ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
+					ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -208,6 +210,7 @@ struct NewCar: View {
                 
                 if let safeMessage {
                     sharedViewData.isEditCarPresented = false
+					sharedViewData.returnNewCar = ezLenniCar
                     MyCarsView().haptic()
                     print("Upload was successful")
                     presentationMode.wrappedValue.dismiss()

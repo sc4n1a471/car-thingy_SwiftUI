@@ -8,7 +8,7 @@
 import Foundation
 import MapKit
 
-struct Car: Codable, Identifiable {
+struct Car: Codable, Identifiable, Equatable, Hashable {
     var id: String {
         license_plate.license_plate
     }
@@ -19,7 +19,7 @@ struct Car: Codable, Identifiable {
     var mileage: [Mileage] = [Mileage()]
     var coordinates: Coordinates = Coordinates()
     var inspections: [Inspection]?
-    
+	
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.license_plate.uppercased()
         

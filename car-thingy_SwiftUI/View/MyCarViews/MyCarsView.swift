@@ -17,47 +17,35 @@ struct MyCarsView: View {
     @Environment(SharedViewData.self) private var sharedViewData
 
     @State private var searchCar = String()
+	@State private var openDetailViewAfterUpload = false
+	@State private var path: NavigationPath = NavigationPath()
     
     var body: some View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
-        NavigationView {
-            List {
-                ForEach(searchCars, id: \.id) { resultCar in
-                    NavigationLink {
-                        DetailView(selectedCar: resultCar, region: resultCar.getLocation())
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(resultCar.getLP())
-                                .font(.headline)
-                            HStack {
-                                Text(getHeading(resultCar:resultCar))
-                            }
-                        }
-                    }
-                }
-                .onDelete { IndexSet in
-                    Task {
-                        let (unsafeCars, unsafeError) = try await deleteData(at: IndexSet, cars: sharedViewData.cars)
-                        
-                        if let safeCars = unsafeCars {
-                            sharedViewData.cars = safeCars
-                            haptic()
-                        }
-                        
-                        if let safeError = unsafeError {
-                            sharedViewData.showAlert(errorMsg: safeError)
-                        }
-                    }
-                }
+        NavigationStack(path: $path.animation()) {
+            List(searchCars) { car in
+				NavigationLink(value: car, label: {
+					VStack(alignment: .leading) {
+						Text(car.getLP())
+							.font(.headline)
+						HStack {
+							Text(getHeading(resultCar:car))
+						}
+					}
+				})
             }
             .task {
                 await loadViewData()
             }
             .navigationTitle("My Cars")
-            
-            #if os(iOS)
+			.navigationDestination(for: Car.self) { selectedCar in
+				DetailView(selectedCar: selectedCar, region: selectedCar.getLocation())
+			}
+			.navigationDestination(isPresented: $openDetailViewAfterUpload) {
+				DetailView(selectedCar: sharedViewData.returnNewCar, region: sharedViewData.returnNewCar.getLocation())
+			}
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading, content: {
                     
@@ -78,25 +66,26 @@ struct MyCarsView: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
                     plusButton
                 })
-            }
-            #endif
-            
+            }            
             .refreshable {
                 await loadViewData(true)
             }
             .searchable(text: $searchCar)
-        }
-        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
-            Button("Got it") {
-                print("alert confirmed")
-            }
-        }
-        .sheet(isPresented: $sharedViewDataBindable.isNewCarPresented, onDismiss: {
-            Task {
-                await loadViewData()
-            }
-        }) {
-            NewCar(isUpload: true)
+			.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
+				Button("Got it") {
+					print("alert confirmed")
+				}
+			}
+			.sheet(isPresented: $sharedViewDataBindable.isNewCarPresented, onDismiss: {
+				Task {
+					await loadViewData()
+					if sharedViewData.returnNewCar.license_plate.license_plate != String() {
+						openDetailViewAfterUpload = true
+					}
+				}
+			}) {
+				NewCar(isUpload: true)
+			}
         }
     }
     
@@ -171,9 +160,7 @@ struct MyCarsView: View {
         }
         
         if let safeCarError {
-            sharedViewData.error = safeCarError
-            sharedViewData.showAlert = true
-            haptic(type: .error)
+			sharedViewData.showAlert(errorMsg: safeCarError)
         }
         
         sharedViewData.isLoading = false
@@ -198,9 +185,7 @@ struct MyCarsView: View {
     }
 }
 
-struct MyCarsView_Previews: PreviewProvider {
-    static var previews: some View {
-        MyCarsView()
-            .environment(SharedViewData())
-    }
+#Preview {
+	MyCarsView()
+		.environment(SharedViewData())
 }

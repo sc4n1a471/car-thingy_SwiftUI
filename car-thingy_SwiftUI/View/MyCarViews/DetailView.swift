@@ -86,7 +86,7 @@ struct DetailView: View {
                 }
                 
                 Section {
-                    InspectionsView(inspections: selectedCar.inspections!)
+                    InspectionsView(inspections: selectedCar.inspections ?? [Inspection()])
                 }
             }
             

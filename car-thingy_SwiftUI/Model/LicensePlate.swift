@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LicensePlate: Codable {
+struct LicensePlate: Codable, Equatable, Hashable {
     var license_plate: String = String()
     var comment: String = String()
     var created_at: String?

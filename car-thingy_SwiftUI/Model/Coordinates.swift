@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Coordinates: Codable {
+struct Coordinates: Codable, Equatable, Hashable {
     var license_plate: String = String()
     var latitude: Double = Double()
     var longitude: Double = Double()

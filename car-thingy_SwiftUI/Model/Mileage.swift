@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Mileage: Codable, Identifiable, Equatable {
+struct Mileage: Codable, Identifiable, Equatable, Hashable {
     
     var id: String {
         String(mileage)
