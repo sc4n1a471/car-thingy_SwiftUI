@@ -80,7 +80,7 @@ struct SpecView: View {
                                 .padding(.top, 2)
                         } else if let safeAccidents = self.accidents {
                             VStack {
-                                ForEach(safeAccidents, id: \.self) { accident in
+								ForEach(Array(safeAccidents.enumerated()), id: \.offset) { index, accident in
                                     HStack {
 										Text(accident.getDate().formatted(
 											Date.FormatStyle()
@@ -89,11 +89,17 @@ struct SpecView: View {
 												.day()
 										))
                                             .font(.system(size: 22)).bold()
+										
                                         Text(accident.role)
                                             .font(.body.bold())
                                             .foregroundColor(Color.gray)
                                             .padding(.top, 2)
                                     }
+									.frame(maxWidth: .infinity, alignment: .leading)
+									
+									if index < safeAccidents.count - 1 {
+										Divider()
+									}
                                 }
                             }
                         } else if let safeRestrictions = self.restrictions {
@@ -131,8 +137,9 @@ extension String {
 
 #Preview {
 //	SpecView(header: "Performance", content: "320", note: "HP")
-	SpecView(header: "Restrictions", restrictions: [
-		Restriction(license_plate: "AAA111", restriction: "HEEEEE", restriction_date: "2021.01.01."),
-		Restriction(license_plate: "AAA111", restriction: "HEEEEEEEE", restriction_date: "2021.01.01.")
-	])
+//	SpecView(header: "Restrictions", restrictions: [
+//		Restriction(license_plate: "AAA111", restriction: "HEEEEE", restriction_date: "2021.01.01."),
+//		Restriction(license_plate: "AAA111", restriction: "HEEEEEEEE", restriction_date: "2021.01.01.")
+//	])
+	SpecView(header: "Accidents", accidents: testCar.accidents)
 }
