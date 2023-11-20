@@ -35,7 +35,7 @@ struct InspectionsView: View {
                         .scrollTargetLayout()
                     }
                     .scrollTargetBehavior(.viewAligned)
-                    .safeAreaPadding(.horizontal, 55)
+                    .safeAreaPadding(.horizontal, 50)
                     .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
             }

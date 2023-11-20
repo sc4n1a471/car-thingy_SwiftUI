@@ -148,6 +148,7 @@ struct DetailView: View {
         }
     }
     
+    // MARK: Button views
     var openQuerySheet: some View {
         Button(action: {
             websocket.openSheet()
@@ -157,7 +158,7 @@ struct DetailView: View {
                 .tint(.blue)
                 .scaleEffect(0.5)
                 .frame(width: 25, height: 25)
-            
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .buttonStyle(.bordered)
         .tint(.blue)
@@ -193,7 +194,7 @@ struct DetailView: View {
             Task {
                 let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.license_plate.license_plate)
                 
-                if let safeSuccessMsg = successMsg {
+                if successMsg != nil {
                     presentationMode.wrappedValue.dismiss()
                 }
                 
@@ -212,6 +213,7 @@ struct DetailView: View {
         .disabled(sharedViewData.isLoading)
     }
     
+    // MARK: Functions
     func loadSelectedCar() async {
         sharedViewData.isLoading = true
         let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.license_plate.license_plate)
@@ -221,18 +223,14 @@ struct DetailView: View {
         }
         
         if let safeCarError {
-            sharedViewData.error = safeCarError
-            sharedViewData.showAlert = true
-            MyCarsView().haptic(type: .error)
+            sharedViewData.showAlert(errorMsg: safeCarError)
         }
         
         sharedViewData.isLoading = false
     }
 }
 
-struct View2_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailView(selectedCar: previewCar, region: previewCar.getLocation())
-            .environment(SharedViewData())
-    }
+#Preview {
+    DetailView(selectedCar: previewCar, region: previewCar.getLocation())
+        .environment(SharedViewData())
 }

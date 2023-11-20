@@ -57,8 +57,6 @@ struct InspectionImageViewer: View {
     }
 }
 
-struct InspectionImageViewer_Previews: PreviewProvider {
-    static var previews: some View {
-        InspectionImageViewer(imageIndex: 0, images: testCar.inspections![0].base_64!)
-    }
+#Preview {
+	InspectionImageViewer(imageIndex: 0, images: testCar.inspections![0].base_64!)
 }

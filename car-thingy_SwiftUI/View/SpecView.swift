@@ -82,7 +82,12 @@ struct SpecView: View {
                             VStack {
                                 ForEach(safeAccidents, id: \.self) { accident in
                                     HStack {
-                                        Text(accident.accident_date)
+										Text(accident.getDate().formatted(
+											Date.FormatStyle()
+												.year()
+												.month()
+												.day()
+										))
                                             .font(.system(size: 22)).bold()
                                         Text(accident.role)
                                             .font(.body.bold())
@@ -95,7 +100,7 @@ struct SpecView: View {
                             VStack {
                                 ForEach(safeRestrictions, id: \.id) { item in
                                     HStack {
-                                        Text(item.restriction)
+										Text(item.restriction.lowercased().capitalizedSentence)
                                             .font(.system(size: 22)).bold()
                                     }
                                 }
@@ -112,8 +117,14 @@ struct SpecView: View {
     }
 }
 
-struct SpecView_Previews: PreviewProvider {
-    static var previews: some View {
-        SpecView(header: "Performance", content: "320", note: "HP")
-    }
+extension String {
+	var capitalizedSentence: String {
+		let firstLetter = self.prefix(1).capitalized
+		let remainingLetters = self.dropFirst().lowercased()
+		return firstLetter + remainingLetters
+	}
+}
+
+#Preview {
+	SpecView(header: "Performance", content: "320", note: "HP")
 }

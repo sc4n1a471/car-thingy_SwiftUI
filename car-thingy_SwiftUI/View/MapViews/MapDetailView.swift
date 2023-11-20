@@ -34,7 +34,7 @@ struct MapDetailView: View {
             .padding(.top, 20)
             .padding(.leading, 20)
         
-        Text(selectedCar.license_plate.created_at ?? String())
+		Text(selectedCar.license_plate.getDate().formatted(date: .long, time: .shortened))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.leading, 20)
             .foregroundStyle(.gray)
@@ -172,7 +172,7 @@ struct MapDetailView: View {
             Task {
                 let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedLicensePlate!)
                 
-                if let safeSuccessMsg = successMsg {
+				if successMsg != nil {
                     withAnimation(.snappy) {
                         selectedLicensePlate = nil
                     }
@@ -225,7 +225,16 @@ struct MapDetailView: View {
     }
 }
 
-//#Preview {
-//    MapDetailView(selectedLicensePlate: "MIA192")
-//        .environment(SharedViewData())
-//}
+	/// https://developer.apple.com/forums/thread/118589
+struct BindingMapDetailView: View {
+	@State var selectedLicensePlate: String? = "MIA192"
+	
+	var body: some View {
+		MapDetailView(selectedLicensePlate: $selectedLicensePlate)
+			.environment(SharedViewData())
+	}
+}
+
+#Preview {
+	BindingMapDetailView()
+}

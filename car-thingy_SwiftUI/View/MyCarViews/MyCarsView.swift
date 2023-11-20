@@ -100,6 +100,7 @@ struct MyCarsView: View {
         }
     }
     
+	// MARK: Button views
     var plusButton: some View {
         Button (action: {
             sharedViewData.isNewCarPresented.toggle()
@@ -126,7 +127,7 @@ struct MyCarsView: View {
                 return sharedViewData.cars.filter {
                     $0.specs.brand == String()
                 }
-            } else if self.searchCar.localizedStandardContains("for testing purpuses") {
+            } else if self.searchCar.localizedStandardContains("for testing purposes") {
                 return sharedViewData.cars.filter {
                     $0.license_plate.comment.lowercased().contains("for testing purposes") || $0.license_plate.comment.lowercased().contains("for testing purpuses")
                 }
@@ -143,6 +144,7 @@ struct MyCarsView: View {
         }
     }
     
+	// MARK: Functions
     func getHeading(resultCar: Car) -> String {
         if (resultCar.specs.brand != String()) {
             if (resultCar.specs.model == String()) {

@@ -27,11 +27,11 @@ struct Mileage: Codable, Identifiable, Equatable {
     func getDate(_ yearMonthOnly: Bool = false) -> Date {
         let calendar = Calendar.autoupdatingCurrent
         if mileage_date.contains(".") {
-            let dateSeperated = mileage_date.split(separator: ".")
+            let dateSeparated = mileage_date.split(separator: ".")
             if yearMonthOnly {
-                return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1])))!
+                return calendar.date(from: DateComponents(year: Int(dateSeparated[0]), month: Int(dateSeparated[1])))!
             } else {
-                return calendar.date(from: DateComponents(year: Int(dateSeperated[0]), month: Int(dateSeperated[1]), day: Int(dateSeperated[2])))!
+                return calendar.date(from: DateComponents(year: Int(dateSeparated[0]), month: Int(dateSeparated[1]), day: Int(dateSeparated[2])))!
             }
         }
         return Date.now
@@ -39,8 +39,8 @@ struct Mileage: Codable, Identifiable, Equatable {
     
     func getYear() -> Int {
         if mileage_date.contains(".") {
-            let dateSeperated = mileage_date.split(separator: ".")
-            return Int(dateSeperated[0])!
+            let dateSeparated = mileage_date.split(separator: ".")
+            return Int(dateSeparated[0])!
         }
         return 0
     }
