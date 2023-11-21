@@ -15,6 +15,7 @@ import Foundation
     var dataSheetOpened = false
     var error = String()
     var isAlert = false
+	var isQuerySaved = false
     
     var license_plate = String()
     
@@ -102,8 +103,20 @@ import Foundation
         self.dataSheetOpened = true
     }
     
-    func dismissSheet() {
+	func dismissSheet() async {
         self.dataSheetOpened = false
+		
+		if !self.isQuerySaved {
+			do {
+				let (_, error) = try await deleteInspection(licensePlate: self.license_plate)
+				
+				if let safeError = error {
+					self.showAlert(error: safeError)
+				}
+			} catch {
+				self.showAlert(error: "deleteInspection failed for some reason...")
+			}
+		}
     }
     
     func setLoading(_ newStatus: Bool) {
@@ -205,6 +218,8 @@ import Foundation
         self.inspections = [Inspection()]
         
         self.messages = [String()]
+		
+		self.isQuerySaved = false
     }
     
     func getInspections(_ licensePlate: String) async {

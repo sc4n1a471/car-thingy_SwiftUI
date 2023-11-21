@@ -120,7 +120,7 @@ struct MapDetailView: View {
         }
         .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
             Task {
-                websocket.dismissSheet()
+                await websocket.dismissSheet()
                 await loadSelectedCar()
             }
         }) {

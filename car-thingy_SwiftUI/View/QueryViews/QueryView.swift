@@ -111,7 +111,7 @@ struct QueryView: View {
         })
         .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
             Task {
-                websocket.dismissSheet()
+                await websocket.dismissSheet()
             }
         }) {
             QuerySheetView(websocket: websocket, knownCarQuery: false)
@@ -120,13 +120,11 @@ struct QueryView: View {
     }
 }
 
-struct QueryView_Previews: PreviewProvider {
-    static var previews: some View {
-        QueryView()
-            .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
-            .previewDisplayName("iPhone 13 Pro")
-//        QueryView()
-//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
-//            .previewDisplayName("Mac Catalyst")
-    }
+#Preview {
+	QueryView()
+		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
+		.previewDisplayName("iPhone 13 Pro")
+		//        QueryView()
+		//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
+		//            .previewDisplayName("Mac Catalyst")
 }

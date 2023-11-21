@@ -59,6 +59,7 @@ extension QuerySheetView {
             
             if let safeMessage {
                 print(safeMessage)
+				websocket.isQuerySaved = true
                 return true
             }
             
