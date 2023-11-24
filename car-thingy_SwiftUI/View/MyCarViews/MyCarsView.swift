@@ -37,7 +37,7 @@ struct MyCarsView: View {
 				})
             }
             .task {
-                await loadViewData()
+				await sharedViewData.loadViewData()
             }
             .navigationTitle("My Cars")
 			.navigationDestination(for: Car.self) { selectedCar in
@@ -68,7 +68,7 @@ struct MyCarsView: View {
                 })
             }            
             .refreshable {
-                await loadViewData(true)
+				await sharedViewData.loadViewData(true)
             }
             .searchable(text: $searchCar)
 			.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
@@ -78,7 +78,7 @@ struct MyCarsView: View {
 			}
 			.sheet(isPresented: $sharedViewDataBindable.isNewCarPresented, onDismiss: {
 				Task {
-					await loadViewData()
+					await sharedViewData.loadViewData()
 					if sharedViewData.returnNewCar.license_plate.license_plate != String() {
 						openDetailViewAfterUpload = true
 					}
@@ -86,6 +86,7 @@ struct MyCarsView: View {
 			}) {
 				NewCar(isUpload: true)
 			}
+			.animation(.default, value: sharedViewData.cars)
         }
     }
     
@@ -101,7 +102,7 @@ struct MyCarsView: View {
     var refreshButton: some View {
         Button(action: {
             Task {
-                await loadViewData(true)
+				await sharedViewData.loadViewData(true)
             }
         }, label: {
             Image(systemName: "arrow.clockwise")
@@ -148,22 +149,6 @@ struct MyCarsView: View {
         } else {
             return "Unknown car!"
         }
-    }
-    
-    func loadViewData(_ refresh: Bool = false) async {
-        sharedViewData.isLoading = true
-        let (safeCars, safeCarError) = await loadCars(refresh)
-        if let safeCars {
-            withAnimation {
-                sharedViewData.cars = safeCars
-            }
-        }
-        
-        if let safeCarError {
-			sharedViewData.showAlert(errorMsg: safeCarError)
-        }
-        
-        sharedViewData.isLoading = false
     }
     
     func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {

@@ -195,6 +195,7 @@ struct DetailView: View {
                 let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.license_plate.license_plate)
                 
                 if successMsg != nil {
+					await sharedViewData.loadViewData()
                     presentationMode.wrappedValue.dismiss()
                 }
                 

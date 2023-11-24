@@ -52,4 +52,18 @@ import MapKit
         print(errorMsg)
         MyCarsView().haptic(type: .error)
     }
+	
+	func loadViewData(_ refresh: Bool = false) async {
+		self.isLoading = true
+		let (safeCars, safeCarError) = await loadCars(refresh)
+		if let safeCars {
+			self.cars = safeCars
+		}
+		
+		if let safeCarError {
+			self.showAlert(errorMsg: safeCarError)
+		}
+		
+		self.isLoading = false
+	}
 }
