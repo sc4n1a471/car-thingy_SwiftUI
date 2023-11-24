@@ -124,13 +124,10 @@ struct QuerySheetView: View {
     var saveCar: some View {
         Button(action: {
             Task {
-                var counter = 0
-                while (locationManager.region.center.latitude == 0 && locationManager.region.center.longitude == 0 && counter != 100) {
+				if (locationManager.lastLocation?.coordinate.latitude == 0 && locationManager.lastLocation?.coordinate.latitude == 0) {
                     print("Location is 0")
-                    counter += 1
-                }
-                if counter == 100 {
-                    websocket.showAlert(error: "The location data was 0, try again...")
+					websocket.showAlert(error: "The location data was 0, try again...")
+					locationManager = LocationManager()
                 } else {
                     if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
                         presentationMode.wrappedValue.dismiss()

@@ -37,6 +37,14 @@ struct NewCar: View {
     @State private var customLatitude: String = String()
     @State private var customLongitude: String = String()
     @State private var selectedMap = MapType.custom
+	
+	var userLatitude: String {
+		return "\(locationManager.lastLocation?.coordinate.latitude ?? 0)"
+	}
+	
+	var userLongitude: String {
+		return "\(locationManager.lastLocation?.coordinate.longitude ?? 0)"
+	}
 	    
     private var isUpload: Bool
     
@@ -193,8 +201,8 @@ struct NewCar: View {
 						return
 					}
                         
-					ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
-					ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
+					ezLenniCar.coordinates.latitude = Double(userLatitude) ?? 127.0
+					ezLenniCar.coordinates.longitude = Double(userLongitude) ?? 36.0
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -234,9 +242,7 @@ struct NewCar: View {
     }
 }
 
-struct NewCar_Previews: PreviewProvider {
-    static var previews: some View {
-        NewCar(isUpload: false)
-            .environment(SharedViewData())
-    }
+#Preview {
+	NewCar(isUpload: false)
+		.environment(SharedViewData())
 }

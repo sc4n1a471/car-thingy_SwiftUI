@@ -20,7 +20,7 @@ extension QuerySheetView {
             self.showingPopover = newState
         }
         
-        func saveCar(websocket: Websocket, knownCarQuery: Bool = true, locationManager: LocationManager = LocationManager()) async -> Bool {
+        func saveCar(websocket: Websocket, knownCarQuery: Bool = true, locationManager: LocationManager) async -> Bool {
             var saveCar: Car = Car(
                 license_plate:
                     LicensePlate(
@@ -49,10 +49,17 @@ extension QuerySheetView {
             )
             
             if !knownCarQuery {
-                print("Saving car with coordinates...")
                 saveCar.coordinates.license_plate = websocket.license_plate
-                saveCar.coordinates.latitude = locationManager.region.center.latitude
-                saveCar.coordinates.longitude = locationManager.region.center.longitude
+				print(locationManager.lastLocation)
+				saveCar.coordinates.latitude = locationManager.lastLocation?.coordinate.latitude ?? 37.789467
+				saveCar.coordinates.longitude = locationManager.lastLocation?.coordinate.longitude ?? -122.416772
+				print("Saving car with coordinates... (\(saveCar.coordinates.latitude), \(saveCar.coordinates.longitude))")
+				
+				if saveCar.coordinates.latitude == 37.789467 && saveCar.coordinates.longitude == -122.416772 {
+					print("Coordinates were default values")
+					websocket.showAlert(error: "Coordinates were default values")
+					return false
+				}
             }
             
             let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)
