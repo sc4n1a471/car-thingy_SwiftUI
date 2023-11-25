@@ -49,8 +49,8 @@ struct QuerySheetView: View {
                     
                     Section {
                         SpecView(header: "Status", content: websocket.status)
-                        SpecView(header: "First registration", content: websocket.first_reg)
-                        SpecView(header: "First registration in 🇭🇺", content: websocket.first_reg_hun)
+						SpecView(header: "First registration", content: websocket.first_reg)
+						SpecView(header: "First registration in 🇭🇺", content: websocket.first_reg_hun)
                         SpecView(header: "Number of owners", content: String(websocket.num_of_owners))
                     }
                     

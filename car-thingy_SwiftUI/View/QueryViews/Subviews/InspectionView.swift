@@ -9,11 +9,11 @@ import SwiftUI
 
 struct InspectionView: View {
     @Environment(\.presentationMode) var presentationMode
+	@Environment(SharedViewData.self) private var sharedViewData
 
     var inspectionName: String = "Műszaki vizsgálat"
     var inspection: Inspection
 
-    @State private var inspectionDate: String = ""
     @State private var presentSheet = false
     @State private var imageIndex: Int = 0
     
@@ -23,7 +23,12 @@ struct InspectionView: View {
                 Text(inspectionName)
                     .font(.footnote)
                     .foregroundColor(Color.gray)
-                Text(inspectionDate)
+				Text(sharedViewData.parseDate(inspection.name.replacingOccurrences(of: "MŰSZAKI VIZSGÁLAT, ", with: "")).formatted(
+					Date.FormatStyle()
+						.year()
+						.month()
+						.day()
+				))
                     .font(.title2)
                     .bold()
             }
@@ -50,11 +55,6 @@ struct InspectionView: View {
             .padding(.trailing, 20)
             .padding(.leading, 20)
             .shadow(radius: 10)
-        }
-        .onAppear() {
-            Task {
-                self.inspectionDate = inspection.name.replacingOccurrences(of: "MŰSZAKI VIZSGÁLAT, ", with: "")
-            }
         }
         .sheet(isPresented: $presentSheet, onDismiss: {
             Task {}

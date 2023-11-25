@@ -66,4 +66,17 @@ import MapKit
 		
 		self.isLoading = false
 	}
+	
+	func parseDate(_ unparsedData: String) -> Date {
+		let calendar = Calendar.autoupdatingCurrent
+		if unparsedData.contains("-") {
+			let dateTimeSeparated = unparsedData.split(separator: "T")
+			let dateSeparated = dateTimeSeparated[0].split(separator: "-")
+			return calendar.date(from: DateComponents(year: Int(dateSeparated[0]), month: Int(dateSeparated[1]), day: Int(dateSeparated[2])))!
+		} else if unparsedData.contains(".") {
+			let dateSeparated = unparsedData.split(separator: ".")
+			return calendar.date(from: DateComponents(year: Int(dateSeparated[0]), month: Int(dateSeparated[1]), day: Int(dateSeparated[2])))!
+		}
+		return Date.now
+	}
 }

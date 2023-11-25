@@ -8,21 +8,28 @@
 import SwiftUI
 
 struct SpecView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
+
     var header: String
     var content: String?
     var note: String?
     var contents: [String]?
     var accidents: [Accident]?
     var restrictions: [Restriction]?
+	var isDate: Bool = false
     private var showElement: Bool
     
-    init(header: String, content: String? = nil, note: String? = nil, contents: [String]? = nil, accidents: [Accident]? = nil, restrictions: [Restriction]? = nil) {
+	init(header: String, content: String? = nil, note: String? = nil, contents: [String]? = nil, accidents: [Accident]? = nil, restrictions: [Restriction]? = nil) {
         self.header = header
         self.content = content
         self.note = note
         self.contents = contents
         self.accidents = accidents
         self.restrictions = restrictions
+		
+		if self.header == "First registration" || self.header == "First registration in 🇭🇺" {
+			self.isDate = true
+		}
         
         if let safeAccidents = self.accidents {
             if safeAccidents.count != 0 {
@@ -72,17 +79,31 @@ struct SpecView: View {
                                 }
                             }
                         } else if let safeContent = self.content {
-                            Text(safeContent)
-                                .font(.system(size: 22)).bold()
-                            Text(note ?? "")
-                                .font(.body.bold())
-                                .foregroundColor(Color.gray)
-                                .padding(.top, 2)
+							if isDate {
+								Text(sharedViewData.parseDate(safeContent).formatted(
+									Date.FormatStyle()
+										.year()
+										.month()
+										.day()
+								))
+									.font(.system(size: 22)).bold()
+								Text(note ?? "")
+									.font(.body.bold())
+									.foregroundColor(Color.gray)
+									.padding(.top, 2)
+							} else {
+								Text(safeContent)
+									.font(.system(size: 22)).bold()
+								Text(note ?? "")
+									.font(.body.bold())
+									.foregroundColor(Color.gray)
+									.padding(.top, 2)
+							}
                         } else if let safeAccidents = self.accidents {
                             VStack {
 								ForEach(Array(safeAccidents.enumerated()), id: \.offset) { index, accident in
                                     HStack {
-										Text(accident.getDate().formatted(
+										Text(sharedViewData.parseDate(accident.accident_date).formatted(
 											Date.FormatStyle()
 												.year()
 												.month()
