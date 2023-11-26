@@ -9,21 +9,26 @@ import SwiftUI
 
 struct DateView: View {
 	var licensePlate: LicensePlate
+	var mapView: Bool
 	private var createdAt: String = String()
 	private var updatedAt: String = String()
+	private var dateFormat = Date.FormatStyle(date: .long, time: .shortened)
 	@State private var showPopover: Bool = false
 	
-	init(licensePlate: LicensePlate) {
+	init(licensePlate: LicensePlate, mapView: Bool = true) {
 		self.licensePlate = licensePlate
+		self.mapView = mapView
+		
+		dateFormat.timeZone = TimeZone(secondsFromGMT: 7200)!
 		
 		if let safeDate = licensePlate.getDate(.updatedAt) {
-			updatedAt = "Updated: \(safeDate.formatted(date: .long, time: .shortened))"
+			updatedAt = "Updated: \(safeDate.formatted(dateFormat))"
 		} else {
 			updatedAt = "Updated: Never"
 		}
 		
 		if let safeDate = licensePlate.getDate(.createdAt) {
-			createdAt = "Created: \(safeDate.formatted(date: .long, time: .shortened))"
+			createdAt = "Created: \(safeDate.formatted(dateFormat))"
 		} else {
 			createdAt = "Created: Never"
 		}
@@ -33,8 +38,12 @@ struct DateView: View {
 		Button(action: {
 			showPopover = true
 		}) {
-			Image(systemName: "info.circle")
-				.foregroundStyle(.gray)
+			if mapView {
+				Image(systemName: "info.circle")
+					.foregroundStyle(.gray)
+			} else {
+				Image(systemName: "info.circle.fill")
+			}
 		}.popover(isPresented: $showPopover) {
 			VStack {
 				Text(createdAt)
@@ -49,12 +58,14 @@ struct DateView: View {
 			.presentationCompactAdaptation(.none)
 			.presentationBackground(.clear)
 		}
-		.buttonStyle(.bordered)
-		.cornerRadius(55)
-		.clipShape(Circle())
+		.if(mapView) { view in
+			view
+				.clipShape(Circle())
+				.buttonStyle(.bordered)
+		}
     }
 }
 
 #Preview {
-	DateView(licensePlate: previewCar.license_plate)
+	DateView(licensePlate: previewCar.license_plate, mapView: false)
 }

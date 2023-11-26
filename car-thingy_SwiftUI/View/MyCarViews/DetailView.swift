@@ -148,7 +148,7 @@ struct DetailView: View {
         }
 		.toolbar(content: {
 			ToolbarItem(placement: .topBarTrailing, content: {
-				DateView(licensePlate: selectedCar.license_plate)
+				DateView(licensePlate: selectedCar.license_plate, mapView: false)
 					.frame(maxWidth: .infinity, alignment: .trailing)
 			})
 		})

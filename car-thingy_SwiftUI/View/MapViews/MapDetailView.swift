@@ -158,7 +158,6 @@ struct MapDetailView: View {
         })
         .buttonStyle(.bordered)
         .disabled(sharedViewData.isLoading)
-        .tint(.yellow)
     }
     
     var queryButton: some View {
