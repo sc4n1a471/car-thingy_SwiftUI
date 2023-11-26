@@ -226,6 +226,30 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
     }
 }
 
+func updateLicensePlate(newLicensePlateObject: LicensePlate, oldLicensePlate: String) async -> (response: String?, error: String?) {
+	guard let encoded = try? JSONEncoder().encode(newLicensePlateObject) else {
+		print("Failed to encode license plate object")
+		return (nil, "Failed to encode license plate object")
+	}
+	
+	var url = URL(string: getURLasString(.licensePlate) + "/" + oldLicensePlate.uppercased())!
+	var request = URLRequest(url: url)
+	
+	request.httpMethod = "PUT"
+	request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+	
+	do {
+		let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
+		print(String(data: data, encoding: .utf8) ?? "???")
+		
+		carsLoaded = false
+		return initSaveResponse(dataCuccli: data)
+	} catch {
+		print("Checkout failed.")
+		return (nil, "Checkout failed")
+	}
+}
+
 func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
     var decodedData: GoResponse
     
@@ -246,7 +270,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
                 return (nil, "Status is not success or failed?")
         }
     } catch {
-        print("initData error: \(error)")
+        print("initSaveResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
