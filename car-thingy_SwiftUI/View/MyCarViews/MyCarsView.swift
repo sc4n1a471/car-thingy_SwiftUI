@@ -47,7 +47,7 @@ struct MyCarsView: View {
 				DetailView(selectedCar: sharedViewData.returnNewCar, region: sharedViewData.returnNewCar.getLocation())
 			}
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading, content: {
+                ToolbarItemGroup(placement: .topBarLeading, content: {
                     
                     Link(destination:
                         URL(string:"https://magyarorszag.hu/jszp_szuf")!
@@ -63,7 +63,7 @@ struct MyCarsView: View {
                     }
                 })
                 
-                ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                ToolbarItemGroup(placement: .topBarTrailing, content: {
                     plusButton
                 })
             }            

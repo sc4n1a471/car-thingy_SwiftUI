@@ -8,6 +8,7 @@
 import Foundation
 
 var previewCar: Car = Car(
+	license_plate: LicensePlate(license_plate: "GSM140", comment: "Ez lenni comment", created_at: "2012.10.17.", updated_at: "2012.10.18."),
     accidents: testCar.accidents!,
     specs: Specs(
         license_plate: testCar.license_plate,

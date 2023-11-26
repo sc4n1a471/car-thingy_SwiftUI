@@ -25,7 +25,8 @@ extension QuerySheetView {
                 license_plate:
                     LicensePlate(
                         license_plate: websocket.license_plate,
-                        created_at: Date.now.ISO8601Format()
+                        created_at: Date.now.ISO8601Format(),
+						updated_at: Date.now.ISO8601Format()
                     ),
                 accidents: websocket.accidents,
                 specs: Specs(

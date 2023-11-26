@@ -22,22 +22,29 @@ struct MapDetailView: View {
         GridItem(.flexible(minimum: 100, maximum: 200)),
         GridItem(.flexible(minimum: 100, maximum: 200))
     ]
+	let columns2 = [
+		GridItem(.flexible(minimum: 100, maximum: 200)),
+		GridItem(.flexible(minimum: 100, maximum: 200))
+	]
     
     var body: some View {
             // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
-        Text(selectedCar.getLP())
-            .fontWeight(.bold)
-            .font(.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 20)
-            .padding(.leading, 20)
-        
-		Text(selectedCar.license_plate.getDate().formatted(date: .long, time: .shortened))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 20)
-            .foregroundStyle(.gray)
+		LazyVGrid(columns: columns2, content: {
+			Text(selectedCar.getLP())
+				.fontWeight(.bold)
+				.font(.system(size: 35))
+				.frame(maxWidth: .infinity, alignment: .leading)
+				.padding(.leading, 20)
+			
+			DateView(licensePlate: selectedCar.license_plate)
+				.frame(maxWidth: .infinity, alignment: .trailing)
+				.padding(.trailing, 20)
+				.font(.system(size: 17))
+				.presentationBackground(.ultraThinMaterial)
+		})
+		.padding(.top, 20)
                 
         List {
             Section {
@@ -139,6 +146,7 @@ struct MapDetailView: View {
             }
         })
         .background(.clear)
+		.offset(y: -20)
         .scrollContentBackground(.hidden)
     }
     

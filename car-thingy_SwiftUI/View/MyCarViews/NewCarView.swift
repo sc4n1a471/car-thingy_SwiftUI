@@ -211,10 +211,21 @@ struct NewCar: View {
                 })
                 
                 ezLenniCar.coordinates.license_plate = ezLenniCar.license_plate.license_plate
-                ezLenniCar.license_plate.created_at = Date.now.ISO8601Format()
+				ezLenniCar.license_plate.updated_at = Date.now.ISO8601Format()
+				
+				ezLenniCar.license_plate.created_at = isUpload ? Date.now.ISO8601Format() : sharedViewData.existingCar.license_plate.created_at
 				
 				if ezLenniCar.license_plate.license_plate != oldLicensePlate {
 					let (safeMessage, safeError) = await updateLicensePlate(newLicensePlateObject: ezLenniCar.license_plate, oldLicensePlate: oldLicensePlate)
+					
+					if let safeMessage {
+						print("Licese plate update was successful: \(safeMessage)")
+					}
+					
+					if let safeError {
+						sharedViewData.showAlert(errorMsg: "Upload failed: \(safeError)")
+						return
+					}
 				}
                 
                 let (safeMessage, safeError) = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload, lpOnly: false)
@@ -225,7 +236,7 @@ struct NewCar: View {
 					sharedViewData.returnNewCar = ezLenniCar
 					sharedViewData.existingCar = ezLenniCar
                     MyCarsView().haptic()
-                    print("Upload was successful")
+                    print("Upload was successful: \(safeMessage)")
                     presentationMode.wrappedValue.dismiss()
                 }
                 

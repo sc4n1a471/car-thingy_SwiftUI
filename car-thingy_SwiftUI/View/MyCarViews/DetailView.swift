@@ -146,6 +146,12 @@ struct DetailView: View {
                 await loadSelectedCar()
             }
         }
+		.toolbar(content: {
+			ToolbarItem(placement: .topBarTrailing, content: {
+				DateView(licensePlate: selectedCar.license_plate)
+					.frame(maxWidth: .infinity, alignment: .trailing)
+			})
+		})
     }
     
     // MARK: Button views
