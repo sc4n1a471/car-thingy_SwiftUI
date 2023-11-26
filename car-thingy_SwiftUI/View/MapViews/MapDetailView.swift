@@ -146,7 +146,6 @@ struct MapDetailView: View {
             }
         })
         .background(.clear)
-		.offset(y: -20)
         .scrollContentBackground(.hidden)
     }
     
