@@ -43,6 +43,7 @@ struct MapView: View {
                 await viewModel.loadMarkers()
             }
         }
+		.navigationTitle("Map")
     }
 }
 

@@ -9,6 +9,7 @@ import SwiftUI
 import Charts
 
 struct MileageView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
     
     var onChangeMileageData: [Mileage]
     @Binding var mileageData: [Mileage]
@@ -136,7 +137,7 @@ struct MileageView: View {
                                                 }
                                                 
                                                 if firstHaptic {
-                                                    MyCarsView().haptic()
+													sharedViewData.haptic()
                                                     firstHaptic = false
                                                 }
                                             }

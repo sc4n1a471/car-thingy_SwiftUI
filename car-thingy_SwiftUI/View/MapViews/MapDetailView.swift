@@ -220,7 +220,7 @@ struct MapDetailView: View {
         if let safeCar {
             selectedCar = safeCar[0]
             sharedViewData.existingCar = selectedCar
-            MyCarsView().haptic(type: .notification)
+            sharedViewData.haptic(type: .notification)
         }
         
         if let safeCarError {

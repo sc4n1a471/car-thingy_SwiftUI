@@ -117,6 +117,7 @@ struct DetailView: View {
             .listRowBackground(Color.clear)
         }
         .navigationTitle(selectedCar.getLP())
+		.navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
             Task {
                 await loadSelectedCar()

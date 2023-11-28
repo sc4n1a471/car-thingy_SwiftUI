@@ -34,8 +34,32 @@ import MapKit
     var is_new: Bool = true
     private var oldLicensePlate = ""
     private var yearAsString = ""
+	
+	enum HapticType: String {
+		case notification
+		case standard
+		case error
+	}
     
     init() {}
+	
+	func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+		print("Haptic")
+		switch type {
+			case .standard:
+				let impact = UIImpactFeedbackGenerator()
+				impact.prepare()
+				impact.impactOccurred(intensity: intensity)
+			case .notification:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.success)
+			case .error:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.error)
+		}
+	}
     
     func clearNewCar() {
         self.newCar = Car()
@@ -50,7 +74,7 @@ import MapKit
         self.showAlert = true
         self.error = errorMsg
         print(errorMsg)
-        MyCarsView().haptic(type: .error)
+		self.haptic(type: .error)
     }
 	
 	func loadViewData(_ refresh: Bool = false) async {

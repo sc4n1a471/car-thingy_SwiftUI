@@ -72,7 +72,7 @@ struct QueryView: View {
             }
             .padding()
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing, content: {
+                ToolbarItemGroup(placement: .topBarTrailing, content: {
                     
                     Button(action: {
                         websocket.openSheet()
@@ -87,12 +87,7 @@ struct QueryView: View {
                     .isHidden(!websocket.isLoading)
                 })
                 
-                ToolbarItemGroup(placement: .navigationBarLeading, content: {
-                    Link(destination:
-                            URL(string:"https://magyarorszag.hu/jszp_szuf")!
-                    ) {
-                        Image(systemName: "link")
-                    }
+                ToolbarItemGroup(placement: .topBarTrailing, content: {
                     Button(action: {
                         websocket.openSheet()
                     }) {
@@ -102,6 +97,7 @@ struct QueryView: View {
                 })
             }
             .navigationTitle("Car Query")
+			.navigationBarTitleDisplayMode(.large)
         }
         .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
             Button("Websocket got it") {

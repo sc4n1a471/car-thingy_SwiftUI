@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct QuerySheetView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
     @Bindable var websocket: Websocket
     @State private var viewModel = ViewModel()
     @State var locationManager = LocationManager()
@@ -97,7 +98,7 @@ struct QuerySheetView: View {
             }
         })
         .onAppear {
-            MyCarsView().haptic(type: .standard)
+            sharedViewData.haptic(type: .standard)
         }
     }
     

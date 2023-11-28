@@ -7,26 +7,37 @@
 
 import SwiftUI
 
-enum HapticType: String {
-    case notification
-    case standard
-    case error
+enum SortType: String {
+	case licensePlate = "License Plate"
+	case createdAt = "Created At"
 }
 
 struct MyCarsView: View {
     @Environment(SharedViewData.self) private var sharedViewData
+	
+	@Binding var path: NavigationPath
 
     @State private var searchCar = String()
 	@State private var openDetailViewAfterUpload = false
-	@State private var path: NavigationPath = NavigationPath()
-    
+	@State private var sortType: SortType = .licensePlate
+	var sortedCars: [Car] {
+		switch sortType {
+			case .licensePlate:
+				return searchCars.sorted { $0.license_plate.license_plate < $1.license_plate.license_plate }
+			case .createdAt:
+				return searchCars.sorted { $0.license_plate.getDate(.createdAt)! > $1.license_plate.getDate(.createdAt)! }
+		}
+	}
+	
     var body: some View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
-        
-        NavigationStack(path: $path.animation()) {
-            List(searchCars) { car in
-				NavigationLink(value: car, label: {
+
+		VStack {
+			List(sortedCars) { car in
+				NavigationLink(destination: {
+					DetailView(selectedCar: car, region: car.getLocation())
+				}, label: {
 					VStack(alignment: .leading) {
 						Text(car.getLP())
 							.font(.headline)
@@ -35,42 +46,33 @@ struct MyCarsView: View {
 						}
 					}
 				})
-            }
-            .task {
-				await sharedViewData.loadViewData()
-            }
-            .navigationTitle("My Cars")
-			.navigationDestination(for: Car.self) { selectedCar in
-				DetailView(selectedCar: selectedCar, region: selectedCar.getLocation())
 			}
+			.task {
+				await sharedViewData.loadViewData()
+			}
+			.navigationBarTitleDisplayMode(.large)
+			.navigationTitle("My Cars")
 			.navigationDestination(isPresented: $openDetailViewAfterUpload) {
 				DetailView(selectedCar: sharedViewData.returnNewCar, region: sharedViewData.returnNewCar.getLocation())
 			}
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading, content: {
-                    
-                    Link(destination:
-                        URL(string:"https://magyarorszag.hu/jszp_szuf")!
-                    ) {
-                        Image(systemName: "link")
-                    }
-                    
-                    if sharedViewData.isLoading {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
-                    } else {
-                        refreshButton
-                    }
-                })
-                
-                ToolbarItemGroup(placement: .topBarTrailing, content: {
-                    plusButton
-                })
-            }            
-            .refreshable {
+			.toolbar {
+				ToolbarItemGroup(placement: .topBarTrailing, content: {
+					if sharedViewData.isLoading {
+						ProgressView()
+							.progressViewStyle(CircularProgressViewStyle())
+					} else {
+						refreshButton
+					}
+				})
+				
+				ToolbarItemGroup(placement: .topBarTrailing, content: {
+					submenu
+				})
+			}
+			.refreshable {
 				await sharedViewData.loadViewData(true)
-            }
-            .searchable(text: $searchCar)
+			}
+			.searchable(text: $searchCar, placement: .toolbar)
 			.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
 				Button("Got it") {
 					print("alert confirmed")
@@ -87,12 +89,36 @@ struct MyCarsView: View {
 				NewCar(isUpload: true)
 			}
 			.animation(.default, value: sharedViewData.cars)
-        }
+			.safeAreaInset(edge: .bottom, content: {
+				VStack {
+					Button(action: {
+						sharedViewData.clearNewCar()
+						sharedViewData.clearExistingCar()
+						sharedViewData.isNewCarPresented.toggle()
+					}, label: {
+						HStack {
+							Image(systemName: "plus.circle.fill")
+								.font(.system(size: 25))
+							Text("New car")
+								.font(.system(size: 18))
+						}
+					})
+					.fontWeight(.bold)
+				}
+				.frame(alignment: .bottom)
+				.frame(maxWidth: .infinity, alignment: .leading)
+				.padding(.leading, 35)
+				.padding(.top, 10)
+				.background(.thinMaterial)
+			})
+		}
     }
     
 	// MARK: Button views
     var plusButton: some View {
         Button (action: {
+			sharedViewData.clearNewCar()
+			sharedViewData.clearExistingCar()
             sharedViewData.isNewCarPresented.toggle()
         }, label: {
             Image(systemName: "plus.circle.fill")
@@ -108,6 +134,30 @@ struct MyCarsView: View {
             Image(systemName: "arrow.clockwise")
         })
     }
+	
+	var submenu: some View {
+		Menu(content: {
+			Link(destination:
+				URL(string:"https://magyarorszag.hu/jszp_szuf")!
+			) {
+				Text("Open JSZP")
+				Image(systemName: "safari")
+			}
+			
+			Menu(content: {
+				Picker("he", systemImage: "line.3.horizontal.decrease.circle", selection: $sortType, content: {
+					Text("License Plate").tag(SortType.licensePlate)
+					Text("Created At").tag(SortType.createdAt)
+				})
+			}, label: {
+				Text("Show Menu")
+				Image(systemName: "arrow.up.arrow.down")
+				Text(sortType.rawValue)
+			})
+		}, label: {
+			Image(systemName: "ellipsis.circle")
+		})
+	}
     
     var searchCars: [Car] {
         if searchCar.isEmpty {
@@ -150,27 +200,9 @@ struct MyCarsView: View {
             return "Unknown car!"
         }
     }
-    
-    func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
-        print("Haptic")
-        switch type {
-        case .standard:
-            let impact = UIImpactFeedbackGenerator()
-            impact.prepare()
-            impact.impactOccurred(intensity: intensity)
-        case .notification:
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.success)
-        case .error:
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.error)
-        }
-    }
 }
 
-#Preview {
-	MyCarsView()
-		.environment(SharedViewData())
-}
+//#Preview {
+//	MyCarsView(path: NavigationPath())
+//		.environment(SharedViewData())
+//}

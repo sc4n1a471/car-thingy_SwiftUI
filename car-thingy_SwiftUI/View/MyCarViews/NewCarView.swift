@@ -146,7 +146,7 @@ struct NewCar: View {
                     sharedViewData.showAlert = false
                 }
             }, message: {
-                Text("Could not connect to server!")
+				Text(sharedViewData.error ?? "Some kind of error?")
             })
             
             // MARK: Toolbar items
@@ -166,10 +166,12 @@ struct NewCar: View {
 			.scrollContentBackground(.visible)
         }
         .onAppear() {
-            MyCarsView().haptic(type: .notification)
+            sharedViewData.haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
+				oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
             } else {
+				sharedViewData.clearExistingCar()
                 self.ezLenniCar = sharedViewData.newCar
                 sharedViewData.is_new = true
 				sharedViewData.returnNewCar = Car()
@@ -177,7 +179,6 @@ struct NewCar: View {
                     focusedField = .newLicensePlate
                 }
             }
-            oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
         }
     }
     
@@ -215,7 +216,7 @@ struct NewCar: View {
 				
 				ezLenniCar.license_plate.created_at = isUpload ? Date.now.ISO8601Format() : sharedViewData.existingCar.license_plate.created_at
 				
-				if ezLenniCar.license_plate.license_plate != oldLicensePlate {
+				if ezLenniCar.license_plate.license_plate != oldLicensePlate && sharedViewData.isEditCarPresented {
 					let (safeMessage, safeError) = await updateLicensePlate(newLicensePlateObject: ezLenniCar.license_plate, oldLicensePlate: oldLicensePlate)
 					
 					if let safeMessage {
@@ -235,7 +236,7 @@ struct NewCar: View {
                     sharedViewData.isEditCarPresented = false
 					sharedViewData.returnNewCar = ezLenniCar
 					sharedViewData.existingCar = ezLenniCar
-                    MyCarsView().haptic()
+                    sharedViewData.haptic()
                     print("Upload was successful: \(safeMessage)")
                     presentationMode.wrappedValue.dismiss()
                 }

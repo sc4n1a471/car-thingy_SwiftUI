@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 @Observable class Websocket {
     var messages: [String] = []
@@ -40,6 +41,12 @@ import Foundation
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
+	
+	enum HapticType: String {
+		case notification
+		case standard
+		case error
+	}
     
     init(preview: Bool = false) {
         if preview {
@@ -75,6 +82,24 @@ import Foundation
             ]
         }
     }
+	
+	func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+		print("Haptic")
+		switch type {
+			case .standard:
+				let impact = UIImpactFeedbackGenerator()
+				impact.prepare()
+				impact.impactOccurred(intensity: intensity)
+			case .notification:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.success)
+			case .error:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.error)
+		}
+	}
     
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.uppercased()
@@ -250,7 +275,7 @@ import Foundation
         self.isAlert = true
         self.isLoading = false
         self.close()
-        MyCarsView().haptic(type: .error)
+		self.haptic(type: .error)
     }
     
     func disableAlert() {
@@ -267,7 +292,7 @@ import Foundation
         webSocketTask?.resume()
         print("Connected")
         
-        MyCarsView().haptic(type: .standard)
+        self.haptic(type: .standard)
         
         self.counter = 0
         self.clearValues()
@@ -299,7 +324,7 @@ import Foundation
                             self.close()
                             await self.getInspections(self.license_plate)
                             self.isSuccess = true
-                            MyCarsView().haptic(type: .notification)
+                            self.haptic(type: .notification)
                             return
                         } else {
                             if let safeKey = safeResponse.key {

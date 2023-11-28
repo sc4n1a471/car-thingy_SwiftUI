@@ -9,23 +9,48 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
+	@State private var path: NavigationPath = NavigationPath()
+
     var body: some View {
-        VStack {
-            TabView {
-                QueryView()
-                    .tabItem {
-                        Label("Query Car", systemImage: "magnifyingglass")
-                    }
-                MyCarsView()
-                    .tabItem {
-                        Label("My Cars", systemImage: "tray.full")
-                    }
-                MapView()
-                    .tabItem {
-                        Label("Map", systemImage: "map")
-                    }
-            }
-        }
+		NavigationStack(path: $path.animation()) {
+			Text("car-thingy_SwiftUI")
+				.font(.largeTitle)
+				.fontWeight(.bold)
+				.padding(.top, 20)
+			
+			NavigationLink(destination: {
+				QueryView()
+			}, label: {
+				Label("Query Car", systemImage: "magnifyingglass")
+					.contentViewStyle()
+			}).padding(.bottom, 20)
+			
+			NavigationLink(destination: {
+				MyCarsView(path: $path)
+			}, label: {
+				Label("My Cars", systemImage: "tray.full")
+					.contentViewStyle()
+			}).padding(.bottom, 20)
+			
+			NavigationLink(destination: {
+				MapView()
+			}, label: {
+				Label("Map", systemImage: "map")
+					.contentViewStyle()
+			}).padding(.bottom, 20)
+			
+			Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "???")")
+			Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "???")
+		}.toolbar(content: {
+			ToolbarItemGroup(placement: .navigationBarLeading, content: {
+				Link(destination:
+						URL(string:"https://magyarorszag.hu/jszp_szuf")!
+				) {
+					Image(systemName: "link")
+				}
+			})
+		})
+		.ignoresSafeArea()
     }
 }
 
@@ -51,6 +76,24 @@ extension View {
 		} else {
 			self
 		}
+	}
+}
+
+extension View {
+	func contentViewStyle() -> some View {
+		modifier(ContentViewModifier())
+	}
+}
+
+struct ContentViewModifier: ViewModifier {
+	func body(content: Content) -> some View {
+		content
+			.font(.system(size: 25))
+			.foregroundStyle(.white)
+			.padding(20)
+			.background(.blue)
+			.clipShape(.rect(cornerRadius: 20))
+			.frame(maxWidth: .infinity, maxHeight: 100)
 	}
 }
 
