@@ -21,13 +21,13 @@ struct DateView: View {
 		
 		dateFormat.timeZone = TimeZone(secondsFromGMT: 7200)!
 		
-		if let safeDate = licensePlate.getDate(.updatedAt) {
+		if let safeDate = self.licensePlate.getDate(.updatedAt) {
 			updatedAt = "Updated: \(safeDate.formatted(dateFormat))"
 		} else {
 			updatedAt = "Updated: Never"
 		}
 		
-		if let safeDate = licensePlate.getDate(.createdAt) {
+		if let safeDate = self.licensePlate.getDate(.createdAt) {
 			createdAt = "Created: \(safeDate.formatted(dateFormat))"
 		} else {
 			createdAt = "Created: Never"

@@ -182,9 +182,13 @@ func initData(dataCuccli: Data, carOnly: Bool = false) -> (cars: [Car]?, error: 
         switch decodedData.status {
             case "success":
                 print("status (Cars): \(decodedData.status)")
-                if !carOnly {
-                    carsLoaded = true
-                }
+				
+				for i in 0 ..< decodedData.message.count {
+					let _ = decodedData.message[i].license_plate.getDate(.createdAt)
+					let _ = decodedData.message[i].license_plate.getDate(.updatedAt)
+				}
+				
+				carsLoaded = true
                 return (decodedData.message, nil)
             case "failed":
                 print("Failed response: \(decodedData.message)")

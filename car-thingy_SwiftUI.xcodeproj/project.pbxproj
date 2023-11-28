@@ -507,7 +507,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -533,6 +533,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -544,7 +545,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -570,6 +571,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};

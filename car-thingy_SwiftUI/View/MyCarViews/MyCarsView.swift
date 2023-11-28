@@ -25,7 +25,7 @@ struct MyCarsView: View {
 			case .licensePlate:
 				return searchCars.sorted { $0.license_plate.license_plate < $1.license_plate.license_plate }
 			case .createdAt:
-				return searchCars.sorted { $0.license_plate.getDate(.createdAt)! > $1.license_plate.getDate(.createdAt)! }
+				return searchCars.sorted { $0.license_plate.parsedCreatedAt! > $1.license_plate.parsedCreatedAt! }
 		}
 	}
 	
@@ -150,7 +150,7 @@ struct MyCarsView: View {
 					Text("Created At").tag(SortType.createdAt)
 				})
 			}, label: {
-				Text("Show Menu")
+				Text("Sort By")
 				Image(systemName: "arrow.up.arrow.down")
 				Text(sortType.rawValue)
 			})

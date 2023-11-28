@@ -39,6 +39,24 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "cd &quot;${PROJECT_DIR}&quot; ; agvtool bump&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "5795FA90286E1288007E60DF"
+                     BuildableName = "car-thingy_SwiftUI.app"
+                     BlueprintName = "car-thingy_SwiftUI"
+                     ReferencedContainer = "container:car-thingy_SwiftUI.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
