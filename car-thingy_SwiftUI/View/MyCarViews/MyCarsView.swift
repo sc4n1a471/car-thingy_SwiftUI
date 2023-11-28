@@ -15,8 +15,7 @@ enum SortType: String {
 struct MyCarsView: View {
     @Environment(SharedViewData.self) private var sharedViewData
 	
-	@Binding var path: NavigationPath
-
+	@State private var path: NavigationPath = NavigationPath()
     @State private var searchCar = String()
 	@State private var openDetailViewAfterUpload = false
 	@State private var sortType: SortType = .licensePlate
@@ -33,7 +32,7 @@ struct MyCarsView: View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
 
-		VStack {
+		NavigationStack(path: $path.animation()) {
 			List(sortedCars) { car in
 				NavigationLink(destination: {
 					DetailView(selectedCar: car, region: car.getLocation())
@@ -68,6 +67,22 @@ struct MyCarsView: View {
 				ToolbarItemGroup(placement: .topBarTrailing, content: {
 					submenu
 				})
+				
+				ToolbarItem(placement: .topBarLeading, content: {
+					Button(action: {
+						sharedViewData.clearNewCar()
+						sharedViewData.clearExistingCar()
+						sharedViewData.isNewCarPresented.toggle()
+					}, label: {
+						HStack {
+							Image(systemName: "plus.circle.fill")
+//								.font(.system(size: 25))
+//							Text("New car")
+//								.font(.system(size: 18))
+						}
+					})
+					.fontWeight(.bold)
+				})
 			}
 			.refreshable {
 				await sharedViewData.loadViewData(true)
@@ -89,28 +104,27 @@ struct MyCarsView: View {
 				NewCar(isUpload: true)
 			}
 			.animation(.default, value: sharedViewData.cars)
-			.safeAreaInset(edge: .bottom, content: {
-				VStack {
-					Button(action: {
-						sharedViewData.clearNewCar()
-						sharedViewData.clearExistingCar()
-						sharedViewData.isNewCarPresented.toggle()
-					}, label: {
-						HStack {
-							Image(systemName: "plus.circle.fill")
-								.font(.system(size: 25))
-							Text("New car")
-								.font(.system(size: 18))
-						}
-					})
-					.fontWeight(.bold)
-				}
-				.frame(alignment: .bottom)
-				.frame(maxWidth: .infinity, alignment: .leading)
-				.padding(.leading, 35)
-				.padding(.top, 10)
-				.background(.thinMaterial)
-			})
+//			.safeAreaInset(edge: .bottom, content: {
+//				VStack {
+//					Button(action: {
+//						sharedViewData.clearNewCar()
+//						sharedViewData.clearExistingCar()
+//						sharedViewData.isNewCarPresented.toggle()
+//					}, label: {
+//						HStack {
+//							Image(systemName: "plus.circle.fill")
+//								.font(.system(size: 25))
+//							Text("New car")
+//								.font(.system(size: 18))
+//						}
+//					})
+//					.fontWeight(.bold)
+//				}
+//				.frame(alignment: .bottom)
+//				.frame(maxWidth: .infinity, alignment: .leading)
+//				.padding()
+//				.background(.ultraThickMaterial)
+//			})
 		}
     }
     
@@ -202,7 +216,7 @@ struct MyCarsView: View {
     }
 }
 
-//#Preview {
-//	MyCarsView(path: NavigationPath())
-//		.environment(SharedViewData())
-//}
+#Preview {
+	MyCarsView()
+		.environment(SharedViewData())
+}

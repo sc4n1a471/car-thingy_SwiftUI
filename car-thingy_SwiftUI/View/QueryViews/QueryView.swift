@@ -13,6 +13,7 @@ struct QueryView: View {
     @State private var viewModel = ViewModel()
     @State var websocket: Websocket = Websocket()
     @State private var requestedLicensePlate: String = String()
+	@State private var showVersionPopover: Bool = false
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -95,6 +96,30 @@ struct QueryView: View {
                     }
                     .isHidden(!websocket.isSuccess)
                 })
+				
+				ToolbarItem(placement: .topBarLeading, content: {
+					Button(action: {
+						showVersionPopover = true
+					}) {
+						Image(systemName: "info.circle")
+							.foregroundStyle(.gray)
+					}.popover(isPresented: $showVersionPopover) {
+						VStack {
+							Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "???")")
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding()
+							
+							Divider()
+
+							Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "???")
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding()
+						}
+						.frame(maxWidth: .infinity, maxHeight: .infinity)
+						.presentationCompactAdaptation(.none)
+						.presentationBackground(.clear)
+					}
+				})
             }
             .navigationTitle("Car Query")
 			.navigationBarTitleDisplayMode(.large)

@@ -9,47 +9,23 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-	@State private var path: NavigationPath = NavigationPath()
-
     var body: some View {
-		NavigationStack(path: $path.animation()) {
-			Text("car-thingy_SwiftUI")
-				.font(.largeTitle)
-				.fontWeight(.bold)
-				.padding(.top, 20)
-			
-			NavigationLink(destination: {
+		VStack {
+			TabView {
 				QueryView()
-			}, label: {
-				Label("Query Car", systemImage: "magnifyingglass")
-					.contentViewStyle()
-			}).padding(.bottom, 20)
-			
-			NavigationLink(destination: {
-				MyCarsView(path: $path)
-			}, label: {
-				Label("My Cars", systemImage: "tray.full")
-					.contentViewStyle()
-			}).padding(.bottom, 20)
-			
-			NavigationLink(destination: {
+					.tabItem {
+						Label("Query Car", systemImage: "magnifyingglass")
+					}
+				MyCarsView()
+					.tabItem {
+						Label("My Cars", systemImage: "tray.full")
+					}
 				MapView()
-			}, label: {
-				Label("Map", systemImage: "map")
-					.contentViewStyle()
-			}).padding(.bottom, 20)
-			
-			Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "???")")
-			Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "???")
-		}.toolbar(content: {
-			ToolbarItemGroup(placement: .navigationBarLeading, content: {
-				Link(destination:
-						URL(string:"https://magyarorszag.hu/jszp_szuf")!
-				) {
-					Image(systemName: "link")
-				}
-			})
-		})
+					.tabItem {
+						Label("Map", systemImage: "map")
+					}
+			}
+		}
 		.ignoresSafeArea()
     }
 }
