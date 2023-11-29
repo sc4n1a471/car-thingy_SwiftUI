@@ -128,7 +128,6 @@ struct QuerySheetView: View {
 				if (locationManager.lastLocation?.coordinate.latitude == 0 && locationManager.lastLocation?.coordinate.latitude == 0) {
                     print("Location is 0")
 					websocket.showAlert(error: "The location data was 0, try again...")
-					locationManager = LocationManager()
                 } else {
                     if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
                         presentationMode.wrappedValue.dismiss()

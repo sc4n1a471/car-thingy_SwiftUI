@@ -41,21 +41,24 @@ struct QueryView: View {
                         .frame(maxWidth: 400)
                         .focused($lpTextFieldFocused)
                 }
-                
-                Button {
-                    Task {
-                        lpTextFieldFocused = false
-                        await websocket.connect(requestedLicensePlate)
-                    }
-                } label: {
-                    Text("Request")
-                        .frame(maxWidth: 200, maxHeight: 50)
-                }
-                .buttonStyle(.borderless)
-                .foregroundColor(.white)
-                .background(!websocket.isLoading ? Color.blue : Color.gray)
-                .cornerRadius(10)
-                .disabled(websocket.isLoading)
+				
+				if websocket.isLoading {
+					openQuerySheet
+				} else {
+					Button {
+						Task {
+							lpTextFieldFocused = false
+							await websocket.connect(requestedLicensePlate)
+						}
+					} label: {
+						Text("Request")
+							.frame(maxWidth: 200, maxHeight: 50)
+					}
+					.buttonStyle(.borderless)
+					.foregroundColor(.white)
+					.background(!websocket.isLoading ? Color.blue : Color.gray)
+					.cornerRadius(10)
+				}
                 
                 Button {
                     Task {
@@ -73,21 +76,6 @@ struct QueryView: View {
             }
             .padding()
             .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing, content: {
-                    
-                    Button(action: {
-                        websocket.openSheet()
-                    }) {
-                        Gauge(value: websocket.percentage, in: 0...100) {}
-                            .gaugeStyle(.accessoryCircularCapacity)
-                            .tint(.blue)
-                            .scaleEffect(0.5)
-                            .frame(width: 25, height: 25)
-                        
-                    }
-                    .isHidden(!websocket.isLoading)
-                })
-                
                 ToolbarItemGroup(placement: .topBarTrailing, content: {
                     Button(action: {
                         websocket.openSheet()
@@ -139,6 +127,22 @@ struct QueryView: View {
                 .presentationDetents([.medium, .large])
         }
     }
+	
+	var openQuerySheet: some View {
+		Button(action: {
+			websocket.openSheet()
+		}) {
+			Gauge(value: websocket.percentage, in: 0...100) {}
+				.gaugeStyle(.accessoryCircularCapacity)
+				.tint(.blue)
+				.scaleEffect(0.5)
+//				.frame(width: 25, height: 25)
+//				.frame(maxWidth: .infinity, maxHeight: .infinity)
+				.frame(maxWidth: 175, maxHeight: 37)
+		}
+		.buttonStyle(.bordered)
+		.tint(.blue)
+	}
 }
 
 #Preview {

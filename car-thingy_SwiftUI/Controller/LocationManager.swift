@@ -12,7 +12,6 @@ import MapKit
 @Observable
 class LocationManager: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
-    private var counter = 0
 	
 	var region = MKCoordinateRegion()
 	var lastLocation: CLLocation?
@@ -27,7 +26,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		guard let location = locations.last else { return }
 		lastLocation = location
-//		print("locationManager - location: \(lastLocation)")
+		print("locationManager - location: \(lastLocation)")
 		
 		locations.last.map {
 			region = MKCoordinateRegion(
@@ -36,11 +35,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 			)
 		}
 		
-		if location.coordinate.latitude != 0 && location.coordinate.longitude != 0 && counter == 10 {
+		if location.coordinate.latitude != 0 && location.coordinate.longitude != 0 {
 			manager.stopUpdatingLocation()
-			counter = 0
 		}
-		counter += 1
 	}
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
