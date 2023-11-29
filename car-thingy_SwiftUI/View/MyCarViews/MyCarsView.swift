@@ -55,7 +55,7 @@ struct MyCarsView: View {
 				DetailView(selectedCar: sharedViewData.returnNewCar, region: sharedViewData.returnNewCar.getLocation())
 			}
 			.toolbar {
-				ToolbarItemGroup(placement: .topBarTrailing, content: {
+				ToolbarItemGroup(placement: .topBarLeading, content: {
 					if sharedViewData.isLoading {
 						ProgressView()
 							.progressViewStyle(CircularProgressViewStyle())
@@ -68,7 +68,7 @@ struct MyCarsView: View {
 					submenu
 				})
 				
-				ToolbarItem(placement: .topBarLeading, content: {
+				ToolbarItem(placement: .topBarTrailing, content: {
 					Button(action: {
 						sharedViewData.clearNewCar()
 						sharedViewData.clearExistingCar()
@@ -76,9 +76,6 @@ struct MyCarsView: View {
 					}, label: {
 						HStack {
 							Image(systemName: "plus.circle.fill")
-//								.font(.system(size: 25))
-//							Text("New car")
-//								.font(.system(size: 18))
 						}
 					})
 					.fontWeight(.bold)

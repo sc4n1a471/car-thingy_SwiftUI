@@ -27,7 +27,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		guard let location = locations.last else { return }
 		lastLocation = location
-		print("locationManager - location: \(lastLocation)")
+//		print("locationManager - location: \(lastLocation)")
 		
 		locations.last.map {
 			region = MKCoordinateRegion(

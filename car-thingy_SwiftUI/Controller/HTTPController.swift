@@ -10,6 +10,11 @@ import Foundation
 var carsLoaded: Bool = false
 var coordinatesLoaded: Bool = false
 
+func setCarsLoaded(_ newStatus: Bool) {
+	print("carsLoaded: \(newStatus)")
+	carsLoaded = newStatus
+}
+
 
 // MARK: New Car query
 func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, error: String?) {
@@ -99,7 +104,7 @@ func deleteInspectionHelper (
 			decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
 			print(decodedData.message as Any)
 			coordinatesLoaded = false
-			carsLoaded = false
+			setCarsLoaded(false)
 			successMsg = decodedData.message
 		} catch {
 			print("Error: Trying to convert JSON data to string")
@@ -166,14 +171,14 @@ func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
 //            return (nil, "Could not reach API (502)")
 //        }
         
-        return initData(dataCuccli: data, carOnly: true)
+        return initData(dataCuccli: data, onlyOne: true)
     } catch {
         print("Invalid data in loadCar: \(error)")
         return (nil, error.localizedDescription)
     }
 }
 
-func initData(dataCuccli: Data, carOnly: Bool = false) -> (cars: [Car]?, error: String?) {
+func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: String?) {
     var decodedData: CarResponse
     
     do {
@@ -181,20 +186,23 @@ func initData(dataCuccli: Data, carOnly: Bool = false) -> (cars: [Car]?, error: 
         
         switch decodedData.status {
             case "success":
-                print("status (Cars): \(decodedData.status)")
+				print(onlyOne ? "status (Car): \(decodedData.status)" : "status (Cars): \(decodedData.status)")
 				
 				for i in 0 ..< decodedData.message.count {
 					let _ = decodedData.message[i].license_plate.getDate(.createdAt)
 					let _ = decodedData.message[i].license_plate.getDate(.updatedAt)
 				}
 				
-				carsLoaded = true
+				if !onlyOne {
+					setCarsLoaded(true)
+				}
+				
                 return (decodedData.message, nil)
-            case "failed":
+            case "fail":
                 print("Failed response: \(decodedData.message)")
                 return (nil, "Server error")
             default:
-                return (nil, "Status is not success or failed?")
+                return (nil, "Status is not success or fail?")
         }
     } catch {
         print("initData error: \(error)")
@@ -222,7 +230,6 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
             //        print(String(decoding: request.httpBody ?? Data(), as: UTF8.self))
 //        print(String(data: data, encoding: .utf8) ?? "???")
                 
-        carsLoaded = false
         return initSaveResponse(dataCuccli: data)
     } catch {
         print("Checkout failed.")
@@ -236,7 +243,7 @@ func updateLicensePlate(newLicensePlateObject: LicensePlate, oldLicensePlate: St
 		return (nil, "Failed to encode license plate object")
 	}
 	
-	var url = URL(string: getURLasString(.licensePlate) + "/" + oldLicensePlate.uppercased())!
+	let url = URL(string: getURLasString(.licensePlate) + "/" + oldLicensePlate.uppercased())!
 	var request = URLRequest(url: url)
 	
 	request.httpMethod = "PUT"
@@ -246,7 +253,6 @@ func updateLicensePlate(newLicensePlateObject: LicensePlate, oldLicensePlate: St
 		let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
 		print(String(data: data, encoding: .utf8) ?? "???")
 		
-		carsLoaded = false
 		return initSaveResponse(dataCuccli: data)
 	} catch {
 		print("Checkout failed.")
@@ -265,13 +271,13 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
             case "success":
                 print("status (saveCar) success: \(decodedData.status)")
                 coordinatesLoaded = false
-                carsLoaded = false
-                return (decodedData.message, nil)
-            case "failed":
+				setCarsLoaded(false)
+				return (decodedData.message, nil)
+            case "fail":
                 print("status (saveCar) failed: \(decodedData.message)")
                 return (nil, "Server error: \(decodedData.message)")
             default:
-                return (nil, "Status is not success or failed?")
+                return (nil, "Status is not success or fail?")
         }
     } catch {
         print("initSaveResponse error: \(error)")
@@ -377,11 +383,11 @@ func initCoordinates(dataCuccli: Data) -> (coordinates: [Coordinates]?, error: S
                 print("status (Coordinates): \(decodedData.status)")
                 coordinatesLoaded = true
                 return (decodedData.message, nil)
-            case "failed":
+            case "fail":
                 print("Failed response: \(decodedData.message)")
                 return (nil, "Server error")
             default:
-                return (nil, "Status is not success or failed?")
+                return (nil, "Status is not success or fail?")
         }
     } catch {
         print("initData error: \(error)")
@@ -418,7 +424,7 @@ func deleteCarHelper (
             decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
             print(decodedData.message as Any)
             coordinatesLoaded = false
-            carsLoaded = false
+			setCarsLoaded(false)
             successMsg = decodedData.message
         } catch {
             print("Error: Trying to convert JSON data to string")
