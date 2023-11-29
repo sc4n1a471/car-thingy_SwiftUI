@@ -89,7 +89,7 @@ struct NewCar: View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
-        NavigationView {
+        NavigationStack {
             Form {
                 Section {
                     TextField("License Plate", text: textBindingLicensePlate)
@@ -110,25 +110,21 @@ struct NewCar: View {
                         if selectedMap == MapType.custom {
                             TextField("Custom latitude", text: $customLatitude)
                                 .keyboardType(.decimalPad)
+								.padding()
                             TextField("Custom longitude", text: $customLongitude)
                                 .keyboardType(.decimalPad)
+								.padding()
                         } else if (selectedMap == MapType.current || isUpload) {
-                            Map(
-                                coordinateRegion: $locationManager.region,
-                                interactionModes: MapInteractionModes.all,
-                                showsUserLocation: true,
-                                userTrackingMode: .none
-                            )
-                            .frame(height: 200)
+							Map(initialPosition: .region(locationManager.region)){
+								UserAnnotation()
+							}.frame(height: 200)
+							
+							
                         } else if (selectedMap == MapType.existing || !isUpload) {
-                            Map(
-                                coordinateRegion: $sharedViewDataBindable.region,
-                                interactionModes: MapInteractionModes.all,
-                                annotationItems: [ezLenniCar]
-                            ) {
-                                MapMarker(coordinate: $0.getLocation().center)
-                            }
-                            .frame(height: 200)
+							Map(initialPosition: .region(sharedViewData.region)) {
+								Marker("", coordinate: ezLenniCar.getLocation().center)
+							}
+							.frame(height: 200)
                         }
                     }
                     .listRowSeparator(.hidden)
@@ -170,6 +166,9 @@ struct NewCar: View {
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
 				oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
+				
+				customLatitude = sharedViewData.region.center.latitude.description
+				customLongitude = sharedViewData.region.center.longitude.description
             } else {
 				sharedViewData.clearExistingCar()
                 self.ezLenniCar = sharedViewData.newCar
@@ -246,7 +245,7 @@ struct NewCar: View {
                 }
             }
         }, label: {
-            Text("Save")
+			Image(systemName: "square.and.arrow.down.fill")
         })
     }
     
@@ -254,7 +253,7 @@ struct NewCar: View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
         }, label: {
-            Text("Close")
+            Image(systemName: "xmark")
         })
     }
 }

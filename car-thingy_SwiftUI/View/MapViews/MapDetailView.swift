@@ -34,7 +34,7 @@ struct MapDetailView: View {
 		LazyVGrid(columns: columns2, content: {
 			Text(selectedCar.getLP())
 				.fontWeight(.bold)
-				.font(.system(size: 35))
+				.font(.system(size: 30))
 				.frame(maxWidth: .infinity, alignment: .leading)
 				.padding(.leading, 20)
 			
@@ -233,7 +233,7 @@ struct MapDetailView: View {
 
 	/// https://developer.apple.com/forums/thread/118589
 struct BindingMapDetailView: View {
-	@State var selectedLicensePlate: String? = "MIA192"
+	@State var selectedLicensePlate: String? = "AAMA490"
 	
 	var body: some View {
 		MapDetailView(selectedLicensePlate: $selectedLicensePlate)
