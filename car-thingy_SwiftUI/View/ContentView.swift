@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import CocoaLumberjackSwift
 
 struct ContentView: View {
     var body: some View {
@@ -27,6 +28,13 @@ struct ContentView: View {
 			}
 		}
 		.ignoresSafeArea()
+		.task {
+			DDLog.add(DDOSLogger.sharedInstance) // Uses os_log
+			let fileLogger: DDFileLogger = DDFileLogger() // File Logger
+			fileLogger.rollingFrequency = 60 * 60 * 24 // 24 hours
+			fileLogger.logFileManager.maximumNumberOfLogFiles = 7
+			DDLog.add(fileLogger)
+		}
     }
 }
 

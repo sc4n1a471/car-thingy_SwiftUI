@@ -52,13 +52,13 @@ extension QuerySheetView {
             if !knownCarQuery {
                 saveCar.coordinates.license_plate = websocket.license_plate
 				print(locationManager.lastLocation)
-				saveCar.coordinates.latitude = locationManager.lastLocation?.coordinate.latitude ?? 37.789467
-				saveCar.coordinates.longitude = locationManager.lastLocation?.coordinate.longitude ?? -122.416772
+				saveCar.coordinates.latitude = locationManager.lastLocation.coordinate.latitude
+				saveCar.coordinates.longitude = locationManager.lastLocation.coordinate.longitude
 				print("Saving car with coordinates... (\(saveCar.coordinates.latitude), \(saveCar.coordinates.longitude))")
 				
-				if saveCar.coordinates.latitude == 37.789467 && saveCar.coordinates.longitude == -122.416772 {
+				if saveCar.coordinates.latitude == 40.748443 && saveCar.coordinates.longitude == -73.985650 {
 					print("Coordinates were default values")
-					websocket.showAlert(error: "Coordinates were default values")
+					websocket.showAlert(error: "Coordinates are pointing to Empire State Building...")
 					return false
 				}
             }

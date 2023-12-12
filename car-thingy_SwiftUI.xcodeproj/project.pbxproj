@@ -20,6 +20,9 @@
 		575DD0FD2B018797001027A9 /* InspectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575DD0FC2B018797001027A9 /* InspectionsView.swift */; };
 		575DD1002B02AAEC001027A9 /* LazyPager in Frameworks */ = {isa = PBXBuildFile; productRef = 575DD0FF2B02AAEC001027A9 /* LazyPager */; };
 		5771424E2B136E0000CF049B /* DateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771424D2B136E0000CF049B /* DateView.swift */; };
+		5775A7EE2B2902FA00096E63 /* CocoaLumberjack in Frameworks */ = {isa = PBXBuildFile; productRef = 5775A7ED2B2902FA00096E63 /* CocoaLumberjack */; };
+		5775A7F02B2902FA00096E63 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5775A7EF2B2902FA00096E63 /* CocoaLumberjackSwift */; };
+		5775A7F22B2902FA00096E63 /* CocoaLumberjackSwiftLogBackend in Frameworks */ = {isa = PBXBuildFile; productRef = 5775A7F12B2902FA00096E63 /* CocoaLumberjackSwiftLogBackend */; };
 		577C65442895958500397961 /* HTTPController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C65432895958500397961 /* HTTPController.swift */; };
 		578406802AF6CDD20045D4BB /* Specs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784067F2AF6CDD20045D4BB /* Specs.swift */; };
 		578406822AF6CF6C0045D4BB /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578406812AF6CF6C0045D4BB /* Coordinates.swift */; };
@@ -107,7 +110,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5775A7EE2B2902FA00096E63 /* CocoaLumberjack in Frameworks */,
 				575DD1002B02AAEC001027A9 /* LazyPager in Frameworks */,
+				5775A7F22B2902FA00096E63 /* CocoaLumberjackSwiftLogBackend in Frameworks */,
+				5775A7F02B2902FA00096E63 /* CocoaLumberjackSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,19 +198,19 @@
 		57A49F342871EFF8006A2712 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				57563E952A1AC2290051B0F1 /* Mileage.swift */,
 				572F0ABC2A1EB48500D73E15 /* Accident.swift */,
-				57563E852A1A7BDC0051B0F1 /* Inspection.swift */,
 				57A49F302871EEA0006A2712 /* Car.swift */,
 				57A49F322871EFE2006A2712 /* CarResponse.swift */,
-				57563E872A1A7BE20051B0F1 /* Query */,
-				5784067F2AF6CDD20045D4BB /* Specs.swift */,
-				578406812AF6CF6C0045D4BB /* Coordinates.swift */,
-				578406832AF6EBF00045D4BB /* Restriction.swift */,
-				578406852AF6FA2C0045D4BB /* DeleteResponse.swift */,
-				5706184F2AF7F58C0083F62E /* LicensePlate.swift */,
-				57D3DE822AF9072F005A172E /* GoResponse.swift */,
 				57C5F1642B0010AB005F40CC /* CoordinateResponse.swift */,
+				578406812AF6CF6C0045D4BB /* Coordinates.swift */,
+				578406852AF6FA2C0045D4BB /* DeleteResponse.swift */,
+				57D3DE822AF9072F005A172E /* GoResponse.swift */,
+				57563E852A1A7BDC0051B0F1 /* Inspection.swift */,
+				5706184F2AF7F58C0083F62E /* LicensePlate.swift */,
+				57563E952A1AC2290051B0F1 /* Mileage.swift */,
+				57563E872A1A7BE20051B0F1 /* Query */,
+				578406832AF6EBF00045D4BB /* Restriction.swift */,
+				5784067F2AF6CDD20045D4BB /* Specs.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -280,6 +286,9 @@
 			name = "car-thingy_SwiftUI";
 			packageProductDependencies = (
 				575DD0FF2B02AAEC001027A9 /* LazyPager */,
+				5775A7ED2B2902FA00096E63 /* CocoaLumberjack */,
+				5775A7EF2B2902FA00096E63 /* CocoaLumberjackSwift */,
+				5775A7F12B2902FA00096E63 /* CocoaLumberjackSwiftLogBackend */,
 			);
 			productName = NodeJS_Thingy_Cars;
 			productReference = 5795FA91286E1288007E60DF /* car-thingy_SwiftUI.app */;
@@ -311,6 +320,7 @@
 			mainGroup = 5795FA88286E1288007E60DF;
 			packageReferences = (
 				575DD0FE2B02AAEC001027A9 /* XCRemoteSwiftPackageReference "LazyPager" */,
+				5775A7EC2B2902FA00096E63 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
 			);
 			productRefGroup = 5795FA92286E1288007E60DF /* Products */;
 			projectDirPath = "";
@@ -507,7 +517,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -545,7 +555,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -607,6 +617,14 @@
 				minimumVersion = 1.0.5;
 			};
 		};
+		5775A7EC2B2902FA00096E63 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CocoaLumberjack/CocoaLumberjack";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.8.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -614,6 +632,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 575DD0FE2B02AAEC001027A9 /* XCRemoteSwiftPackageReference "LazyPager" */;
 			productName = LazyPager;
+		};
+		5775A7ED2B2902FA00096E63 /* CocoaLumberjack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5775A7EC2B2902FA00096E63 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjack;
+		};
+		5775A7EF2B2902FA00096E63 /* CocoaLumberjackSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5775A7EC2B2902FA00096E63 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjackSwift;
+		};
+		5775A7F12B2902FA00096E63 /* CocoaLumberjackSwiftLogBackend */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5775A7EC2B2902FA00096E63 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjackSwiftLogBackend;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import CocoaLumberjackSwift
 
 @Observable class Websocket {
     var messages: [String] = []
@@ -213,7 +214,7 @@ import UIKit
                 }
             case .message(let message):
                 self.messages.append(message)
-                print("Message: \(message)")
+                DDLogDebug("Message: \(message)")
                 break
             default:
                 print("default value: \(value)")
@@ -290,7 +291,7 @@ import UIKit
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
-        print("Connected")
+		DDLogVerbose("Connected")
         
         self.haptic(type: .standard)
         
@@ -337,7 +338,7 @@ import UIKit
                         }
                     }
                     if let safeError {
-                        print("error: \(safeError)")
+						DDLogError("error: \(safeError)")
                         self.showAlert(error: safeError)
                     }
                 case .data(let data):
@@ -357,7 +358,7 @@ import UIKit
                 self.close()
             }
         } catch {
-            print(error)
+			DDLogError(error)
         }
     }
     
@@ -365,7 +366,7 @@ import UIKit
         guard let data = message.data(using: .utf8) else { return }
         webSocketTask?.send(.string(message)) { error in
             if let error = error {
-                print(error.localizedDescription)
+				DDLogError(error.localizedDescription)
             }
         }
     }
@@ -381,7 +382,7 @@ import UIKit
     func ping() {
         webSocketTask?.sendPing { error in
             if let safeError = error {
-                print("Ping error: \(error?.localizedDescription)")
+				DDLogError("Ping error: \(error?.localizedDescription)")
             }
         }
     }

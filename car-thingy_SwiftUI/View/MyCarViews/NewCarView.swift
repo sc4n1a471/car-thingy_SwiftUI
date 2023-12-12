@@ -11,6 +11,7 @@ import CoreLocation
 import CoreLocationUI
 #endif
 import MapKit
+import CocoaLumberjackSwift
 
 enum MapType: String {
     case custom = "customMap"
@@ -39,11 +40,11 @@ struct NewCar: View {
     @State private var selectedMap = MapType.custom
 	
 	var userLatitude: String {
-		return "\(locationManager.lastLocation?.coordinate.latitude ?? 0)"
+		return "\(locationManager.lastLocation.coordinate.latitude)"
 	}
 	
 	var userLongitude: String {
-		return "\(locationManager.lastLocation?.coordinate.longitude ?? 0)"
+		return "\(locationManager.lastLocation.coordinate.longitude)"
 	}
 	    
     private var isUpload: Bool
@@ -191,12 +192,12 @@ struct NewCar: View {
                     ezLenniCar.coordinates.latitude = Double(customLatitude) ?? 37.789467
                     ezLenniCar.coordinates.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-                    var counter = 0
-                    while (locationManager.region.center.latitude == 0 && locationManager.region.center.longitude == 0 && counter != 100) {
-                        print("Location is 0")
-                        counter += 1
-                    }
-					if counter == 100 {
+					if let safeLocationManagerMessage = locationManager.message {
+						sharedViewData.showAlert(errorMsg: safeLocationManagerMessage)
+						return
+					}
+					
+					if locationManager.region.center.latitude == 40.748443 && locationManager.region.center.longitude == -73.985650 {
 						sharedViewData.showAlert(errorMsg: "The location data was 0, try again...")
 						return
 					}
@@ -219,7 +220,7 @@ struct NewCar: View {
 					let (safeMessage, safeError) = await updateLicensePlate(newLicensePlateObject: ezLenniCar.license_plate, oldLicensePlate: oldLicensePlate)
 					
 					if let safeMessage {
-						print("Licese plate update was successful: \(safeMessage)")
+						DDLogVerbose("Licese plate update was successful: \(safeMessage)")
 					}
 					
 					if let safeError {
@@ -236,7 +237,7 @@ struct NewCar: View {
 					sharedViewData.returnNewCar = ezLenniCar
 					sharedViewData.existingCar = ezLenniCar
                     sharedViewData.haptic()
-                    print("Upload was successful: \(safeMessage)")
+					DDLogVerbose("Upload was successful: \(safeMessage)")
                     presentationMode.wrappedValue.dismiss()
                 }
                 

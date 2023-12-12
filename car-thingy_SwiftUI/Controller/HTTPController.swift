@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CocoaLumberjackSwift
 
 var carsLoaded: Bool = false
 var coordinatesLoaded: Bool = false
@@ -33,12 +34,12 @@ func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, e
             print("status (query): \(decodedData)")
             return (nil, decodedData.errorMessage)
         } else {
-            print("Failed response: No error message from server")
+            DDLogError("Failed response: No error message from server")
             return (nil, "No error message from server")
         }
         
     } catch {
-        print("initWebhookResponse error: \(error)")
+		DDLogError("initWebhookResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -52,7 +53,7 @@ func loadInspections(license_plate: String) async -> (inspections: [Inspection]?
         
         return initInspections(dataCuccli: data)
     } catch {
-        print("Invalid inspection data")
+		DDLogError("Invalid inspection data")
         return (nil, error.localizedDescription)
     }
 }
@@ -71,7 +72,7 @@ func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: St
         }
         
     } catch {
-        print("initInspections error: \(error)")
+		DDLogError("initInspections error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -86,14 +87,14 @@ func deleteInspectionHelper (
 	
 	URLSession.shared.dataTask(with: request) { data, response, error in
 		guard error == nil else {
-			print("Error: error calling DELETE")
-			print("deleteData error: \(String(describing: error))")
+			DDLogError("Error: error calling DELETE")
+			DDLogError("deleteData error: \(String(describing: error))")
 			errorMsg = "Error calling DELETE \n \(String(describing: error))"
 			completionHandler(nil, errorMsg)
 			return
 		}
 		guard let data = data else {
-			print("Error: Did not receive data")
+			DDLogError("Error: Did not receive data")
 			errorMsg = "Did not receive data in deleteData"
 			completionHandler(nil, errorMsg)
 			return
@@ -107,8 +108,8 @@ func deleteInspectionHelper (
 			setCarsLoaded(false)
 			successMsg = decodedData.message
 		} catch {
-			print("Error: Trying to convert JSON data to string")
-			print("Error during decoding in deleteData. Error: \(error)")
+			DDLogError("Error: Trying to convert JSON data to string")
+			DDLogError("Error during decoding in deleteData. Error: \(error)")
 			errorMsg = "Error during decoding in deleteData \n \(error)"
 			completionHandler(nil, errorMsg)
 			return
@@ -153,7 +154,7 @@ func loadCars(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
                 //        }
             return initData(dataCuccli: data)
         } catch {
-            print("Invalid data in loadCars: \(error)")
+			DDLogError("Invalid data in loadCars: \(error)")
             return (nil, error.localizedDescription)
         }
     }
@@ -173,7 +174,7 @@ func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
         
         return initData(dataCuccli: data, onlyOne: true)
     } catch {
-        print("Invalid data in loadCar: \(error)")
+		DDLogError("Invalid data in loadCar: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -199,13 +200,13 @@ func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: 
 				
                 return (decodedData.message, nil)
             case "fail":
-                print("Failed response: \(decodedData.message)")
+				DDLogError("Failed response: \(decodedData.message)")
                 return (nil, "Server error")
             default:
                 return (nil, "Status is not success or fail?")
         }
     } catch {
-        print("initData error: \(error)")
+		DDLogError("initData error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -214,7 +215,7 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
     uploadableCarData.toString()
     
     guard let encoded = try? JSONEncoder().encode(uploadableCarData) else {
-        print("Failed to encode car")
+		DDLogError("Failed to encode car")
         return (nil, "Failed to encode car")
     }
     
@@ -232,14 +233,14 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
                 
         return initSaveResponse(dataCuccli: data)
     } catch {
-        print("Checkout failed.")
+		DDLogError("Checkout failed.")
         return (nil, "Checkout failed")
     }
 }
 
 func updateLicensePlate(newLicensePlateObject: LicensePlate, oldLicensePlate: String) async -> (response: String?, error: String?) {
 	guard let encoded = try? JSONEncoder().encode(newLicensePlateObject) else {
-		print("Failed to encode license plate object")
+		DDLogError("Failed to encode license plate object")
 		return (nil, "Failed to encode license plate object")
 	}
 	
@@ -255,7 +256,7 @@ func updateLicensePlate(newLicensePlateObject: LicensePlate, oldLicensePlate: St
 		
 		return initSaveResponse(dataCuccli: data)
 	} catch {
-		print("Checkout failed.")
+		DDLogError("Checkout failed.")
 		return (nil, "Checkout failed")
 	}
 }
@@ -280,7 +281,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
                 return (nil, "Status is not success or fail?")
         }
     } catch {
-        print("initSaveResponse error: \(error)")
+		DDLogError("initSaveResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -299,14 +300,14 @@ func deleteHelper (
     
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil else {
-            print("Error: error calling DELETE")
-            print("deleteData error: \(String(describing: error))")
+			DDLogError("Error: error calling DELETE")
+			DDLogError("deleteData error: \(String(describing: error))")
             errorMsg = "Error calling DELETE \n \(String(describing: error))"
             completionHandler(cars, errorMsg)
             return
         }
         guard let data = data else {
-            print("Error: Did not receive data")
+			DDLogError("Error: Did not receive data")
             errorMsg = "Did not receive data in deleteData"
             completionHandler(cars, errorMsg)
             return
@@ -318,8 +319,8 @@ func deleteHelper (
             print(decodedData.message as Any)
             coordinatesLoaded = false
         } catch {
-            print("Error: Trying to convert JSON data to string")
-            print("Error during decoding in deleteData. Error: \(error)")
+			DDLogError("Error: Trying to convert JSON data to string")
+			DDLogError("Error during decoding in deleteData. Error: \(error)")
             errorMsg = "Error during decoding in deleteData \n \(error)"
                 //            cars = cars
             completionHandler(cars, errorMsg)
@@ -364,7 +365,7 @@ func loadCoordinates() async -> (coordinates: [Coordinates]?, error: String?) {
 
             return initCoordinates(dataCuccli: data)
         } catch {
-            print("Invalid data in loadCoordinates: \(error)")
+			DDLogError("Invalid data in loadCoordinates: \(error)")
             return (nil, error.localizedDescription)
         }
     }
@@ -390,7 +391,7 @@ func initCoordinates(dataCuccli: Data) -> (coordinates: [Coordinates]?, error: S
                 return (nil, "Status is not success or fail?")
         }
     } catch {
-        print("initData error: \(error)")
+		DDLogError("initData error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -406,14 +407,14 @@ func deleteCarHelper (
     
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil else {
-            print("Error: error calling DELETE")
-            print("deleteData error: \(String(describing: error))")
+			DDLogError("Error: error calling DELETE")
+			DDLogError("deleteData error: \(String(describing: error))")
             errorMsg = "Error calling DELETE \n \(String(describing: error))"
             completionHandler(nil, errorMsg)
             return
         }
         guard let data = data else {
-            print("Error: Did not receive data")
+			DDLogError("Error: Did not receive data")
             errorMsg = "Did not receive data in deleteData"
             completionHandler(nil, errorMsg)
             return
@@ -427,8 +428,8 @@ func deleteCarHelper (
 			setCarsLoaded(false)
             successMsg = decodedData.message
         } catch {
-            print("Error: Trying to convert JSON data to string")
-            print("Error during decoding in deleteData. Error: \(error)")
+			DDLogError("Error: Trying to convert JSON data to string")
+			DDLogError("Error during decoding in deleteData. Error: \(error)")
             errorMsg = "Error during decoding in deleteData \n \(error)"
             completionHandler(nil, errorMsg)
             return

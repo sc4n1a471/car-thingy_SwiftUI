@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import CocoaLumberjackSwift
 
 @Observable class SharedViewData {
     var cars = [Car]()
@@ -73,7 +74,7 @@ import MapKit
         self.isLoading = false
         self.showAlert = true
         self.error = errorMsg
-        print(errorMsg)
+        DDLogError(errorMsg)
 		self.haptic(type: .error)
     }
 	

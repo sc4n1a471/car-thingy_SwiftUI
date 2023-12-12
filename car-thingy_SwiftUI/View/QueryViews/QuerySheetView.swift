@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import CocoaLumberjackSwift
 
 struct QuerySheetView: View {
 	@Environment(SharedViewData.self) private var sharedViewData
     @Bindable var websocket: Websocket
     @State private var viewModel = ViewModel()
-    @State var locationManager = LocationManager()
+    @State private var locationManager = LocationManager()
     @Environment(\.presentationMode) var presentationMode
     var knownCarQuery: Bool = true
     
@@ -99,6 +100,9 @@ struct QuerySheetView: View {
         })
         .onAppear {
             sharedViewData.haptic(type: .standard)
+			Task {
+				DDLogDebug("=============== QuerySheetView open ===============")
+			}
         }
     }
     
@@ -125,9 +129,15 @@ struct QuerySheetView: View {
     var saveCar: some View {
         Button(action: {
             Task {
-				if (locationManager.lastLocation?.coordinate.latitude == 0 && locationManager.lastLocation?.coordinate.latitude == 0) {
-                    print("Location is 0")
-					websocket.showAlert(error: "The location data was 0, try again...")
+				if let safeLocationManagerMessage = locationManager.message {
+					websocket.showAlert(error: safeLocationManagerMessage)
+					return
+				}
+				
+				if (locationManager.lastLocation.coordinate.latitude == 40.748443 && locationManager.lastLocation.coordinate.latitude == -73.985650) {
+                    DDLogError("Location is Empire State Building")
+					websocket.showAlert(error: "The location data was pointing to Empire State Building, try again...")
+					locationManager = LocationManager()
                 } else {
                     if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
                         presentationMode.wrappedValue.dismiss()
