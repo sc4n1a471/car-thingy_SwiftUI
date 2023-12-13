@@ -9,11 +9,13 @@ import SwiftUI
 import Charts
 
 struct MileageView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
     
     var onChangeMileageData: [Mileage]
     @Binding var mileageData: [Mileage]
-    @State var currentActiveMileage: Mileage?
-    @State var hideLabels: Bool = false
+    @State private var parsedMileageData: [Mileage] = [Mileage()]
+    @State private var currentActiveMileage: Mileage?
+    @State private var hideLabels: Bool = false
     @State private var firstHaptic: Bool = true
     
     var body: some View {
@@ -46,38 +48,48 @@ struct MileageView: View {
                 .isHidden(hideLabels)
                 .frame(maxHeight: 75)
                 
-                Chart(mileageData, id: \.id) { data in
-                    PointMark(
-                        x: .value("Year", data.getDate()),
-                        y: .value("Mileage", data.animate ?? false ? data.mileage : 0)
-                    )
-                    LineMark(
-                        x: .value("Year", data.getDate()),
-                        y: .value("Mileage", data.animate ?? false ? data.mileage : 0)
-                    )
-                    .interpolationMethod(.catmullRom)
+                Chart {
+                    ForEach(parsedMileageData, id: \.id) { data in
+                        PointMark(
+                            x: .value("Year", data.getDate()),
+                            y: .value("Mileage", data.animate ?? false ? data.mileage : 0)
+                        )
+                        LineMark(
+                            x: .value("Year", data.getDate()),
+                            y: .value("Mileage", data.animate ?? false ? data.mileage : 0)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        
+                        AreaMark(
+                            x: .value("Year", data.getDate()),
+                            y: .value("Mileage", data.animate ?? false ? data.mileage : 0)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(Color.blue.opacity(0.1).gradient)
+                        
+                        if let currentActiveMileage, currentActiveMileage.id == data.id {
+                            RuleMark(x: .value("Date", currentActiveMileage.getDate(true)))
+                                .foregroundStyle(Color.gray.opacity(0.3))
+                        }
+                    }
                     
-                    AreaMark(
-                        x: .value("Year", data.getDate()),
-                        y: .value("Mileage", data.animate ?? false ? data.mileage : 0)
-                    )
-                    .interpolationMethod(.catmullRom)
-                    .foregroundStyle(Color.blue.opacity(0.1).gradient)
-                    
-                    if let currentActiveMileage, currentActiveMileage.id == data.id {
-                        RuleMark(x: .value("Date", currentActiveMileage.getDate(true)))
-                            .foregroundStyle(Color.gray.opacity(0.3))
+                    ForEach(mileageData, id: \.id) { data in
+                        PointMark(
+                            x: .value("Year", data.getDate()),
+                            y: .value("Mileage", data.mileage)
+                        )
+                        .opacity(0.2)
                     }
                 }
                 .frame(height: 250)
-                .padding(.leading)
                 .onAppear {
+                    parsedMileageData = parseMileageData(mileageData)
                         // MARK: Animating chart
-                    for (index, _) in mileageData.enumerated() {
+                    for (index, _) in parsedMileageData.enumerated() {
                         DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
                             withAnimation(
                                 .interactiveSpring(response: 0.6, dampingFraction: 0.9, blendDuration: 0.1)) {
-                                    mileageData[index].animate = true
+                                    parsedMileageData[index].animate = true
                                 }
                         }
                     }
@@ -85,12 +97,12 @@ struct MileageView: View {
                 .onChange(of: onChangeMileageData) { newMileageData in
                     if newMileageData.count != 0 {
                         if newMileageData[0].mileage_date.contains(".") {
-                            mileageData = newMileageData
-                            for (index, _) in mileageData.enumerated() {
+                            parsedMileageData = parseMileageData(newMileageData)
+                            for (index, _) in parsedMileageData.enumerated() {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
                                     withAnimation(
                                         .interactiveSpring(response: 0.6, dampingFraction: 0.9, blendDuration: 0.1)) {
-                                            mileageData[index].animate = true
+                                            parsedMileageData[index].animate = true
                                         }
                                 }
                             }
@@ -112,7 +124,7 @@ struct MileageView: View {
                                             let components = calendar.dateComponents([.year, .month], from: date)
                                             
                                             if let currentMileageData = mileageData.first(where: { item in
-                                                item.getYear() == components.year
+                                                item.getDateComponents().year == components.year
                                             }) {
                                                 if let safeCurrentActiveMileage = self.currentActiveMileage {
                                                     if safeCurrentActiveMileage.mileage_date != currentMileageData.mileage_date {
@@ -125,7 +137,7 @@ struct MileageView: View {
                                                 }
                                                 
                                                 if firstHaptic {
-                                                    MyCarsView().haptic()
+													sharedViewData.haptic()
                                                     firstHaptic = false
                                                 }
                                             }
@@ -212,10 +224,40 @@ struct MileageView: View {
         }
         return 0
     }
+    
+    func parseMileageData(_ mileageData: [Mileage]) -> [Mileage] {
+        var parsedMileageData: [Mileage] = []
+		
+		if !mileageData.isEmpty {
+			parsedMileageData.append(mileageData[0])
+			
+			let sortedMileageData: [Mileage] = mileageData.sorted { $0.getDate() < $1.getDate() }
+			
+			for (index, data) in sortedMileageData.enumerated() {
+				if index == 0 {
+					continue
+				}
+				let prevData = parsedMileageData.last
+				if prevData?.getDateComponents().year == data.getDateComponents().year /*&& prevData?.getDateComponents().month == data.getDateComponents().month*/ {
+					continue
+				}
+				parsedMileageData.append(data)
+			}
+		}
+                
+        return parsedMileageData
+    }
 }
 
-//struct MileageView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MileageView(mileageData: testCar.mileage!)
-//    }
-//}
+/// https://developer.apple.com/forums/thread/118589
+struct BindingViewPreview: View {
+    @State var mileage: [Mileage] = testCar.mileage!
+    
+    var body: some View {
+        MileageView(onChangeMileageData: testCar.mileage!, mileageData: $mileage)
+    }
+}
+
+#Preview {
+    BindingViewPreview()
+}

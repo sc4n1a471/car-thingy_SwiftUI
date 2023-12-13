@@ -6,16 +6,43 @@
 //
 
 import SwiftUI
+import CocoaLumberjackSwift
 
 struct QuerySheetView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
     @Bindable var websocket: Websocket
     @State private var viewModel = ViewModel()
+    @State private var locationManager = LocationManager()
     @Environment(\.presentationMode) var presentationMode
+    var knownCarQuery: Bool = true
+    
+    let columns = [
+        GridItem(.flexible(minimum: 275, maximum: 425)),
+        GridItem(.flexible(minimum: 25, maximum: 75))
+    ]
+    let columns2 = [
+        GridItem(.flexible(minimum: 100, maximum: 400))
+    ]
     
     var body: some View {
         NavigationStack {
             List {
                 if !viewModel.inspectionsOnly {
+                    Section {
+                        withAnimation {
+                            LazyVGrid(columns: websocket.isLoading ? columns : columns2, content: {
+                                if websocket.isLoading {
+                                    showLogs
+                                    closeConnection
+                                } else {
+                                    saveCar
+                                }
+                            })
+                        }
+                    }
+                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    .listRowBackground(Color.clear)
+                    
                     Section {
                         SpecView(header: "Brand", content: websocket.brand)
                         SpecView(header: "Model", content: websocket.model)
@@ -24,8 +51,8 @@ struct QuerySheetView: View {
                     
                     Section {
                         SpecView(header: "Status", content: websocket.status)
-                        SpecView(header: "First registration", content: websocket.first_reg)
-                        SpecView(header: "First registration in 🇭🇺", content: websocket.first_reg_hun)
+						SpecView(header: "First registration", content: websocket.first_reg)
+						SpecView(header: "First registration in 🇭🇺", content: websocket.first_reg_hun)
                         SpecView(header: "Number of owners", content: String(websocket.num_of_owners))
                     }
                     
@@ -43,98 +70,15 @@ struct QuerySheetView: View {
                     }
                     
                     Section {
-                        SpecView(header: "Restrictions", contents: websocket.restrictions)
+                        SpecView(header: "Restrictions", restrictions: websocket.restrictions)
                     }
                     
-                    Group {
+                    Section {
                         SpecView(header: "Accidents", accidents: websocket.accidents)
                     }
                 }
                 
-                ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
-//                if let safeInspections = websocket.inspections {
-//                    if enableScrollView {
-//                        Section {
-//                            if safeInspections.count == 1 {
-//                                ForEach(safeInspections, id: \.self) { safeInspection in
-//                                    Section {
-//                                        InspectionView(inspection: safeInspection)
-//                                            .frame(width: 391, height: 300)
-//                                    }
-//                                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                                }
-//                            } else {
-//                                ScrollView(.horizontal) {
-//                                    HStack {
-//                                        ForEach(safeInspections, id: \.self) { safeInspection in
-//                                            Section {
-//                                                InspectionView(inspection: safeInspection)
-//                                                    .frame(width: 300, height: 300)
-//                                            }
-//                                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                                        }
-//                                        .listStyle(.plain)
-//                                    }
-//                                }
-//                            }
-//                        } header: {
-//                            Text("Inspections")
-//                        }
-//                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                        .edgesIgnoringSafeArea(.all)
-//                        .listStyle(GroupedListStyle()) // or PlainListStyle()
-//                        /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-//                    } else {
-//                        ForEach(safeInspections, id: \.self) { safeInspection in
-//                            Section {
-//                                InspectionView(inspection: safeInspection)
-//                                    .frame(height: 300)
-//                            }
-//                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-//                        }
-//                    }
-//                }
-                
-                if viewModel.enableScrollView {
-                    Section {
-                        if websocket.inspections.count == 1 {
-                            ForEach(websocket.inspections, id: \.self) { inspection in
-                                Section {
-                                    InspectionView(inspection: inspection)
-                                        .frame(width: 391, height: 300)
-                                }
-                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                            }
-                        } else {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    ForEach(websocket.inspections, id: \.self) { inspection in
-                                        Section {
-                                            InspectionView(inspection: inspection)
-                                                .frame(width: 300, height: 300)
-                                        }
-                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                                    }
-                                    .listStyle(.plain)
-                                }
-                            }
-                        }
-                    } header: {
-                        Text("Inspections")
-                    }
-                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    .edgesIgnoringSafeArea(.all)
-                    .listStyle(GroupedListStyle()) // or PlainListStyle()
-                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                } else {
-                    ForEach(websocket.inspections, id: \.self) { inspection in
-                        Section {
-                            InspectionView(inspection: inspection)
-                                .frame(height: 300)
-                        }
-                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    }
-                }
+                InspectionsView(inspections: websocket.inspections)
             }
             // MARK: Toolbar items
             .toolbar {
@@ -144,41 +88,21 @@ struct QuerySheetView: View {
                         .disabled(websocket.isLoading)
                 })
 #endif
-                
-                ToolbarItem(placement: .navigationBarLeading, content: {
-                    Button(action: {
-                        viewModel.setPopover(true)
-                    }) {
-                        Gauge(value: websocket.percentage, in: 0...100) {}
-                            .gaugeStyle(.accessoryCircularCapacity)
-                            .tint(.blue)
-                            .scaleEffect(0.5)
-                            .frame(width: 25, height: 25)
-                        
-                    }.popover(isPresented: $viewModel.showingPopover) {
-                        ForEach(websocket.messages, id: \.self) { message in
-                            Text(message)
-                        }
-                        .presentationCompactAdaptation((.popover))
-                        .padding(10)
-                    }
-                    .isHidden(!websocket.isLoading)
-                })
-                
-                ToolbarItem(placement: .navigationBarTrailing, content: {
-                    saveCar
-                        .disabled(websocket.isLoading)
-                })
-                
-                ToolbarItem(placement: .navigationBarTrailing, content: {
-                    closeConnection
-                        .disabled(!websocket.isLoading)
-                })
             }
             .navigationTitle(websocket.getLP())
+            .scrollContentBackground(.visible)
         }
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
+            Button("Websocket got it") {
+                websocket.disableAlert()
+                print("websocket alert confirmed")
+            }
+        })
         .onAppear {
-            MyCarsView().haptic(type: .notification)
+            sharedViewData.haptic(type: .standard)
+			Task {
+				DDLogDebug("=============== QuerySheetView open ===============")
+			}
         }
     }
     
@@ -194,27 +118,64 @@ struct QuerySheetView: View {
         Button(action: {
             websocket.close()
         }, label: {
-            Image(systemName: "xmark.circle.fill")
+            Image(systemName: "xmark")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(height: 50)
         })
+        .buttonStyle(.bordered)
+        .tint(.red)
     }
     
     var saveCar: some View {
         Button(action: {
             Task {
-                if await viewModel.saveCar(websocket: websocket) {
-                    presentationMode.wrappedValue.dismiss()
+				if let safeLocationManagerMessage = locationManager.message {
+					websocket.showAlert(error: safeLocationManagerMessage)
+					return
+				}
+				
+				if (locationManager.lastLocation.coordinate.latitude == 40.748443 && locationManager.lastLocation.coordinate.latitude == -73.985650) {
+                    DDLogError("Location is Empire State Building")
+					websocket.showAlert(error: "The location data was pointing to Empire State Building, try again...")
+					locationManager = LocationManager()
+                } else {
+                    if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
             }
         }, label: {
-            Image(systemName: "square.and.arrow.down.fill")
+            Image(systemName: "square.and.arrow.down")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(height: 50)
         })
+        .buttonStyle(.bordered)
+        .tint(.green)
     }
     
-
+    var showLogs: some View {
+        Button(action: {
+            viewModel.setPopover(true)
+        }) {
+            Gauge(value: websocket.percentage, in: 0...100) {}
+                .gaugeStyle(.accessoryCircularCapacity)
+                .tint(.blue)
+                .scaleEffect(0.5)
+                .frame(width: 25, height: 25)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+        }.popover(isPresented: $viewModel.showingPopover) {
+            ForEach(websocket.messages, id: \.self) { message in
+                Text(message)
+            }
+            .presentationCompactAdaptation((.popover))
+            .padding(10)
+        }
+        .buttonStyle(.bordered)
+        .tint(.blue)
+    }
 }
 
-struct QuerySheetView_Previews: PreviewProvider {
-    static var previews: some View {
-        QuerySheetView(websocket: Websocket(preview: true))
-    }
+#Preview {
+    QuerySheetView(websocket: Websocket(preview: true))
 }

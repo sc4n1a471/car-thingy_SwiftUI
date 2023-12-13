@@ -6,15 +6,18 @@
 //
 
 import Foundation
+import UIKit
+import CocoaLumberjackSwift
 
 @Observable class Websocket {
-    var messages = [String]()
+    var messages: [String] = []
     var percentage = Double()
     var isLoading = Bool()
     var isSuccess = false
     var dataSheetOpened = false
     var error = String()
-    var showAlert = false
+    var isAlert = false
+	var isQuerySaved = false
     
     var license_plate = String()
     
@@ -33,12 +36,18 @@ import Foundation
     var year = Int()
     
     var accidents = [Accident()]
-    var restrictions = [String()]
+    var restrictions = [Restriction()]
     var mileage = [Mileage()]
     var inspections = [Inspection()]
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var counter = 0
+	
+	enum HapticType: String {
+		case notification
+		case standard
+		case error
+	}
     
     init(preview: Bool = false) {
         if preview {
@@ -57,7 +66,7 @@ import Foundation
             year = testCar.year
             
             accidents = testCar.accidents!
-            restrictions = testCar.restrictions!
+			restrictions = parseRestrictions(testCar.restrictions!, testCar.license_plate)
             mileage = testCar.mileage!
             inspections = testCar.inspections!
             
@@ -74,6 +83,24 @@ import Foundation
             ]
         }
     }
+	
+	func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+		print("Haptic")
+		switch type {
+			case .standard:
+				let impact = UIImpactFeedbackGenerator()
+				impact.prepare()
+				impact.impactOccurred(intensity: intensity)
+			case .notification:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.success)
+			case .error:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.error)
+		}
+	}
     
     func getLP() -> String {
         var formattedLicensePlate = self.license_plate.uppercased()
@@ -102,8 +129,20 @@ import Foundation
         self.dataSheetOpened = true
     }
     
-    func dismissSheet() {
+	func dismissSheet() async {
         self.dataSheetOpened = false
+		
+		if !self.isQuerySaved {
+			do {
+				let (_, error) = try await deleteInspection(licensePlate: self.license_plate)
+				
+				if let safeError = error {
+					self.showAlert(error: safeError)
+				}
+			} catch {
+				self.showAlert(error: "deleteInspection failed for some reason...")
+			}
+		}
     }
     
     func setLoading(_ newStatus: Bool) {
@@ -115,13 +154,16 @@ import Foundation
             case .accidents(let accidents):
                 self.accidents = accidents
             case .restrictions(let restrictions):
-                self.restrictions = restrictions
+				self.restrictions = parseRestrictions(restrictions, self.license_plate)
             case .mileage(let mileage):
                 self.mileage = mileage
             case .stringValue(let stringValue):
                 switch key {
                     case CarDataType.brand:
                         self.brand = stringValue
+                        if !self.dataSheetOpened {
+                            self.openSheet()
+                        }
                         break
                     case CarDataType.color:
                         self.color = stringValue
@@ -172,7 +214,7 @@ import Foundation
                 }
             case .message(let message):
                 self.messages.append(message)
-                print("Message: \(message)")
+                DDLogDebug("Message: \(message)")
                 break
             default:
                 print("default value: \(value)")
@@ -197,11 +239,13 @@ import Foundation
         self.year = Int()
         
         self.accidents = [Accident()]
-        self.restrictions = [String()]
+        self.restrictions = [Restriction()]
         self.mileage = [Mileage()]
         self.inspections = [Inspection()]
         
         self.messages = [String()]
+		
+		self.isQuerySaved = false
     }
     
     func getInspections(_ licensePlate: String) async {
@@ -210,20 +254,34 @@ import Foundation
             self.inspections = safeInspections
         }
         if let safeError = error {
-            self.enableAlert(error: safeError)
+            self.showAlert(error: safeError)
         }
     }
+	
+	func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {
+		var newRestrictions: [Restriction] = []
+		for restriction in stringRestrictions {
+			newRestrictions.append(Restriction(
+				license_plate: licensePlate,
+				restriction: restriction,
+				restriction_date: Date.now.ISO8601Format(),
+				active: true
+			))
+		}
+		return newRestrictions
+	}
     
-    func enableAlert(error: String) {
+    func showAlert(error: String) {
         self.error = error
-        self.showAlert = true
+        self.isAlert = true
         self.isLoading = false
         self.close()
+		self.haptic(type: .error)
     }
     
     func disableAlert() {
         self.error = String()
-        self.showAlert = false
+        self.isAlert = false
     }
     
     func connect(_ requestedCar: String) async {
@@ -233,16 +291,18 @@ import Foundation
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
+		DDLogVerbose("Connected")
+        
+        self.haptic(type: .standard)
+        
         self.counter = 0
         self.clearValues()
         
         self.license_plate = requestedCar
-        
         self.sendMessage(requestedCar)
         
             //        receiveMessage()
         await setReceiveHandler()
-        print("Connected")
     }
         
     func setReceiveHandler() async {
@@ -264,10 +324,8 @@ import Foundation
                         if safeResponse.status == "success" {
                             self.close()
                             await self.getInspections(self.license_plate)
-                            if !self.dataSheetOpened {
-                                self.openSheet()
-                            }
                             self.isSuccess = true
+                            self.haptic(type: .notification)
                             return
                         } else {
                             if let safeKey = safeResponse.key {
@@ -280,8 +338,8 @@ import Foundation
                         }
                     }
                     if let safeError {
-                        print("error: \(safeError)")
-                        self.enableAlert(error: safeError)
+						DDLogError("error: \(safeError)")
+                        self.showAlert(error: safeError)
                     }
                 case .data(let data):
                         // Handle binary data
@@ -300,7 +358,7 @@ import Foundation
                 self.close()
             }
         } catch {
-            print(error)
+			DDLogError(error)
         }
     }
     
@@ -308,7 +366,7 @@ import Foundation
         guard let data = message.data(using: .utf8) else { return }
         webSocketTask?.send(.string(message)) { error in
             if let error = error {
-                print(error.localizedDescription)
+				DDLogError(error.localizedDescription)
             }
         }
     }
@@ -324,7 +382,7 @@ import Foundation
     func ping() {
         webSocketTask?.sendPing { error in
             if let safeError = error {
-                print("Ping error: \(error?.localizedDescription)")
+				DDLogError("Ping error: \(error?.localizedDescription)")
             }
         }
     }

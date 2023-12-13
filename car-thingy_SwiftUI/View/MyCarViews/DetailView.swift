@@ -1,9 +1,9 @@
-//
-//  View2.swift
-//  NodeJS_Thingy_Cars
-//
-//  Created by Martin Terhes on 7/3/22.
-//
+    //
+    //  View2.swift
+    //  NodeJS_Thingy_Cars
+    //
+    //  Created by Martin Terhes on 7/3/22.
+    //
 
 import SwiftUI
 import CoreLocation
@@ -11,6 +11,7 @@ import MapKit
 
 struct DetailView: View {
     @Environment(SharedViewData.self) private var sharedViewData
+    @Environment(\.presentationMode) var presentationMode
 
     @State var selectedCar: Car
     @State var region: MKCoordinateRegion
@@ -18,11 +19,37 @@ struct DetailView: View {
     
     @State var websocket: Websocket = Websocket()
     
+    let columns = [
+        GridItem(.flexible(minimum: 100, maximum: 200)),
+        GridItem(.flexible(minimum: 100, maximum: 200))
+    ]
+    
     var body: some View {
-        // required because can't use environment as binding
+            // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
         List {
+            Section {
+                withAnimation {
+                    LazyVGrid(columns: columns, content: {
+                        if sharedViewData.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            editButton
+                        }
+                        if websocket.isLoading {
+                            openQuerySheet
+                        } else {
+                            queryButton
+                        }
+                    })
+                }
+            }
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            
             if selectedCar.specs.license_plate != String() {
                 Section {
                     SpecView(header: "Brand", content: selectedCar.specs.brand)
@@ -54,97 +81,16 @@ struct DetailView: View {
                     SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
                 }
                 
-                Group {
+                Section {
                     SpecView(header: "Accidents", accidents: selectedCar.accidents)
                 }
                 
-                    ///https://www.swiftyplace.com/blog/customise-list-view-appearance-in-swiftui-examples-beyond-the-default-stylings
-                    //                if let safeInspections = websocket.inspections {
-                    //                    if enableScrollView {
-                    //                        Section {
-                    //                            if safeInspections.count == 1 {
-                    //                                ForEach(safeInspections, id: \.self) { safeInspection in
-                    //                                    Section {
-                    //                                        InspectionView(inspection: safeInspection)
-                    //                                            .frame(width: 391, height: 300)
-                    //                                    }
-                    //                                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    //                                }
-                    //                            } else {
-                    //                                ScrollView(.horizontal) {
-                    //                                    HStack {
-                    //                                        ForEach(safeInspections, id: \.self) { safeInspection in
-                    //                                            Section {
-                    //                                                InspectionView(inspection: safeInspection)
-                    //                                                    .frame(width: 300, height: 300)
-                    //                                            }
-                    //                                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    //                                        }
-                    //                                        .listStyle(.plain)
-                    //                                    }
-                    //                                }
-                    //                            }
-                    //                        } header: {
-                    //                            Text("Inspections")
-                    //                        }
-                    //                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    //                        .edgesIgnoringSafeArea(.all)
-                    //                        .listStyle(GroupedListStyle()) // or PlainListStyle()
-                    //                        /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                    //                    } else {
-                    //                        ForEach(safeInspections, id: \.self) { safeInspection in
-                    //                            Section {
-                    //                                InspectionView(inspection: safeInspection)
-                    //                                    .frame(height: 300)
-                    //                            }
-                    //                            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    //                        }
-                    //                    }
-                    //                }
-                
-                if enableScrollView {
-                    Section {
-                        if selectedCar.inspections!.count == 1 {
-                            ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                                Section {
-                                    InspectionView(inspection: inspection)
-                                        .frame(width: 391, height: 300)
-                                }
-                                .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                            }
-                        } else {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                                        Section {
-                                            InspectionView(inspection: inspection)
-                                                .frame(width: 300, height: 300)
-                                        }
-                                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                                    }
-                                    .listStyle(.plain)
-                                }
-                            }
-                        }
-                    } header: {
-                        Text("Inspections")
-                    }
-                    .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    .edgesIgnoringSafeArea(.all)
-                    .listStyle(GroupedListStyle()) // or PlainListStyle()
-                                                   /// iOS 17: https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-scrollview-snap-with-paging-or-between-child-views
-                } else {
-                    ForEach(selectedCar.inspections!, id: \.self) { inspection in
-                        Section {
-                            InspectionView(inspection: inspection)
-                                .frame(height: 300)
-                        }
-                        .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    }
+                Section {
+                    InspectionsView(inspections: selectedCar.inspections ?? [Inspection()])
                 }
             }
             
-            // MARK: Map
+                // MARK: Map
             Section {
                 Map(
                     coordinateRegion: $region,
@@ -159,36 +105,19 @@ struct DetailView: View {
             .listRowSeparator(.hidden)
             .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             
-            SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            Section {
+                SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+            }
+            
+            Section {
+                deleteButton
+            }
+            .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
         }
         .navigationTitle(selectedCar.getLP())
-#if os(iOS)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                Button(action: {
-                    websocket.openSheet()
-                }) {
-                    Gauge(value: websocket.percentage, in: 0...100) {}
-                        .gaugeStyle(.accessoryCircularCapacity)
-                        .tint(.blue)
-                        .scaleEffect(0.5)
-                        .frame(width: 25, height: 25)
-                    
-                }
-                .isHidden(!websocket.isLoading)
-                
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!sharedViewData.isLoading)
-                
-                queryButton
-                    .disabled(websocket.isLoading)
-                
-                editButton
-                    .disabled(sharedViewData.isLoading)
-            })
-        }
-#endif
+		.navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
             Task {
                 await loadSelectedCar()
@@ -198,13 +127,19 @@ struct DetailView: View {
         }
         .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
             Task {
-                websocket.dismissSheet()
+                await websocket.dismissSheet()
                 await loadSelectedCar()
             }
         }) {
             QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
         }
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
+            Button("Websocket got it") {
+                websocket.disableAlert()
+                print("websocket alert confirmed")
+            }
+        })
         .onAppear() {
             sharedViewData.existingCar = selectedCar
             sharedViewData.region = region
@@ -212,6 +147,29 @@ struct DetailView: View {
                 await loadSelectedCar()
             }
         }
+		.toolbar(content: {
+			ToolbarItem(placement: .topBarTrailing, content: {
+				DateView(licensePlate: selectedCar.license_plate, mapView: false)
+					.frame(maxWidth: .infinity, alignment: .trailing)
+			})
+		})
+    }
+    
+    // MARK: Button views
+    var openQuerySheet: some View {
+        Button(action: {
+            websocket.openSheet()
+        }) {
+            Gauge(value: websocket.percentage, in: 0...100) {}
+                .gaugeStyle(.accessoryCircularCapacity)
+                .tint(.blue)
+                .scaleEffect(0.5)
+                .frame(width: 25, height: 25)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .tint(.blue)
+        .frame(height: 50)
     }
     
     var editButton: some View {
@@ -219,7 +177,10 @@ struct DetailView: View {
             sharedViewData.isEditCarPresented.toggle()
         }, label: {
             Image(systemName: "pencil")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
+        .buttonStyle(.bordered)
+        .frame(height: 50)
     }
     
     var queryButton: some View {
@@ -229,9 +190,38 @@ struct DetailView: View {
             }
         }, label: {
             Image(systemName: "magnifyingglass")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
+        .buttonStyle(.borderedProminent)
+        .frame(height: 50)
     }
     
+    var deleteButton: some View {
+        Button(action: {
+            Task {
+                let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.license_plate.license_plate)
+                
+                if successMsg != nil {
+					await sharedViewData.loadViewData()
+                    presentationMode.wrappedValue.dismiss()
+                }
+                
+                if let safeErrorMsg = errorMsg {
+                    sharedViewData.showAlert(errorMsg: safeErrorMsg)
+                }
+            }
+            presentationMode.wrappedValue.dismiss()
+        }, label: {
+            Image(systemName: "trash")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        })
+        .buttonStyle(.bordered)
+        .frame(height: 50)
+        .tint(.red)
+        .disabled(sharedViewData.isLoading)
+    }
+    
+    // MARK: Functions
     func loadSelectedCar() async {
         sharedViewData.isLoading = true
         let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.license_plate.license_plate)
@@ -241,18 +231,14 @@ struct DetailView: View {
         }
         
         if let safeCarError {
-            sharedViewData.error = safeCarError
-            sharedViewData.showAlert = true
-            MyCarsView().haptic(type: .error)
+            sharedViewData.showAlert(errorMsg: safeCarError)
         }
         
         sharedViewData.isLoading = false
     }
 }
 
-struct View2_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailView(selectedCar: previewCar, region: previewCar.getLocation())
-            .environment(SharedViewData())
-    }
+#Preview {
+    DetailView(selectedCar: previewCar, region: previewCar.getLocation())
+        .environment(SharedViewData())
 }

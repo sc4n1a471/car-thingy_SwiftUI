@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Restriction: Codable {
+struct Restriction: Codable, Equatable, Hashable {
     var id: String {
         restriction
     }

@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import CocoaLumberjackSwift
 
 @Observable class SharedViewData {
     var cars = [Car]()
@@ -19,6 +20,7 @@ import MapKit
     
     var newCar: Car = Car()
     var existingCar: Car = Car()
+	var returnNewCar: Car = Car()
     
     var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
@@ -33,8 +35,32 @@ import MapKit
     var is_new: Bool = true
     private var oldLicensePlate = ""
     private var yearAsString = ""
+	
+	enum HapticType: String {
+		case notification
+		case standard
+		case error
+	}
     
     init() {}
+	
+	func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+		print("Haptic")
+		switch type {
+			case .standard:
+				let impact = UIImpactFeedbackGenerator()
+				impact.prepare()
+				impact.impactOccurred(intensity: intensity)
+			case .notification:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.success)
+			case .error:
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.error)
+		}
+	}
     
     func clearNewCar() {
         self.newCar = Car()
@@ -43,4 +69,39 @@ import MapKit
     func clearExistingCar() {
         self.existingCar = Car()
     }
+    
+    func showAlert(errorMsg: String) {
+        self.isLoading = false
+        self.showAlert = true
+        self.error = errorMsg
+        DDLogError(errorMsg)
+		self.haptic(type: .error)
+    }
+	
+	func loadViewData(_ refresh: Bool = false) async {
+		self.isLoading = true
+		let (safeCars, safeCarError) = await loadCars(refresh)
+		if let safeCars {
+			self.cars = safeCars
+		}
+		
+		if let safeCarError {
+			self.showAlert(errorMsg: safeCarError)
+		}
+		
+		self.isLoading = false
+	}
+	
+	func parseDate(_ unparsedData: String) -> Date {
+		let calendar = Calendar.autoupdatingCurrent
+		if unparsedData.contains("-") {
+			let dateTimeSeparated = unparsedData.split(separator: "T")
+			let dateSeparated = dateTimeSeparated[0].split(separator: "-")
+			return calendar.date(from: DateComponents(year: Int(dateSeparated[0]), month: Int(dateSeparated[1]), day: Int(dateSeparated[2])))!
+		} else if unparsedData.contains(".") {
+			let dateSeparated = unparsedData.split(separator: ".")
+			return calendar.date(from: DateComponents(year: Int(dateSeparated[0]), month: Int(dateSeparated[1]), day: Int(dateSeparated[2])))!
+		}
+		return Date.now
+	}
 }

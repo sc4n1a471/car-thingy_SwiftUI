@@ -8,40 +8,52 @@
 //import UIKit
 import CoreLocation
 import MapKit
+import os
+import CocoaLumberjackSwift
 
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    let manager = CLLocationManager()
-    
-    @Published var region = MKCoordinateRegion()
+@Observable
+class LocationManager: NSObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+	
+	var region = MKCoordinateRegion()
+	var lastLocation: CLLocation = CLLocation(latitude: 40.748443, longitude: -73.985650)
+	var message: String?
 
     override init() {
         super.init()
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
-        manager.stopUpdatingLocation()      // in theory, stops immediately after it starts updating location to prevent location updates more than once
+		manager.startUpdatingLocation()
     }
-
-//    func requestLocation() {
-//        manager.requestLocation()
-//    }
-
-//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        region.center.latitude = locations.first!.coordinate.latitude
-//        region.center.longitude = locations.first!.coordinate.longitude
-//        print(locations)
-//    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            locations.last.map {
-                region = MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude),
-                    span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                )
-            }
-        }
+		var location: CLLocation
+		if let safeLocation = locations.last {
+			location = safeLocation
+			
+			lastLocation = location
+			DDLogDebug("locationManager - location: \(self.lastLocation)")
+			
+			locations.last.map {
+				region = MKCoordinateRegion(
+					center: CLLocationCoordinate2D(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude),
+					span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+				)
+			}
+			
+			if location.coordinate.latitude != 40.748443 && location.coordinate.longitude != -73.985650 {
+				DDLogDebug("Location data is no longer Empire State Building, stopping updating location")
+				manager.stopUpdatingLocation()
+			}
+		} else {
+			location = CLLocation(latitude: 40.748443, longitude: -73.985650)
+			DDLogDebug("locations.last was nil????")
+			message = "locaitions.last was nil????"
+		}
+	}
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("error:: \(error.localizedDescription)")
+		DDLogError("locationManager error: \(error.localizedDescription)")
+		message = error.localizedDescription
     }
 }

@@ -21,7 +21,23 @@ extension MapView {
             )
         )
         
-        var coordinates: [Coordinates] = [Coordinates()]
         var infoSheet: Bool = false
+        var sharedViewData: SharedViewData?
+        
+        func initViewModel(_ sharedViewData: SharedViewData) {
+            self.sharedViewData = sharedViewData
+        }
+        
+        func loadMarkers() async {
+            let (cars, error) = await loadCars()
+            
+            if let cars {
+                sharedViewData?.cars = cars
+            }
+            
+            if let error {
+                sharedViewData?.showAlert(errorMsg: error)
+            }
+        }
     }
 }

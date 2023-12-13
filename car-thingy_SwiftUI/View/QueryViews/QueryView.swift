@@ -13,6 +13,7 @@ struct QueryView: View {
     @State private var viewModel = ViewModel()
     @State var websocket: Websocket = Websocket()
     @State private var requestedLicensePlate: String = String()
+	@State private var showVersionPopover: Bool = false
     
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -40,21 +41,24 @@ struct QueryView: View {
                         .frame(maxWidth: 400)
                         .focused($lpTextFieldFocused)
                 }
-                
-                Button {
-                    Task {
-                        lpTextFieldFocused = false
-                        await websocket.connect(requestedLicensePlate)
-                    }
-                } label: {
-                    Text("Request")
-                        .frame(maxWidth: 200, maxHeight: 50)
-                }
-                .buttonStyle(.borderless)
-                .foregroundColor(.white)
-                .background(!websocket.isLoading ? Color.blue : Color.gray)
-                .cornerRadius(10)
-                .disabled(websocket.isLoading)
+				
+				if websocket.isLoading {
+					openQuerySheet
+				} else {
+					Button {
+						Task {
+							lpTextFieldFocused = false
+							await websocket.connect(requestedLicensePlate)
+						}
+					} label: {
+						Text("Request")
+							.frame(maxWidth: 200, maxHeight: 50)
+					}
+					.buttonStyle(.borderless)
+					.foregroundColor(.white)
+					.background(!websocket.isLoading ? Color.blue : Color.gray)
+					.cornerRadius(10)
+				}
                 
                 Button {
                     Task {
@@ -72,27 +76,7 @@ struct QueryView: View {
             }
             .padding()
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                    
-                    Button(action: {
-                        websocket.openSheet()
-                    }) {
-                        Gauge(value: websocket.percentage, in: 0...100) {}
-                            .gaugeStyle(.accessoryCircularCapacity)
-                            .tint(.blue)
-                            .scaleEffect(0.5)
-                            .frame(width: 25, height: 25)
-                        
-                    }
-                    .isHidden(!websocket.isLoading)
-                })
-                
-                ToolbarItemGroup(placement: .navigationBarLeading, content: {
-                    Link(destination:
-                            URL(string:"https://magyarorszag.hu/jszp_szuf")!
-                    ) {
-                        Image(systemName: "link")
-                    }
+                ToolbarItemGroup(placement: .topBarTrailing, content: {
                     Button(action: {
                         websocket.openSheet()
                     }) {
@@ -100,10 +84,35 @@ struct QueryView: View {
                     }
                     .isHidden(!websocket.isSuccess)
                 })
+				
+				ToolbarItem(placement: .topBarLeading, content: {
+					Button(action: {
+						showVersionPopover = true
+					}) {
+						Image(systemName: "info.circle")
+							.foregroundStyle(.gray)
+					}.popover(isPresented: $showVersionPopover) {
+						VStack {
+							Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "???")")
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding()
+							
+							Divider()
+
+							Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "???")
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding()
+						}
+						.frame(maxWidth: .infinity, maxHeight: .infinity)
+						.presentationCompactAdaptation(.none)
+						.presentationBackground(.clear)
+					}
+				})
             }
             .navigationTitle("Car Query")
+			.navigationBarTitleDisplayMode(.large)
         }
-        .alert(websocket.error, isPresented: $websocket.showAlert, actions: {
+        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
                 print("websocket alert confirmed")
@@ -111,22 +120,36 @@ struct QueryView: View {
         })
         .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
             Task {
-                websocket.dismissSheet()
+                await websocket.dismissSheet()
             }
         }) {
-            QuerySheetView(websocket: websocket)
+            QuerySheetView(websocket: websocket, knownCarQuery: false)
                 .presentationDetents([.medium, .large])
         }
     }
+	
+	var openQuerySheet: some View {
+		Button(action: {
+			websocket.openSheet()
+		}) {
+			Gauge(value: websocket.percentage, in: 0...100) {}
+				.gaugeStyle(.accessoryCircularCapacity)
+				.tint(.blue)
+				.scaleEffect(0.5)
+//				.frame(width: 25, height: 25)
+//				.frame(maxWidth: .infinity, maxHeight: .infinity)
+				.frame(maxWidth: 175, maxHeight: 37)
+		}
+		.buttonStyle(.bordered)
+		.tint(.blue)
+	}
 }
 
-struct QueryView_Previews: PreviewProvider {
-    static var previews: some View {
-        QueryView()
-            .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
-            .previewDisplayName("iPhone 13 Pro")
-//        QueryView()
-//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
-//            .previewDisplayName("Mac Catalyst")
-    }
+#Preview {
+	QueryView()
+		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
+		.previewDisplayName("iPhone 13 Pro")
+		//        QueryView()
+		//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
+		//            .previewDisplayName("Mac Catalyst")
 }

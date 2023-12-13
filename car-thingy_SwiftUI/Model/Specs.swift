@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Specs: Codable {
+struct Specs: Codable, Equatable, Hashable {
     var license_plate: String?
     var brand: String?
     var color: String?

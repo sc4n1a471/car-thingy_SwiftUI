@@ -20,12 +20,13 @@ extension QuerySheetView {
             self.showingPopover = newState
         }
         
-        func saveCar(websocket: Websocket) async -> Bool {
+        func saveCar(websocket: Websocket, knownCarQuery: Bool = true, locationManager: LocationManager) async -> Bool {
             var saveCar: Car = Car(
                 license_plate:
                     LicensePlate(
                         license_plate: websocket.license_plate,
-                        created_at: Date.now.ISO8601Format()
+                        created_at: Date.now.ISO8601Format(),
+						updated_at: Date.now.ISO8601Format()
                     ),
                 accidents: websocket.accidents,
                 specs: Specs(
@@ -44,35 +45,37 @@ extension QuerySheetView {
                     type_code: websocket.type_code,
                     year: websocket.year
                 ),
-                restrictions: parseRestrictions(websocket.restrictions, websocket.license_plate),
+                restrictions: websocket.restrictions,
                 mileage: parseMileage(websocket.mileage, websocket.license_plate)
             )
+            
+            if !knownCarQuery {
+                saveCar.coordinates.license_plate = websocket.license_plate
+				print(locationManager.lastLocation)
+				saveCar.coordinates.latitude = locationManager.lastLocation.coordinate.latitude
+				saveCar.coordinates.longitude = locationManager.lastLocation.coordinate.longitude
+				print("Saving car with coordinates... (\(saveCar.coordinates.latitude), \(saveCar.coordinates.longitude))")
+				
+				if saveCar.coordinates.latitude == 40.748443 && saveCar.coordinates.longitude == -73.985650 {
+					print("Coordinates were default values")
+					websocket.showAlert(error: "Coordinates are pointing to Empire State Building...")
+					return false
+				}
+            }
             
             let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)
             
             if let safeMessage {
                 print(safeMessage)
+				websocket.isQuerySaved = true
                 return true
             }
             
             if let safeError {
-                websocket.enableAlert(error: safeError)
+                websocket.showAlert(error: safeError)
                 return false
             }
             return false
-        }
-        
-        func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {
-            var newRestrictions: [Restriction] = []
-            for restriction in stringRestrictions {
-                newRestrictions.append(Restriction(
-                    license_plate: licensePlate,
-                    restriction: restriction,
-                    restriction_date: Date.now.ISO8601Format(),
-                    active: true
-                ))
-            }
-            return newRestrictions
         }
         
         func parseMileage(_ oldMileage: [Mileage], _ licensePlate: String) -> [Mileage] {

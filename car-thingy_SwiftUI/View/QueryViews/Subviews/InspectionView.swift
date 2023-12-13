@@ -8,24 +8,31 @@
 import SwiftUI
 
 struct InspectionView: View {
-    var inspection: Inspection
-    @State private var inspectionDate: String = ""
+    @Environment(\.presentationMode) var presentationMode
+	@Environment(SharedViewData.self) private var sharedViewData
+
     var inspectionName: String = "Műszaki vizsgálat"
-    
+    var inspection: Inspection
+
     @State private var presentSheet = false
-    @State private var imageIndex: Int?
+    @State private var imageIndex: Int = 0
     
     var body: some View {
         VStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .center) {
                 Text(inspectionName)
                     .font(.footnote)
                     .foregroundColor(Color.gray)
-                Text(inspectionDate)
+				Text(sharedViewData.parseDate(inspection.name.replacingOccurrences(of: "MŰSZAKI VIZSGÁLAT, ", with: "")).formatted(
+					Date.FormatStyle()
+						.year()
+						.month()
+						.day()
+				))
                     .font(.title2)
                     .bold()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
             .padding()
             
             TabView {
@@ -44,16 +51,15 @@ struct InspectionView: View {
             .cornerRadius(10)
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-        }
-        .onAppear() {
-            Task {
-                self.inspectionDate = inspection.name.replacingOccurrences(of: "MŰSZAKI VIZSGÁLAT, ", with: "")
-            }
+            .padding(.bottom, 20)
+            .padding(.trailing, 20)
+            .padding(.leading, 20)
+            .shadow(radius: 10)
         }
         .sheet(isPresented: $presentSheet, onDismiss: {
             Task {}
         }) {
-            InspectionImageViewer(imageIndex: imageIndex ?? 0, images: inspection.base_64!)
+            InspectionImageViewer(imageIndex: imageIndex, images: inspection.base_64!)
         }
     }
     
@@ -72,9 +78,6 @@ struct InspectionView: View {
     }
 }
 
-//struct InspectionView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        InspectionView(inspection: testCar.inspections![0])
-//        QuerySheetView(queriedCar: testCar, inspectionsOnly: true)
-//    }
-//}
+#Preview {
+    InspectionView(inspection: testCar.inspections![0])
+}

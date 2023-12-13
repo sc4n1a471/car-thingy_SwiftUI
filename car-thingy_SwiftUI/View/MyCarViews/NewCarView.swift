@@ -11,6 +11,7 @@ import CoreLocation
 import CoreLocationUI
 #endif
 import MapKit
+import CocoaLumberjackSwift
 
 enum MapType: String {
     case custom = "customMap"
@@ -33,11 +34,19 @@ struct NewCar: View {
     @State private var ezLenniCar: Car = Car()
     @State private var oldLicensePlate = String()
     
-    @StateObject var locationManager = LocationManager()
+    @State var locationManager = LocationManager()
     @State private var customLatitude: String = String()
     @State private var customLongitude: String = String()
     @State private var selectedMap = MapType.custom
-    
+	
+	var userLatitude: String {
+		return "\(locationManager.lastLocation.coordinate.latitude)"
+	}
+	
+	var userLongitude: String {
+		return "\(locationManager.lastLocation.coordinate.longitude)"
+	}
+	    
     private var isUpload: Bool
     
     init(isUpload: Bool, isNewBrand: State<Bool> = State(initialValue: false)) {
@@ -81,7 +90,7 @@ struct NewCar: View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
-        NavigationView {
+        NavigationStack {
             Form {
                 Section {
                     TextField("License Plate", text: textBindingLicensePlate)
@@ -102,25 +111,21 @@ struct NewCar: View {
                         if selectedMap == MapType.custom {
                             TextField("Custom latitude", text: $customLatitude)
                                 .keyboardType(.decimalPad)
+								.padding()
                             TextField("Custom longitude", text: $customLongitude)
                                 .keyboardType(.decimalPad)
+								.padding()
                         } else if (selectedMap == MapType.current || isUpload) {
-                            Map(
-                                coordinateRegion: $locationManager.region,
-                                interactionModes: MapInteractionModes.all,
-                                showsUserLocation: true,
-                                userTrackingMode: .none
-                            )
-                            .frame(height: 200)
+							Map(initialPosition: .region(locationManager.region)){
+								UserAnnotation()
+							}.frame(height: 200)
+							
+							
                         } else if (selectedMap == MapType.existing || !isUpload) {
-                            Map(
-                                coordinateRegion: $sharedViewDataBindable.region,
-                                interactionModes: MapInteractionModes.all,
-                                annotationItems: [ezLenniCar]
-                            ) {
-                                MapMarker(coordinate: $0.getLocation().center)
-                            }
-                            .frame(height: 200)
+							Map(initialPosition: .region(sharedViewData.region)) {
+								Marker("", coordinate: ezLenniCar.getLocation().center)
+							}
+							.frame(height: 200)
                         }
                     }
                     .listRowSeparator(.hidden)
@@ -138,7 +143,7 @@ struct NewCar: View {
                     sharedViewData.showAlert = false
                 }
             }, message: {
-                Text("Could not connect to server!")
+				Text(sharedViewData.error ?? "Some kind of error?")
             })
             
             // MARK: Toolbar items
@@ -155,19 +160,25 @@ struct NewCar: View {
                         .disabled(sharedViewData.isLoading)
                 })
             }
+			.scrollContentBackground(.visible)
         }
         .onAppear() {
-            MyCarsView().haptic(type: .notification)
+            sharedViewData.haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
+				oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
+				
+				customLatitude = sharedViewData.region.center.latitude.description
+				customLongitude = sharedViewData.region.center.longitude.description
             } else {
+				sharedViewData.clearExistingCar()
                 self.ezLenniCar = sharedViewData.newCar
                 sharedViewData.is_new = true
+				sharedViewData.returnNewCar = Car()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(1)) {
                     focusedField = .newLicensePlate
                 }
             }
-            oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
         }
     }
     
@@ -181,8 +192,18 @@ struct NewCar: View {
                     ezLenniCar.coordinates.latitude = Double(customLatitude) ?? 37.789467
                     ezLenniCar.coordinates.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-                    ezLenniCar.coordinates.latitude = locationManager.region.center.latitude
-                    ezLenniCar.coordinates.longitude = locationManager.region.center.longitude
+					if let safeLocationManagerMessage = locationManager.message {
+						sharedViewData.showAlert(errorMsg: safeLocationManagerMessage)
+						return
+					}
+					
+					if locationManager.region.center.latitude == 40.748443 && locationManager.region.center.longitude == -73.985650 {
+						sharedViewData.showAlert(errorMsg: "The location data was 0, try again...")
+						return
+					}
+                        
+					ezLenniCar.coordinates.latitude = Double(userLatitude) ?? 127.0
+					ezLenniCar.coordinates.longitude = Double(userLongitude) ?? 36.0
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -191,27 +212,41 @@ struct NewCar: View {
                 })
                 
                 ezLenniCar.coordinates.license_plate = ezLenniCar.license_plate.license_plate
-                ezLenniCar.license_plate.created_at = Date.now.ISO8601Format()
+				ezLenniCar.license_plate.updated_at = Date.now.ISO8601Format()
+				
+				ezLenniCar.license_plate.created_at = isUpload ? Date.now.ISO8601Format() : sharedViewData.existingCar.license_plate.created_at
+				
+				if ezLenniCar.license_plate.license_plate != oldLicensePlate && sharedViewData.isEditCarPresented {
+					let (safeMessage, safeError) = await updateLicensePlate(newLicensePlateObject: ezLenniCar.license_plate, oldLicensePlate: oldLicensePlate)
+					
+					if let safeMessage {
+						DDLogVerbose("Licese plate update was successful: \(safeMessage)")
+					}
+					
+					if let safeError {
+						sharedViewData.showAlert(errorMsg: "Upload failed: \(safeError)")
+						return
+					}
+				}
                 
                 let (safeMessage, safeError) = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload, lpOnly: false)
                 sharedViewData.isLoading = false
                 
                 if let safeMessage {
                     sharedViewData.isEditCarPresented = false
-                    MyCarsView().haptic()
-                    print("Upload was successful")
+					sharedViewData.returnNewCar = ezLenniCar
+					sharedViewData.existingCar = ezLenniCar
+                    sharedViewData.haptic()
+					DDLogVerbose("Upload was successful: \(safeMessage)")
                     presentationMode.wrappedValue.dismiss()
                 }
                 
                 if let safeError {
-                    sharedViewData.error = "Upload failed: \(safeError)"
-                    sharedViewData.showAlert = true
-                    MyCarsView().haptic(type: .error)
-                    print("Upload failed: \(safeError)")
+                    sharedViewData.showAlert(errorMsg: "Upload failed: \(safeError)")
                 }
             }
         }, label: {
-            Text("Save")
+			Image(systemName: "square.and.arrow.down.fill")
         })
     }
     
@@ -219,14 +254,12 @@ struct NewCar: View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
         }, label: {
-            Text("Close")
+            Image(systemName: "xmark")
         })
     }
 }
 
-struct NewCar_Previews: PreviewProvider {
-    static var previews: some View {
-        NewCar(isUpload: false)
-            .environment(SharedViewData())
-    }
+#Preview {
+	NewCar(isUpload: false)
+		.environment(SharedViewData())
 }
