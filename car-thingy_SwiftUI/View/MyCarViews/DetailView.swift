@@ -50,27 +50,27 @@ struct DetailView: View {
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
             
-            if selectedCar.specs.license_plate != String() {
+            if selectedCar.brand != nil {
                 Section {
-                    SpecView(header: "Brand", content: selectedCar.specs.brand)
-                    SpecView(header: "Model", content: selectedCar.specs.model)
-                    SpecView(header: "Type Code", content: selectedCar.specs.type_code)
+                    SpecView(header: "Brand", content: selectedCar.brand)
+                    SpecView(header: "Model", content: selectedCar.model)
+                    SpecView(header: "Type Code", content: selectedCar.typeCode)
                 }
                 
                 Section {
-                    SpecView(header: "Status", content: selectedCar.specs.status)
-                    SpecView(header: "First registration", content: selectedCar.specs.first_reg)
-                    SpecView(header: "First registration in 🇭🇺", content: selectedCar.specs.first_reg_hun)
-                    SpecView(header: "Number of owners", content: String(selectedCar.specs.num_of_owners ?? 99))
+                    SpecView(header: "Status", content: selectedCar.status)
+                    SpecView(header: "First registration", content: selectedCar.firstReg)
+                    SpecView(header: "First registration in 🇭🇺", content: selectedCar.firstRegHun)
+                    SpecView(header: "Number of owners", content: String(selectedCar.numOfOwners ?? 99))
                 }
                 
                 Section {
-                    SpecView(header: "Year", content: String(selectedCar.specs.year ?? 1970))
-                    SpecView(header: "Engine size", content: String(selectedCar.specs.engine_size ?? 9999), note: "cm3")
-                    SpecView(header: "Performance", content: String(selectedCar.specs.performance ?? 999), note: "HP")
-                    SpecView(header: "Fuel type", content: selectedCar.specs.fuel_type)
-                    SpecView(header: "Gearbox", content: selectedCar.specs.gearbox)
-                    SpecView(header: "Color", content: selectedCar.specs.color)
+                    SpecView(header: "Year", content: String(selectedCar.year ?? 1970))
+                    SpecView(header: "Engine size", content: String(selectedCar.engineSize ?? 9999), note: "cm3")
+                    SpecView(header: "Performance", content: String(selectedCar.performance ?? 999), note: "HP")
+                    SpecView(header: "Fuel type", content: selectedCar.fuelType)
+                    SpecView(header: "Gearbox", content: selectedCar.gearbox)
+                    SpecView(header: "Color", content: selectedCar.color)
                 }
                 
                 Section {
@@ -106,7 +106,7 @@ struct DetailView: View {
             .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             
             Section {
-                SpecView(header: "Comment", content: selectedCar.license_plate.comment)
+                SpecView(header: "Comment", content: selectedCar.comment)
             }
             
             Section {
@@ -149,7 +149,7 @@ struct DetailView: View {
         }
 		.toolbar(content: {
 			ToolbarItem(placement: .topBarTrailing, content: {
-				DateView(licensePlate: selectedCar.license_plate, mapView: false)
+				DateView(car: selectedCar, mapView: false)
 					.frame(maxWidth: .infinity, alignment: .trailing)
 			})
 		})
@@ -186,7 +186,7 @@ struct DetailView: View {
     var queryButton: some View {
         Button(action: {
             Task {
-                await websocket.connect(_:selectedCar.license_plate.license_plate)
+                await websocket.connect(_:selectedCar.licensePlate)
             }
         }, label: {
             Image(systemName: "magnifyingglass")
@@ -199,7 +199,7 @@ struct DetailView: View {
     var deleteButton: some View {
         Button(action: {
             Task {
-                let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.license_plate.license_plate)
+                let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.licensePlate)
                 
                 if successMsg != nil {
 					await sharedViewData.loadViewData()
@@ -224,7 +224,7 @@ struct DetailView: View {
     // MARK: Functions
     func loadSelectedCar() async {
         sharedViewData.isLoading = true
-        let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.license_plate.license_plate)
+        let (safeCar, safeCarError) = await loadCar(license_plate: sharedViewData.existingCar.licensePlate)
         if let safeCar {
             sharedViewData.existingCar = safeCar[0]
             selectedCar = sharedViewData.existingCar

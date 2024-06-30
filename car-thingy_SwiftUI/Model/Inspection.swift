@@ -8,7 +8,8 @@
 import Foundation
 
 struct Inspection: Codable, Hashable {
-    var license_plate = String()
+    var licensePlate = String()
     var name: String = String()
-    var base_64: [String]?
+	var imageLocation: String = String()
+    var base64: [String]?
 }

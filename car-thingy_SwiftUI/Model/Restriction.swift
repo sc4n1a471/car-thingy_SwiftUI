@@ -11,8 +11,8 @@ struct Restriction: Codable, Equatable, Hashable {
     var id: String {
         restriction
     }
-    var license_plate: String = String()
+    var licensePlate: String = String()
     var restriction: String = String()
-    var restriction_date: String = String()
-    var active: Bool = Bool()
+//    var restrictionDate: String = String()
+    var isActive: Bool = Bool()
 }

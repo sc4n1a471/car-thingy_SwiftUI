@@ -103,7 +103,7 @@ struct SpecView: View {
                             VStack {
 								ForEach(Array(safeAccidents.enumerated()), id: \.offset) { index, accident in
                                     HStack {
-										Text(sharedViewData.parseDate(accident.accident_date).formatted(
+										Text(sharedViewData.parseDate(accident.accidentDate).formatted(
 											Date.FormatStyle()
 												.year()
 												.month()

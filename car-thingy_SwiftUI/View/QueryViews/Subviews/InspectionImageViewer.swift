@@ -58,5 +58,5 @@ struct InspectionImageViewer: View {
 }
 
 #Preview {
-	InspectionImageViewer(imageIndex: 0, images: testCar.inspections![0].base_64!)
+	InspectionImageViewer(imageIndex: 0, images: testCar.inspections![0].base64!)
 }

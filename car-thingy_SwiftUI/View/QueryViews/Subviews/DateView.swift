@@ -8,26 +8,26 @@
 import SwiftUI
 
 struct DateView: View {
-	var licensePlate: LicensePlate
+	var car: Car
 	var mapView: Bool
 	private var createdAt: String = String()
 	private var updatedAt: String = String()
 	private var dateFormat = Date.FormatStyle(date: .long, time: .shortened)
 	@State private var showPopover: Bool = false
 	
-	init(licensePlate: LicensePlate, mapView: Bool = true) {
-		self.licensePlate = licensePlate
+	init(car: Car, mapView: Bool = true) {
+		self.car = car
 		self.mapView = mapView
 		
 		dateFormat.timeZone = TimeZone(secondsFromGMT: 7200)!
 		
-		if let safeDate = self.licensePlate.getDate(.updatedAt) {
+		if let safeDate = self.car.getDate(.updatedAt) {
 			updatedAt = "Updated: \(safeDate.formatted(dateFormat))"
 		} else {
 			updatedAt = "Updated: Never"
 		}
 		
-		if let safeDate = self.licensePlate.getDate(.createdAt) {
+		if let safeDate = self.car.getDate(.createdAt) {
 			createdAt = "Created: \(safeDate.formatted(dateFormat))"
 		} else {
 			createdAt = "Created: Never"
@@ -67,5 +67,5 @@ struct DateView: View {
 }
 
 #Preview {
-	DateView(licensePlate: previewCar.license_plate, mapView: false)
+	DateView(car: previewCar, mapView: false)
 }

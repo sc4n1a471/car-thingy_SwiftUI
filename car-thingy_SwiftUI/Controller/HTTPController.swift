@@ -17,6 +17,7 @@ func setCarsLoaded(_ newStatus: Bool) {
 }
 
 
+
 // MARK: New Car query
 func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, error: String?) {
     var decodedData: WebsocketResponse
@@ -44,40 +45,21 @@ func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, e
     }
 }
 
-// MARK: Inspections
-func loadInspections(license_plate: String) async -> (inspections: [Inspection]?, error: String?) {
-    let url = URL(string: getURLasString(.inspections) + "/" + license_plate.uppercased())!
-    
-    do {
-        let (data, _) = try await URLSession.shared.data(from: url)
-        
-        return initInspections(dataCuccli: data)
-    } catch {
+func loadQueryInspections(license_plate: String) async -> (inspections: [Inspection]?, error: String?) {
+	let url = URL(string: getURLasString(.queryInspections) + "/" + license_plate.uppercased())!
+	
+	do {
+		let (data, _) = try await URLSession.shared.data(from: url)
+		
+		return initInspections(dataCuccli: data)
+	} catch {
 		DDLogError("Invalid inspection data")
-        return (nil, error.localizedDescription)
-    }
+		return (nil, error.localizedDescription)
+	}
 }
 
-func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: String?) {
-    var decodedInspections: InspectionResponse
-    
-    do {
-        decodedInspections = try JSONDecoder().decode(InspectionResponse.self, from: dataCuccli)
-        
-        if (decodedInspections.isSuccess()) {
-            print("status (Inspections): \(decodedInspections.isSuccess())")
-            return (decodedInspections.message, nil)
-        } else {
-            return (nil, "No error message from server (?)")
-        }
-        
-    } catch {
-		DDLogError("initInspections error: \(error)")
-        return (nil, error.localizedDescription)
-    }
-}
 
-func deleteInspectionHelper (
+func deleteQueryInspectionHelper (
 	request: inout URLRequest,
 	completionHandler: @escaping (_ successMsg: String?, _ errorMsg: String?) -> Void
 ) {
@@ -119,14 +101,14 @@ func deleteInspectionHelper (
 	}.resume()
 }
 
-func deleteInspection(licensePlate: String) async throws -> (success: String?, error: String?) {
-	let url1 = getURLasString(.inspections) + "/" + licensePlate.uppercased()
+func deleteQueryInspection(licensePlate: String) async throws -> (success: String?, error: String?) {
+	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased()
 	let urlFormatted = URL(string: url1)
 	var request = URLRequest(url: urlFormatted!)
 	request.httpMethod = "DELETE"
 	
 	return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-		deleteInspectionHelper(request: &request) { (deleteSuccess, deleteError) in
+		deleteQueryInspectionHelper(request: &request) { (deleteSuccess, deleteError) in
 			if let deleteSuccess {
 				continuation.resume(returning: (deleteSuccess, deleteError))
 			}
@@ -137,6 +119,43 @@ func deleteInspection(licensePlate: String) async throws -> (success: String?, e
 		}
 	})
 }
+
+
+
+// MARK: Inspections
+func loadInspections(license_plate: String) async -> (inspections: [Inspection]?, error: String?) {
+    let url = URL(string: getURLasString(.inspections) + "/" + license_plate.uppercased())!
+    
+    do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        return initInspections(dataCuccli: data)
+    } catch {
+		DDLogError("Invalid inspection data")
+        return (nil, error.localizedDescription)
+    }
+}
+
+func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: String?) {
+    var decodedInspections: InspectionResponse
+    
+    do {
+        decodedInspections = try JSONDecoder().decode(InspectionResponse.self, from: dataCuccli)
+        
+        if (decodedInspections.isSuccess()) {
+            print("status (Inspections): \(decodedInspections.isSuccess())")
+            return (decodedInspections.message, nil)
+        } else {
+            return (nil, "No error message from server (?)")
+        }
+        
+    } catch {
+		DDLogError("initInspections error: \(error)")
+        return (nil, error.localizedDescription)
+    }
+}
+
+
 
 // MARK: MyCars
 func loadCars(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
@@ -190,8 +209,8 @@ func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: 
 				print(onlyOne ? "status (Car): \(decodedData.status)" : "status (Cars): \(decodedData.status)")
 				
 				for i in 0 ..< decodedData.message.count {
-					let _ = decodedData.message[i].license_plate.getDate(.createdAt)
-					let _ = decodedData.message[i].license_plate.getDate(.updatedAt)
+					let _ = decodedData.message[i].getDate(.createdAt)
+					let _ = decodedData.message[i].getDate(.updatedAt)
 				}
 				
 				if !onlyOne {
@@ -238,8 +257,8 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
     }
 }
 
-func updateLicensePlate(newLicensePlateObject: LicensePlate, oldLicensePlate: String) async -> (response: String?, error: String?) {
-	guard let encoded = try? JSONEncoder().encode(newLicensePlateObject) else {
+func updateLicensePlate(newCarObject: Car, oldLicensePlate: String) async -> (response: String?, error: String?) {
+	guard let encoded = try? JSONEncoder().encode(newCarObject) else {
 		DDLogError("Failed to encode license plate object")
 		return (nil, "Failed to encode license plate object")
 	}
@@ -333,69 +352,30 @@ func deleteHelper (
     }.resume()
 }
 
-func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?, error: String?) {
-    
-    let cars: [Car]? = cars
-    
-    let url1 = getURLasString(.cars) + "/" + (cars![offsets.first!].license_plate.license_plate).uppercased()
-    let urlFormatted = URL(string: url1)
-    var request = URLRequest(url: urlFormatted!)
-    request.httpMethod = "DELETE"
-    
-    return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-        deleteHelper(request: &request, cars: cars!, offsets: offsets) { (deleteCars, deleteError) in
-            if let deleteCars {
-                continuation.resume(returning: (deleteCars, deleteError))
-            }
-            if let deleteError {
-                continuation.resume(returning: (deleteCars, deleteError))
-            }
-        }
-    })
-}
+//func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?, error: String?) {
+//    
+//    let cars: [Car]? = cars
+//    
+//    let url1 = getURLasString(.cars) + "/" + (cars![offsets.first!].licensePlate).uppercased()
+//    let urlFormatted = URL(string: url1)
+//    var request = URLRequest(url: urlFormatted!)
+//    request.httpMethod = "DELETE"
+//    
+//    return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
+//        deleteHelper(request: &request, cars: cars!, offsets: offsets) { (deleteCars, deleteError) in
+//            if let deleteCars {
+//                continuation.resume(returning: (deleteCars, deleteError))
+//            }
+//            if let deleteError {
+//                continuation.resume(returning: (deleteCars, deleteError))
+//            }
+//        }
+//    })
+//}
+
+
 
 // MARK: Map
-func loadCoordinates() async -> (coordinates: [Coordinates]?, error: String?) {
-    if !coordinatesLoaded {
-        let url = getURL(.coordinates)
-        
-        do {
-                // (data, metadata)-ban metadata most nem kell, ezért lehet _
-            let (data, _) = try await URLSession.shared.data(from: url)
-
-            return initCoordinates(dataCuccli: data)
-        } catch {
-			DDLogError("Invalid data in loadCoordinates: \(error)")
-            return (nil, error.localizedDescription)
-        }
-    }
-    print("Cars are already loaded")
-    return (nil,nil)
-}
-
-func initCoordinates(dataCuccli: Data) -> (coordinates: [Coordinates]?, error: String?) {
-    var decodedData: CoordinateResponse
-    
-    do {
-        decodedData = try JSONDecoder().decode(CoordinateResponse.self, from: dataCuccli)
-        
-        switch decodedData.status {
-            case "success":
-                print("status (Coordinates): \(decodedData.status)")
-                coordinatesLoaded = true
-                return (decodedData.message, nil)
-            case "fail":
-                print("Failed response: \(decodedData.message)")
-                return (nil, "Server error")
-            default:
-                return (nil, "Status is not success or fail?")
-        }
-    } catch {
-		DDLogError("initData error: \(error)")
-        return (nil, error.localizedDescription)
-    }
-}
-
 // Used for deleting cars generally
 func deleteCarHelper (
     request: inout URLRequest,

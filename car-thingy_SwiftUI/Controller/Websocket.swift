@@ -132,16 +132,14 @@ import CocoaLumberjackSwift
 	func dismissSheet() async {
         self.dataSheetOpened = false
 		
-		if !self.isQuerySaved {
-			do {
-				let (_, error) = try await deleteInspection(licensePlate: self.license_plate)
-				
-				if let safeError = error {
-					self.showAlert(error: safeError)
-				}
-			} catch {
-				self.showAlert(error: "deleteInspection failed for some reason...")
+		do {
+			let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate)
+			
+			if let safeError = error {
+				self.showAlert(error: safeError)
 			}
+		} catch {
+			self.showAlert(error: "deleteInspection failed for some reason...")
 		}
     }
     
@@ -249,7 +247,7 @@ import CocoaLumberjackSwift
     }
     
     func getInspections(_ licensePlate: String) async {
-        let (inspections, error) = await loadInspections(license_plate: licensePlate)
+		let (inspections, error) = await loadQueryInspections(license_plate: licensePlate)
         if let safeInspections = inspections {
             self.inspections = safeInspections
         }
@@ -262,10 +260,10 @@ import CocoaLumberjackSwift
 		var newRestrictions: [Restriction] = []
 		for restriction in stringRestrictions {
 			newRestrictions.append(Restriction(
-				license_plate: licensePlate,
+				licensePlate: licensePlate,
 				restriction: restriction,
-				restriction_date: Date.now.ISO8601Format(),
-				active: true
+//				restrictionDate: Date.now.ISO8601Format(),
+				isActive: true
 			))
 		}
 		return newRestrictions

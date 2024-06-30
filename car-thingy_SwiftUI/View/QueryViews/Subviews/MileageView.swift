@@ -96,7 +96,7 @@ struct MileageView: View {
                 }
                 .onChange(of: onChangeMileageData) { newMileageData in
                     if newMileageData.count != 0 {
-                        if newMileageData[0].mileage_date.contains(".") {
+                        if newMileageData[0].date.contains(".") {
                             parsedMileageData = parseMileageData(newMileageData)
                             for (index, _) in parsedMileageData.enumerated() {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
@@ -127,7 +127,7 @@ struct MileageView: View {
                                                 item.getDateComponents().year == components.year
                                             }) {
                                                 if let safeCurrentActiveMileage = self.currentActiveMileage {
-                                                    if safeCurrentActiveMileage.mileage_date != currentMileageData.mileage_date {
+                                                    if safeCurrentActiveMileage.date != currentMileageData.date {
                                                         firstHaptic = true
                                                     }
                                                 }

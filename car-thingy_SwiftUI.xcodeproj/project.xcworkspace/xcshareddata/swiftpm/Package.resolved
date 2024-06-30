@@ -1,4 +1,5 @@
 {
+  "originHash" : "2b6c2779c91d34aa6d697926dadd9c77f5652322dee424884ba1621fa4924416",
   "pins" : [
     {
       "identity" : "cocoalumberjack",
@@ -28,5 +29,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
