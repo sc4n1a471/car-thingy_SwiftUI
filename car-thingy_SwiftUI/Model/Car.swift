@@ -18,7 +18,7 @@ struct Car: Codable, Identifiable, Equatable, Hashable {
         licensePlate
     }
 	var licensePlate: String = String()
-	var comment: String = String()
+	var comment: String?
 	var createdAt: String?
 	var updatedAt: String?
 	var brand: String?

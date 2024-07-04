@@ -79,7 +79,7 @@ struct NewCar: View {
     var textBindingComment: Binding<String> {
             Binding<String>(
                 get: {
-                    return self.ezLenniCar.comment
+					return self.ezLenniCar.comment ?? ""
             },
                 set: { newString in
                     self.ezLenniCar.comment = newString

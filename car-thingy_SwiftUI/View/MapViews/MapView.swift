@@ -18,7 +18,7 @@ struct MapView: View {
             ForEach(sharedViewData.cars, id: \.licensePlate) { coordinateObject in
                 Marker(coordinateObject.licensePlate, coordinate: CLLocationCoordinate2D(latitude: coordinateObject.latitude, longitude: coordinateObject.longitude))
                     .tag(coordinateObject.licensePlate)
-                    .tint(coordinateObject.brand != String() ? .blue : .red)
+                    .tint(coordinateObject.brand != nil ? .blue : .red)
             }
         }.onAppear(perform: {
             viewModel.initViewModel(sharedViewData)

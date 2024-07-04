@@ -176,21 +176,25 @@ struct MyCarsView: View {
         } else {
             if self.searchCar.localizedStandardContains("new") {
                 return sharedViewData.cars.filter {
-                    $0.brand == String()
+                    $0.brand == nil
                 }
             } else if self.searchCar.localizedStandardContains("for testing purposes") {
-                return sharedViewData.cars.filter {
-                    $0.comment.lowercased().contains("for testing purposes") || $0.comment.lowercased().contains("for testing purpuses")
+				return sharedViewData.cars.filter { car -> Bool in
+					guard let safeComment = car.comment else { return false }
+					return safeComment.lowercased().contains("for testing purposes")
                 }
             }
-            return sharedViewData.cars.filter {
-                $0.licensePlate.contains(self.searchCar.uppercased())
+            return sharedViewData.cars.filter { car -> Bool in
+				guard let safeBrand = car.brand else { return false }
+				guard let safeModel = car.model else { return false }
+				guard let safeTypeCode = car.typeCode else { return false }
+				return car.licensePlate.contains(self.searchCar.uppercased())
                 ||
-                $0.brand!.contains(self.searchCar.uppercased())
+				safeBrand.contains(self.searchCar.uppercased())
                 ||
-                $0.model!.contains(self.searchCar.uppercased())
+				safeModel.contains(self.searchCar.uppercased())
                 ||
-                $0.typeCode!.contains(self.searchCar.uppercased())
+                safeTypeCode.contains(self.searchCar.uppercased())
             }
         }
     }
