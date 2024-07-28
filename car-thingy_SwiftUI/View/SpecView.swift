@@ -163,4 +163,5 @@ extension String {
 //		Restriction(license_plate: "AAA111", restriction: "HEEEEEEEE", restriction_date: "2021.01.01.")
 //	])
 	SpecView(header: "Accidents", accidents: testCar.accidents)
+		.environment(SharedViewData())
 }

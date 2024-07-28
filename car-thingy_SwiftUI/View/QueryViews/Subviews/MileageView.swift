@@ -255,6 +255,7 @@ struct BindingViewPreview: View {
     
     var body: some View {
         MileageView(onChangeMileageData: testCar.mileage!, mileageData: $mileage)
+			.environment(SharedViewData())
     }
 }
 
