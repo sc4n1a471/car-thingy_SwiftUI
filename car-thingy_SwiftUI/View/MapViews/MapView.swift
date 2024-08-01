@@ -15,10 +15,10 @@ struct MapView: View {
     
     var body: some View {
         Map(initialPosition: .region(viewModel.position), selection: $selectedLicensePlate) {
-            ForEach(sharedViewData.cars, id: \.license_plate.license_plate) { coordinateObject in
-                Marker(coordinateObject.license_plate.license_plate, coordinate: CLLocationCoordinate2D(latitude: coordinateObject.coordinates.latitude, longitude: coordinateObject.coordinates.longitude))
-                    .tag(coordinateObject.license_plate.license_plate)
-                    .tint(coordinateObject.specs.brand != String() ? .blue : .red)
+            ForEach(sharedViewData.cars, id: \.licensePlate) { coordinateObject in
+                Marker(coordinateObject.licensePlate, coordinate: CLLocationCoordinate2D(latitude: coordinateObject.latitude, longitude: coordinateObject.longitude))
+                    .tag(coordinateObject.licensePlate)
+                    .tint(coordinateObject.brand != nil ? .blue : .red)
             }
         }.onAppear(perform: {
             viewModel.initViewModel(sharedViewData)

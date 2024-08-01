@@ -22,9 +22,9 @@ struct MyCarsView: View {
 	var sortedCars: [Car] {
 		switch sortType {
 			case .licensePlate:
-				return searchCars.sorted { $0.license_plate.license_plate < $1.license_plate.license_plate }
+				return searchCars.sorted { $0.licensePlate < $1.licensePlate }
 			case .createdAt:
-				return searchCars.sorted { $0.license_plate.parsedCreatedAt! > $1.license_plate.parsedCreatedAt! }
+				return searchCars.sorted { $0.parsedCreatedAt! > $1.parsedCreatedAt! }
 		}
 	}
 	
@@ -93,7 +93,7 @@ struct MyCarsView: View {
 			.sheet(isPresented: $sharedViewDataBindable.isNewCarPresented, onDismiss: {
 				Task {
 					await sharedViewData.loadViewData()
-					if sharedViewData.returnNewCar.license_plate.license_plate != String() {
+					if sharedViewData.returnNewCar.licensePlate != String() {
 						openDetailViewAfterUpload = true
 					}
 				}
@@ -176,35 +176,39 @@ struct MyCarsView: View {
         } else {
             if self.searchCar.localizedStandardContains("new") {
                 return sharedViewData.cars.filter {
-                    $0.specs.brand == String()
+                    $0.brand == nil
                 }
             } else if self.searchCar.localizedStandardContains("for testing purposes") {
-                return sharedViewData.cars.filter {
-                    $0.license_plate.comment.lowercased().contains("for testing purposes") || $0.license_plate.comment.lowercased().contains("for testing purpuses")
+				return sharedViewData.cars.filter { car -> Bool in
+					guard let safeComment = car.comment else { return false }
+					return safeComment.lowercased().contains("for testing purposes")
                 }
             }
-            return sharedViewData.cars.filter {
-                $0.license_plate.license_plate.contains(self.searchCar.uppercased())
+            return sharedViewData.cars.filter { car -> Bool in
+				guard let safeBrand = car.brand else { return false }
+				guard let safeModel = car.model else { return false }
+				guard let safeTypeCode = car.typeCode else { return false }
+				return car.licensePlate.contains(self.searchCar.uppercased())
                 ||
-                $0.specs.brand!.contains(self.searchCar.uppercased())
+				safeBrand.contains(self.searchCar.uppercased())
                 ||
-                $0.specs.model!.contains(self.searchCar.uppercased())
+				safeModel.contains(self.searchCar.uppercased())
                 ||
-                $0.specs.type_code!.contains(self.searchCar.uppercased())
+                safeTypeCode.contains(self.searchCar.uppercased())
             }
         }
     }
     
 	// MARK: Functions
     func getHeading(resultCar: Car) -> String {
-        if (resultCar.specs.brand != String()) {
-            if (resultCar.specs.model == String()) {
-                return resultCar.specs.type_code ?? "No type_code"
+        if (resultCar.brand != nil) {
+            if (resultCar.model == String()) {
+                return resultCar.typeCode ?? "No type_code"
             } else {
-                if (resultCar.specs.model!.contains(resultCar.specs.brand!)) {
-                    return resultCar.specs.model?.replacingOccurrences(of: "\(resultCar.specs.brand!) ", with: "") ?? "No model"
+                if (resultCar.model!.contains(resultCar.brand!)) {
+                    return resultCar.model?.replacingOccurrences(of: "\(resultCar.brand!) ", with: "") ?? "No model"
                 } else {
-                    return resultCar.specs.model ?? "No model"
+                    return resultCar.model ?? "No model"
                 }
             }
         } else {

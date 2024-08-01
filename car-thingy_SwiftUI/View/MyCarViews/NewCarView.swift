@@ -66,12 +66,12 @@ struct NewCar: View {
     var textBindingLicensePlate: Binding<String> {
             Binding<String>(
                 get: {
-                    return ezLenniCar.license_plate.license_plate
+                    return ezLenniCar.licensePlate
                     
             },
                 set: { newString in
-                    self.ezLenniCar.license_plate.license_plate = newString.uppercased()
-                    self.ezLenniCar.license_plate.license_plate.removeAll(where: {
+                    self.ezLenniCar.licensePlate = newString.uppercased()
+                    self.ezLenniCar.licensePlate.removeAll(where: {
                         removableCharacters.contains($0)
                     })
             })
@@ -79,10 +79,10 @@ struct NewCar: View {
     var textBindingComment: Binding<String> {
             Binding<String>(
                 get: {
-                    return self.ezLenniCar.license_plate.comment
+					return self.ezLenniCar.comment ?? ""
             },
                 set: { newString in
-                    self.ezLenniCar.license_plate.comment = newString
+                    self.ezLenniCar.comment = newString
             })
     }
     
@@ -166,7 +166,7 @@ struct NewCar: View {
             sharedViewData.haptic(type: .notification)
             if (sharedViewData.isEditCarPresented) {
                 self.ezLenniCar = sharedViewData.existingCar
-				oldLicensePlate = sharedViewData.existingCar.license_plate.license_plate
+				oldLicensePlate = sharedViewData.existingCar.licensePlate
 				
 				customLatitude = sharedViewData.region.center.latitude.description
 				customLongitude = sharedViewData.region.center.longitude.description
@@ -189,8 +189,8 @@ struct NewCar: View {
                 sharedViewData.isLoading = true
                 
                 if (selectedMap == MapType.custom) {
-                    ezLenniCar.coordinates.latitude = Double(customLatitude) ?? 37.789467
-                    ezLenniCar.coordinates.longitude = Double(customLongitude) ?? -122.416772
+                    ezLenniCar.latitude = Double(customLatitude) ?? 37.789467
+                    ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
 					if let safeLocationManagerMessage = locationManager.message {
 						sharedViewData.showAlert(errorMsg: safeLocationManagerMessage)
@@ -202,8 +202,8 @@ struct NewCar: View {
 						return
 					}
                         
-					ezLenniCar.coordinates.latitude = Double(userLatitude) ?? 127.0
-					ezLenniCar.coordinates.longitude = Double(userLongitude) ?? 36.0
+					ezLenniCar.latitude = Double(userLatitude) ?? 127.0
+					ezLenniCar.longitude = Double(userLongitude) ?? 36.0
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -211,13 +211,13 @@ struct NewCar: View {
                     removableCharacters.contains($0)
                 })
                 
-                ezLenniCar.coordinates.license_plate = ezLenniCar.license_plate.license_plate
-				ezLenniCar.license_plate.updated_at = Date.now.ISO8601Format()
+				ezLenniCar.updatedAt = Date.now.ISO8601Format()
+				ezLenniCar.mileage = []
 				
-				ezLenniCar.license_plate.created_at = isUpload ? Date.now.ISO8601Format() : sharedViewData.existingCar.license_plate.created_at
+				ezLenniCar.createdAt = isUpload ? Date.now.ISO8601Format() : sharedViewData.existingCar.createdAt
 				
-				if ezLenniCar.license_plate.license_plate != oldLicensePlate && sharedViewData.isEditCarPresented {
-					let (safeMessage, safeError) = await updateLicensePlate(newLicensePlateObject: ezLenniCar.license_plate, oldLicensePlate: oldLicensePlate)
+				if ezLenniCar.licensePlate != oldLicensePlate && sharedViewData.isEditCarPresented {
+					let (safeMessage, safeError) = await updateLicensePlate(newCarObject: ezLenniCar, oldLicensePlate: oldLicensePlate)
 					
 					if let safeMessage {
 						DDLogVerbose("Licese plate update was successful: \(safeMessage)")

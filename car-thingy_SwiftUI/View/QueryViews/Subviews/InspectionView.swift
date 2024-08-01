@@ -36,8 +36,8 @@ struct InspectionView: View {
             .padding()
             
             TabView {
-                ForEach(0..<(inspection.base_64?.count ?? 0), id:\.self) { i in
-                    if let safeImage = convertImage(base64: inspection.base_64![i]) {
+                ForEach(0..<(inspection.base64?.count ?? 0), id:\.self) { i in
+                    if let safeImage = convertImage(base64: inspection.base64![i]) {
                         safeImage
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -59,7 +59,7 @@ struct InspectionView: View {
         .sheet(isPresented: $presentSheet, onDismiss: {
             Task {}
         }) {
-            InspectionImageViewer(imageIndex: imageIndex, images: inspection.base_64!)
+            InspectionImageViewer(imageIndex: imageIndex, images: inspection.base64!)
         }
     }
     

@@ -20,6 +20,7 @@ struct InspectionsView: View {
                                 .frame(width: 351, height: 300)
                         }
                         .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+						.safeAreaPadding(.horizontal, 55)
                     }
                 } else {
                     ScrollView(.horizontal) {
@@ -35,7 +36,7 @@ struct InspectionsView: View {
                         .scrollTargetLayout()
                     }
                     .scrollTargetBehavior(.viewAligned)
-                    .safeAreaPadding(.horizontal, 50)
+                    .safeAreaPadding(.horizontal, 55)
                     .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
             }
@@ -45,5 +46,11 @@ struct InspectionsView: View {
 
 
 #Preview {
-    InspectionsView(inspections: testCar.inspections!)
+	InspectionsView(inspections: previewCar.inspections!)
+		.environment(SharedViewData())
+}
+
+#Preview {
+	DetailView(selectedCar: previewCar, region: previewCar.getLocation())
+		.environment(SharedViewData())
 }
