@@ -69,45 +69,45 @@ struct MapDetailView: View {
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
             
-            if selectedCar.brand != String() {
-                Section {
-                    SpecView(header: "Brand", content: selectedCar.brand)
-                    SpecView(header: "Model", content: selectedCar.model)
-                    SpecView(header: "Type Code", content: selectedCar.typeCode)
-                }
-                
-                Section {
-                    SpecView(header: "Status", content: selectedCar.status)
-                    SpecView(header: "First registration", content: selectedCar.firstReg)
-                    SpecView(header: "First registration in 🇭🇺", content: selectedCar.firstRegHun)
-                    SpecView(header: "Number of owners", content: String(selectedCar.numOfOwners ?? 99))
-                }
-                
-                Section {
-                    SpecView(header: "Year", content: String(selectedCar.year ?? 1970))
-                    SpecView(header: "Engine size", content: String(selectedCar.engineSize ?? 9999), note: "cm3")
-                    SpecView(header: "Performance", content: String(selectedCar.performance ?? 999), note: "HP")
-                    SpecView(header: "Fuel type", content: selectedCar.fuelType)
-                    SpecView(header: "Gearbox", content: selectedCar.gearbox)
-                    SpecView(header: "Color", content: selectedCar.color)
-                }
-                
-                Section {
-                    MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
-                }
-                
-                Section {
-                    SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
-                }
-                
-                Section {
-                    SpecView(header: "Accidents", accidents: selectedCar.accidents)
-                }
-                
-                if let safeInspections = selectedCar.inspections {
-                    InspectionsView(inspections: safeInspections)
-                }
-            }
+			if selectedCar.brand != nil {
+				Section {
+					SpecView(header: "Brand", content: selectedCar.brand)
+					SpecView(header: "Model", content: selectedCar.model)
+					SpecView(header: "Type Code", content: selectedCar.typeCode)
+				}
+				
+				Section {
+					SpecView(header: "Status", content: selectedCar.status)
+					SpecView(header: "First registration", content: selectedCar.firstReg)
+					SpecView(header: "First registration in 🇭🇺", content: selectedCar.firstRegHun)
+					SpecView(header: "Number of owners", content: String(selectedCar.numOfOwners ?? 99))
+				}
+				
+				Section {
+					SpecView(header: "Year", content: String(selectedCar.year ?? 1970))
+					SpecView(header: "Engine size", content: String(selectedCar.engineSize ?? 9999), note: "cm3")
+					SpecView(header: "Performance", content: String(selectedCar.performance ?? 999), note: "HP")
+					SpecView(header: "Fuel type", content: selectedCar.fuelType)
+					SpecView(header: "Gearbox", content: selectedCar.gearbox)
+					SpecView(header: "Color", content: selectedCar.color)
+				}
+				
+				Section {
+					MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
+				}
+				
+				Section {
+					SpecView(header: "Restrictions", restrictions: selectedCar.restrictions)
+				}
+				
+				Section {
+					SpecView(header: "Accidents", accidents: selectedCar.accidents)
+				}
+				
+				Section {
+					InspectionsView(inspections: selectedCar.inspections ?? [Inspection()])
+				}
+			}
             
             Section {
                 SpecView(header: "Comment", content: selectedCar.comment)
