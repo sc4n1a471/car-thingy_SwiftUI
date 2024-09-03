@@ -185,7 +185,7 @@ struct MyCarsView: View {
                 }
             }
             return sharedViewData.cars.filter { car -> Bool in
-				guard let safeBrand = car.brand else { return false }
+				guard let safeBrand = car.brand else { return car.licensePlate.contains(self.searchCar.uppercased()) }
 				guard let safeModel = car.model else { return false }
 				guard let safeTypeCode = car.typeCode else { return false }
 				return car.licensePlate.contains(self.searchCar.uppercased())

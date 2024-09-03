@@ -334,8 +334,8 @@ import CocoaLumberjackSwift
                                     self.setValues(safeValue, key: safeKey)
                                 }
                             }
-                            self.percentage = safeResponse.percentage
-                                //                            self.ping()
+							self.percentage = safeResponse.percentage
+							self.ping()
                         }
                     }
                     if let safeError {

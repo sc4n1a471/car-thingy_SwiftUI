@@ -178,4 +178,5 @@ struct QuerySheetView: View {
 
 #Preview {
     QuerySheetView(websocket: Websocket(preview: true))
+		.environment(SharedViewData())
 }
