@@ -167,7 +167,7 @@ import CocoaLumberjackSwift
                         }
                         break
                     case CarDataType.color:
-//                        self.color = stringValue
+                        self.color = stringValue
                         break
                     case CarDataType.first_reg:
                         self.first_reg = stringValue
@@ -334,7 +334,7 @@ import CocoaLumberjackSwift
                                     self.setValues(safeValue, key: safeKey)
                                 }
                             }
-//							self.percentage = safeResponse.percentage
+							self.percentage = safeResponse.percentage
 							self.ping()
                         }
                     }
@@ -375,7 +375,7 @@ import CocoaLumberjackSwift
     func close() {
         webSocketTask?.cancel(with: .goingAway, reason: "Query ended".data(using: .utf8))
         print("Disconnected")
-//        self.percentage = 0.0
+        self.percentage = 0.0
         self.counter = 0
         self.setLoading(false)
     }

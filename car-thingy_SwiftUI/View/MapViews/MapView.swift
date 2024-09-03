@@ -32,12 +32,15 @@ struct MapView: View {
             }
         }, content: {
             MapDetailView(selectedLicensePlate: $selectedLicensePlate)
-                .presentationDetents([.medium, .large])
+				.presentationDetents(
+					viewModel.knownCar ? [.medium, .large] : [.fraction(0.35), .medium, .large]
+				)
                 .presentationBackground(.ultraThickMaterial)
         })
         .onChange(of: selectedLicensePlate) {
             if let selectedLicensePlate {
                 viewModel.infoSheet = true
+				viewModel.knownCar = sharedViewData.cars.first(where: { $0.licensePlate == selectedLicensePlate })?.brand != nil
             }
             Task {
                 await viewModel.loadMarkers()

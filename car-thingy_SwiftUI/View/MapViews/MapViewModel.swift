@@ -21,6 +21,7 @@ extension MapView {
             )
         )
         
+		var knownCar: Bool = false
         var infoSheet: Bool = false
         var sharedViewData: SharedViewData?
         
