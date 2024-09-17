@@ -134,7 +134,7 @@ struct MapDetailView: View {
             QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
         }
-        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
+        .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMapView) {
             Button("Got it") {
                 print("alert confirmed")
             }
@@ -185,7 +185,7 @@ struct MapDetailView: View {
                 }
                                 
                 if let safeErrorMsg = errorMsg {
-                    sharedViewData.showAlert(errorMsg: safeErrorMsg)
+					sharedViewData.showAlert(.mapView, safeErrorMsg)
                 }
             }
             presentationMode.wrappedValue.dismiss()
@@ -224,7 +224,7 @@ struct MapDetailView: View {
         }
         
         if let safeCarError {
-            sharedViewData.showAlert(errorMsg: safeCarError)
+			sharedViewData.showAlert(.mapView, safeCarError)
         }
         
         sharedViewData.isLoading = false

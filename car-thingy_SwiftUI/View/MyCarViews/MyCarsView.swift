@@ -85,7 +85,7 @@ struct MyCarsView: View {
 				await sharedViewData.loadViewData(true)
 			}
 			.searchable(text: $searchCar, placement: .toolbar)
-			.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlert) {
+			.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMyCars) {
 				Button("Got it") {
 					print("alert confirmed")
 				}

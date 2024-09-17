@@ -13,7 +13,12 @@ import CocoaLumberjackSwift
     var cars = [Car]()
     var error: String?
     
-    var showAlert = false
+	var showAlertMyCars = false
+	var showAlertNewCar = false
+	var showAlertDetailView = false
+	var showAlertQueryView = false
+	var showAlertMapView = false
+	
     var isLoading = false
     var isNewCarPresented = false
     var isEditCarPresented = false
@@ -40,6 +45,14 @@ import CocoaLumberjackSwift
 		case notification
 		case standard
 		case error
+	}
+	
+	enum AlertLocations: String {
+		case myCars
+		case newCar
+		case detailView
+		case queryView
+		case mapView
 	}
     
     init() {}
@@ -70,9 +83,20 @@ import CocoaLumberjackSwift
         self.existingCar = Car()
     }
     
-    func showAlert(errorMsg: String) {
+	func showAlert(_ alertLocation: AlertLocations, _ errorMsg: String) {
+		switch alertLocation {
+			case .myCars:
+				showAlertMyCars = true
+			case .newCar:
+				showAlertNewCar = true
+			case .detailView:
+				showAlertDetailView = true
+			case .queryView:
+				showAlertQueryView = true
+			case .mapView:
+				showAlertMapView = true
+		}
         self.isLoading = false
-        self.showAlert = true
         self.error = errorMsg
         DDLogError(errorMsg)
 		self.haptic(type: .error)
@@ -86,7 +110,7 @@ import CocoaLumberjackSwift
 		}
 		
 		if let safeCarError {
-			self.showAlert(errorMsg: safeCarError)
+			self.showAlert(.myCars, safeCarError)
 		}
 		
 		self.isLoading = false
