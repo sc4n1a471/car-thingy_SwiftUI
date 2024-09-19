@@ -91,6 +91,7 @@ func deleteQueryInspectionHelper (
 			successMsg = decodedData.data
 		} catch {
 			DDLogError("Error: Trying to convert JSON data to string")
+			DDLogError(String(data: data, encoding: .utf8) ?? "???")
 			DDLogError("Error during decoding in deleteQueryInspectionHelper. Error: \(error)")
 			errorMsg = "Error during decoding in deleteQueryInspectionHelper \n \(error)"
 			completionHandler(nil, errorMsg)

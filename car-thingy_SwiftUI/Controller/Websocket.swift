@@ -300,7 +300,8 @@ import CocoaLumberjackSwift
     func connect(_ requestedCar: String) async {
         self.setLoading(true)
         guard let url = URL(string: getURLasString(.query)) else { return }
-        let request = URLRequest(url: url)
+        var request = URLRequest(url: url)
+		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
@@ -352,7 +353,11 @@ import CocoaLumberjackSwift
                     }
                     if let safeError {
 						DDLogError("error: \(safeError)")
-                        self.showAlert(.notQuerySheetView, safeError)
+						if self.dataSheetOpened {
+							self.showAlert(.querySheetView, safeError)
+						} else {
+							self.showAlert(.notQuerySheetView, safeError)
+						}
                     }
                 case .data(let data):
                         // Handle binary data

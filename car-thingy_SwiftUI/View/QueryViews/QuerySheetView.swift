@@ -92,7 +92,7 @@ struct QuerySheetView: View {
             .navigationTitle(websocket.getLP())
             .scrollContentBackground(.visible)
         }
-        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
+		.alert(websocket.error, isPresented: $websocket.isAlertSheetView, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
                 print("websocket alert confirmed")
