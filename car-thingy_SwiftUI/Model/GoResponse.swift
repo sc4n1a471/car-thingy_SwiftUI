@@ -9,5 +9,6 @@ import Foundation
 
 struct GoResponse: Decodable {
     var status: String
-    var message: String
+    var message: String?
+	var data: String?
 }

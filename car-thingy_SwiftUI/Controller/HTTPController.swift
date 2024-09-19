@@ -49,7 +49,10 @@ func loadQueryInspections(license_plate: String) async -> (inspections: [Inspect
 	let url = URL(string: getURLasString(.queryInspections) + "/" + license_plate.uppercased())!
 	
 	do {
-		let (data, _) = try await URLSession.shared.data(from: url)
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
+		let (data, _) = try await URLSession.shared.data(for: request)
 		
 		return initInspections(dataCuccli: data)
 	} catch {
@@ -149,12 +152,13 @@ func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: St
         
         if (decodedInspections.isSuccess()) {
             print("status (Inspections): \(decodedInspections.isSuccess())")
-            return (decodedInspections.message, nil)
+			return (decodedInspections.data, nil)
         } else {
             return (nil, "No error message from server (?)")
         }
         
     } catch {
+		DDLogError(String(data: dataCuccli, encoding: .utf8) ?? "???")
 		DDLogError("initInspections error: \(error)")
         return (nil, error.localizedDescription)
     }
@@ -296,7 +300,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
                 print("status (saveCar) success: \(decodedData.status)")
                 coordinatesLoaded = false
 				setCarsLoaded(false)
-				return (decodedData.message, nil)
+				return (decodedData.data, nil)
             case "fail":
                 print("status (saveCar) failed: \(decodedData.message)")
                 return (nil, "Server error: \(decodedData.message)")
@@ -304,6 +308,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
                 return (nil, "Status is not success or fail?")
         }
     } catch {
+		DDLogError(String(data: dataCuccli, encoding: .utf8) ?? "???")
 		DDLogError("initSaveResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
