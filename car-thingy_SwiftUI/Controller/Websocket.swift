@@ -17,6 +17,7 @@ import CocoaLumberjackSwift
     var dataSheetOpened = false
     var error = String()
     var isAlert = false
+	var isAlertSheetView = false	// show alert on sheetView only, so it doesn't dismiss the sheet
 	var isQuerySaved = false
     
     var license_plate = String()
@@ -47,6 +48,11 @@ import CocoaLumberjackSwift
 		case notification
 		case standard
 		case error
+	}
+	
+	enum AlertLocations: String {
+		case notQuerySheetView
+		case querySheetView
 	}
     
     init(preview: Bool = false) {
@@ -138,10 +144,10 @@ import CocoaLumberjackSwift
 				let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate)
 				
 				if let safeError = error {
-					self.showAlert(error: safeError)
+					self.showAlert(.notQuerySheetView, safeError)
 				}
 			} catch {
-				self.showAlert(error: "deleteInspection failed for some reason...")
+				self.showAlert(.notQuerySheetView, "deleteInspection failed for some reason...")
 			}
 		}
     }
@@ -255,7 +261,7 @@ import CocoaLumberjackSwift
             self.inspections = safeInspections
         }
         if let safeError = error {
-            self.showAlert(error: safeError)
+			self.showAlert(.querySheetView, safeError)
         }
     }
 	
@@ -272,9 +278,14 @@ import CocoaLumberjackSwift
 		return newRestrictions
 	}
     
-    func showAlert(error: String) {
+	func showAlert(_ alertLocation: AlertLocations,_ error: String) {
         self.error = error
-        self.isAlert = true
+		switch alertLocation {
+			case .notQuerySheetView:
+				self.isAlert = true
+			case .querySheetView:
+				self.isAlertSheetView = true
+		}
         self.isLoading = false
         self.close()
 		self.haptic(type: .error)
@@ -283,12 +294,14 @@ import CocoaLumberjackSwift
     func disableAlert() {
         self.error = String()
         self.isAlert = false
+		self.isAlertSheetView = false
     }
     
     func connect(_ requestedCar: String) async {
         self.setLoading(true)
         guard let url = URL(string: getURLasString(.query)) else { return }
-        let request = URLRequest(url: url)
+        var request = URLRequest(url: url)
+		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
@@ -340,7 +353,11 @@ import CocoaLumberjackSwift
                     }
                     if let safeError {
 						DDLogError("error: \(safeError)")
-                        self.showAlert(error: safeError)
+						if self.dataSheetOpened {
+							self.showAlert(.querySheetView, safeError)
+						} else {
+							self.showAlert(.notQuerySheetView, safeError)
+						}
                     }
                 case .data(let data):
                         // Handle binary data

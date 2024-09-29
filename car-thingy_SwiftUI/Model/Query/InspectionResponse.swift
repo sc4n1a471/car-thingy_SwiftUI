@@ -9,7 +9,8 @@ import Foundation
 
 struct InspectionResponse: Codable, Hashable {
     var status: String
-    var message: [Inspection]
+    var data: [Inspection]?
+	var mssage: String?
     
     func isSuccess() -> Bool {
         return status == "success"

@@ -25,7 +25,7 @@ struct DetailView: View {
     ]
     
     var body: some View {
-            // required because can't use environment as binding
+		// required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
         List {
@@ -140,6 +140,11 @@ struct DetailView: View {
                 print("websocket alert confirmed")
             }
         })
+		.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertDetailView) {
+			Button("Got it") {
+				print("alert confirmed")
+			}
+		}
         .onAppear() {
             sharedViewData.existingCar = selectedCar
             sharedViewData.region = region
@@ -202,15 +207,14 @@ struct DetailView: View {
                 let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.licensePlate)
                 
                 if successMsg != nil {
-					await sharedViewData.loadViewData()
                     presentationMode.wrappedValue.dismiss()
+					await sharedViewData.loadViewData()
                 }
                 
                 if let safeErrorMsg = errorMsg {
-                    sharedViewData.showAlert(errorMsg: safeErrorMsg)
+					sharedViewData.showAlert(.detailView, safeErrorMsg)
                 }
             }
-            presentationMode.wrappedValue.dismiss()
         }, label: {
             Image(systemName: "trash")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -231,7 +235,7 @@ struct DetailView: View {
         }
         
         if let safeCarError {
-            sharedViewData.showAlert(errorMsg: safeCarError)
+			sharedViewData.showAlert(.detailView, safeCarError)
         }
         
         sharedViewData.isLoading = false

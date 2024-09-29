@@ -37,7 +37,7 @@ extension MapView {
             }
             
             if let error {
-                sharedViewData?.showAlert(errorMsg: error)
+				sharedViewData?.showAlert(.mapView, error)
             }
         }
     }

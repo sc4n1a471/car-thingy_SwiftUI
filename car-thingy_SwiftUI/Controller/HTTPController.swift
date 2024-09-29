@@ -49,7 +49,10 @@ func loadQueryInspections(license_plate: String) async -> (inspections: [Inspect
 	let url = URL(string: getURLasString(.queryInspections) + "/" + license_plate.uppercased())!
 	
 	do {
-		let (data, _) = try await URLSession.shared.data(from: url)
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
+		let (data, _) = try await URLSession.shared.data(for: request)
 		
 		return initInspections(dataCuccli: data)
 	} catch {
@@ -70,7 +73,7 @@ func deleteQueryInspectionHelper (
 	URLSession.shared.dataTask(with: request) { data, response, error in
 		guard error == nil else {
 			DDLogError("Error: error calling DELETE")
-			DDLogError("deleteData error: \(String(describing: error))")
+			DDLogError("deleteQueryInspectionHelper error: \(String(describing: error))")
 			errorMsg = "Error calling DELETE \n \(String(describing: error))"
 			completionHandler(nil, errorMsg)
 			return
@@ -85,14 +88,15 @@ func deleteQueryInspectionHelper (
 		do {
 			var decodedData: DeleteResponse
 			decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
-			print(decodedData.message as Any)
+			print(decodedData.data as Any)
 			coordinatesLoaded = false
 			setCarsLoaded(false)
-			successMsg = decodedData.message
+			successMsg = decodedData.data
 		} catch {
 			DDLogError("Error: Trying to convert JSON data to string")
-			DDLogError("Error during decoding in deleteData. Error: \(error)")
-			errorMsg = "Error during decoding in deleteData \n \(error)"
+			DDLogError(String(data: data, encoding: .utf8) ?? "???")
+			DDLogError("Error during decoding in deleteQueryInspectionHelper. Error: \(error)")
+			errorMsg = "Error during decoding in deleteQueryInspectionHelper \n \(error)"
 			completionHandler(nil, errorMsg)
 			return
 		}
@@ -106,6 +110,7 @@ func deleteQueryInspection(licensePlate: String) async throws -> (success: Strin
 	let urlFormatted = URL(string: url1)
 	var request = URLRequest(url: urlFormatted!)
 	request.httpMethod = "DELETE"
+	request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
 	
 	return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
 		deleteQueryInspectionHelper(request: &request) { (deleteSuccess, deleteError) in
@@ -127,7 +132,10 @@ func loadInspections(license_plate: String) async -> (inspections: [Inspection]?
     let url = URL(string: getURLasString(.inspections) + "/" + license_plate.uppercased())!
     
     do {
-        let (data, _) = try await URLSession.shared.data(from: url)
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
+		let (data, _) = try await URLSession.shared.data(for: request)
         
         return initInspections(dataCuccli: data)
     } catch {
@@ -144,12 +152,13 @@ func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: St
         
         if (decodedInspections.isSuccess()) {
             print("status (Inspections): \(decodedInspections.isSuccess())")
-            return (decodedInspections.message, nil)
+			return (decodedInspections.data, nil)
         } else {
             return (nil, "No error message from server (?)")
         }
         
     } catch {
+		DDLogError(String(data: dataCuccli, encoding: .utf8) ?? "???")
 		DDLogError("initInspections error: \(error)")
         return (nil, error.localizedDescription)
     }
@@ -163,14 +172,12 @@ func loadCars(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
         let url = getURL(.cars)
         
         do {
-                // (data, metadata)-ban metadata most nem kell, ezért lehet _
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-                //        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-                //            returnedData.error = "Could not reach API (502)"
-                //            returnedData.cars = [errorCar]
-                //            return returnedData
-                //        }
+			var request = URLRequest(url: url)
+			request.httpMethod = "GET"
+			request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
+			
+			let (data, metadata) = try await URLSession.shared.data(for: request)
+
             return initData(dataCuccli: data)
         } catch {
 			DDLogError("Invalid data in loadCars: \(error)")
@@ -185,11 +192,10 @@ func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
     let url = URL(string: getURLasString(.cars) + "/" + license_plate.uppercased())!
     
     do {
-        let (data, _) = try await URLSession.shared.data(from: url)
-        
-//        if (String(data: data, encoding: .utf8)?.contains("502") == true) {
-//            return (nil, "Could not reach API (502)")
-//        }
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
+		let (data, metadata) = try await URLSession.shared.data(for: request)
         
         return initData(dataCuccli: data, onlyOne: true)
     } catch {
@@ -208,19 +214,19 @@ func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: 
             case "success":
 				print(onlyOne ? "status (Car): \(decodedData.status)" : "status (Cars): \(decodedData.status)")
 				
-				for i in 0 ..< decodedData.message.count {
-					let _ = decodedData.message[i].getDate(.createdAt)
-					let _ = decodedData.message[i].getDate(.updatedAt)
+				for i in 0 ..< decodedData.data!.count {
+					let _ = decodedData.data![i].getDate(.createdAt)
+					let _ = decodedData.data![i].getDate(.updatedAt)
 				}
 				
 				if !onlyOne {
 					setCarsLoaded(true)
 				}
 				
-                return (decodedData.message, nil)
+                return (decodedData.data, nil)
             case "fail":
-				DDLogError("Failed response: \(decodedData.message)")
-                return (nil, "Server error")
+				DDLogError("Failed response: \(decodedData.message ?? "No response??")")
+                return (nil, "Server error: \(decodedData.message ?? "No response??")")
             default:
                 return (nil, "Status is not success or fail?")
         }
@@ -244,6 +250,7 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
     
     request.httpMethod = isPost ? "POST" : "PUT"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+	request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
         
     do {
         let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
@@ -268,10 +275,11 @@ func updateLicensePlate(newCarObject: Car, oldLicensePlate: String) async -> (re
 	
 	request.httpMethod = "PUT"
 	request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+	request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
 	
 	do {
 		let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
-		print(String(data: data, encoding: .utf8) ?? "???")
+//		print(String(data: data, encoding: .utf8) ?? "???")
 		
 		return initSaveResponse(dataCuccli: data)
 	} catch {
@@ -292,7 +300,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
                 print("status (saveCar) success: \(decodedData.status)")
                 coordinatesLoaded = false
 				setCarsLoaded(false)
-				return (decodedData.message, nil)
+				return (decodedData.data, nil)
             case "fail":
                 print("status (saveCar) failed: \(decodedData.message)")
                 return (nil, "Server error: \(decodedData.message)")
@@ -300,6 +308,7 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
                 return (nil, "Status is not success or fail?")
         }
     } catch {
+		DDLogError(String(data: dataCuccli, encoding: .utf8) ?? "???")
 		DDLogError("initSaveResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
@@ -335,7 +344,7 @@ func deleteHelper (
         do {
             var decodedData: DeleteResponse
             decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
-            print(decodedData.message as Any)
+            print(decodedData.data as Any)
             coordinatesLoaded = false
         } catch {
 			DDLogError("Error: Trying to convert JSON data to string")
@@ -388,29 +397,30 @@ func deleteCarHelper (
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil else {
 			DDLogError("Error: error calling DELETE")
-			DDLogError("deleteData error: \(String(describing: error))")
+			DDLogError("deleteCarHelper error: \(String(describing: error))")
             errorMsg = "Error calling DELETE \n \(String(describing: error))"
             completionHandler(nil, errorMsg)
             return
         }
         guard let data = data else {
 			DDLogError("Error: Did not receive data")
-            errorMsg = "Did not receive data in deleteData"
+            errorMsg = "Did not receive data in deleteCarHelper"
             completionHandler(nil, errorMsg)
             return
         }
         
         do {
             var decodedData: DeleteResponse
+			print(String(data: data, encoding: .utf8) ?? "???")
             decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
-            print(decodedData.message as Any)
+            print(decodedData.data as Any)
             coordinatesLoaded = false
 			setCarsLoaded(false)
-            successMsg = decodedData.message
+            successMsg = decodedData.data
         } catch {
 			DDLogError("Error: Trying to convert JSON data to string")
-			DDLogError("Error during decoding in deleteData. Error: \(error)")
-            errorMsg = "Error during decoding in deleteData \n \(error)"
+			DDLogError("Error during decoding in deleteCarHelper. Error: \(error)")
+            errorMsg = "Error during decoding in deleteCarHelper \n \(error)"
             completionHandler(nil, errorMsg)
             return
         }
@@ -424,6 +434,7 @@ func deleteCar(licensePlate: String) async throws -> (success: String?, error: S
     let urlFormatted = URL(string: url1)
     var request = URLRequest(url: urlFormatted!)
     request.httpMethod = "DELETE"
+	request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
     
     return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
         deleteCarHelper(request: &request) { (deleteSuccess, deleteError) in

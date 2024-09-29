@@ -14,6 +14,9 @@ struct MapView: View {
     @State private var selectedLicensePlate: String?
     
     var body: some View {
+		// required because can't use environment as binding
+		@Bindable var sharedViewDataBindable = sharedViewData
+		
         Map(initialPosition: .region(viewModel.position), selection: $selectedLicensePlate) {
             ForEach(sharedViewData.cars, id: \.licensePlate) { coordinateObject in
                 Marker(coordinateObject.licensePlate, coordinate: CLLocationCoordinate2D(latitude: coordinateObject.latitude, longitude: coordinateObject.longitude))
@@ -26,6 +29,11 @@ struct MapView: View {
                 await viewModel.loadMarkers()
             }
         })
+		.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMapView) {
+			Button("Got it") {
+				print("alert confirmed")
+			}
+		}
         .sheet(isPresented: $viewModel.infoSheet, onDismiss: {
             withAnimation(.snappy) {
                 selectedLicensePlate = nil

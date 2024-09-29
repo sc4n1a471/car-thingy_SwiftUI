@@ -138,9 +138,9 @@ struct NewCar: View {
                     Text("Comment")
                 }
             }
-            .alert("Error", isPresented: $sharedViewDataBindable.showAlert, actions: {
+			.alert("Error", isPresented: $sharedViewDataBindable.showAlertNewCar, actions: {
                 Button("Got it") {
-                    sharedViewData.showAlert = false
+                    sharedViewData.showAlertNewCar = false
                 }
             }, message: {
 				Text(sharedViewData.error ?? "Some kind of error?")
@@ -193,12 +193,12 @@ struct NewCar: View {
                     ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
 					if let safeLocationManagerMessage = locationManager.message {
-						sharedViewData.showAlert(errorMsg: safeLocationManagerMessage)
+						sharedViewData.showAlert(.newCar, safeLocationManagerMessage)
 						return
 					}
 					
 					if locationManager.region.center.latitude == 40.748443 && locationManager.region.center.longitude == -73.985650 {
-						sharedViewData.showAlert(errorMsg: "The location data was 0, try again...")
+						sharedViewData.showAlert(.newCar, "The location data was 0, try again...")
 						return
 					}
                         
@@ -224,7 +224,7 @@ struct NewCar: View {
 					}
 					
 					if let safeError {
-						sharedViewData.showAlert(errorMsg: "Upload failed: \(safeError)")
+						sharedViewData.showAlert(.newCar, "Licese plate update failed: \(safeError)")
 						return
 					}
 				}
@@ -242,7 +242,8 @@ struct NewCar: View {
                 }
                 
                 if let safeError {
-                    sharedViewData.showAlert(errorMsg: "Upload failed: \(safeError)")
+                    sharedViewData.showAlert(.newCar, "Upload failed: \(safeError)")
+					return
                 }
             }
         }, label: {

@@ -92,7 +92,7 @@ struct QuerySheetView: View {
             .navigationTitle(websocket.getLP())
             .scrollContentBackground(.visible)
         }
-        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
+		.alert(websocket.error, isPresented: $websocket.isAlertSheetView, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
                 print("websocket alert confirmed")
@@ -130,13 +130,13 @@ struct QuerySheetView: View {
         Button(action: {
             Task {
 				if let safeLocationManagerMessage = locationManager.message {
-					websocket.showAlert(error: safeLocationManagerMessage)
+					websocket.showAlert(.querySheetView, safeLocationManagerMessage)
 					return
 				}
 				
 				if (locationManager.lastLocation.coordinate.latitude == 40.748443 && locationManager.lastLocation.coordinate.latitude == -73.985650) {
                     DDLogError("Location is Empire State Building")
-					websocket.showAlert(error: "The location data was pointing to Empire State Building, try again...")
+					websocket.showAlert(.querySheetView,  "The location data was pointing to Empire State Building, try again...")
 					locationManager = LocationManager()
                 } else {
                     if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {

@@ -64,7 +64,7 @@ extension QuerySheetView {
 				
 				if saveCar.latitude == 40.748443 && saveCar.longitude == -73.985650 {
 					print("Coordinates were default values")
-					websocket.showAlert(error: "Coordinates are pointing to Empire State Building...")
+					websocket.showAlert(.querySheetView, "Coordinates are pointing to Empire State Building...")
 					return false
 				}
             }
@@ -78,7 +78,7 @@ extension QuerySheetView {
             }
             
             if let safeError {
-                websocket.showAlert(error: safeError)
+                websocket.showAlert(.querySheetView, safeError)
                 return false
             }
             return false

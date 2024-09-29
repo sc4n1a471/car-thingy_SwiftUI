@@ -8,6 +8,6 @@
 import Foundation
 
 struct DeleteResponse: Codable {
-    var message: String
+    var data: String
     var status: String
 }
