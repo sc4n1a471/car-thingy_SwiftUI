@@ -11,7 +11,6 @@ struct InspectionView: View {
     @Environment(\.presentationMode) var presentationMode
 	@Environment(SharedViewData.self) private var sharedViewData
 
-    var inspectionName: String = "Műszaki vizsgálat"
     var inspection: Inspection
 
     @State private var presentSheet = false
@@ -20,10 +19,10 @@ struct InspectionView: View {
     var body: some View {
         VStack {
             VStack(alignment: .center) {
-                Text(inspectionName)
+				Text(inspection.parseName(.name))
                     .font(.footnote)
                     .foregroundColor(Color.gray)
-				Text(sharedViewData.parseDate(inspection.name.replacingOccurrences(of: "MŰSZAKI VIZSGÁLAT, ", with: "")).formatted(
+				Text(sharedViewData.parseDate(inspection.parseName(.date)).formatted(
 					Date.FormatStyle()
 						.year()
 						.month()

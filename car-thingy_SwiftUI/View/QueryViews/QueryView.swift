@@ -102,6 +102,12 @@ struct QueryView: View {
 							Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "???")
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.padding()
+							
+							Divider()
+							
+							Text(env == "prod" ? "Production" : "Development")
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding()
 						}
 						.frame(maxWidth: .infinity, maxHeight: .infinity)
 						.presentationCompactAdaptation(.none)

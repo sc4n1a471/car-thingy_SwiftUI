@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct InspectionsView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
+	
     var inspections: [Inspection]
     
     var body: some View {
@@ -25,7 +27,11 @@ struct InspectionsView: View {
                 } else {
                     ScrollView(.horizontal) {
                         LazyHStack {
-                            ForEach(inspections, id: \.self) { inspection in
+							ForEach(inspections.sorted {
+								var parsedDate1 = sharedViewData.parseDate($0.parseName(.date))
+								var parsedDate2 = sharedViewData.parseDate($1.parseName(.date))
+								return parsedDate1 > parsedDate2
+							}, id: \.self) { inspection in
                                 VStack {
                                     InspectionView(inspection: inspection)
                                         .frame(width: 250, height: 250)
