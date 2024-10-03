@@ -204,6 +204,7 @@ struct DetailView: View {
     var deleteButton: some View {
         Button(action: {
             Task {
+				sharedViewData.isLoading = true
                 let (successMsg, errorMsg) = try await deleteCar(licensePlate: selectedCar.licensePlate)
                 
                 if successMsg != nil {
@@ -214,6 +215,7 @@ struct DetailView: View {
                 if let safeErrorMsg = errorMsg {
 					sharedViewData.showAlert(.detailView, safeErrorMsg)
                 }
+				sharedViewData.isLoading = false
             }
         }, label: {
             Image(systemName: "trash")

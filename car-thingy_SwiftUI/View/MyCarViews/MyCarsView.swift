@@ -33,18 +33,26 @@ struct MyCarsView: View {
         @Bindable var sharedViewDataBindable = sharedViewData
 
 		NavigationStack(path: $path.animation()) {
-			List(sortedCars) { car in
-				NavigationLink(destination: {
-					DetailView(selectedCar: car, region: car.getLocation())
-				}, label: {
-					VStack(alignment: .leading) {
-						Text(car.getLP())
-							.font(.headline)
-						HStack {
-							Text(getHeading(resultCar:car))
-						}
+			VStack {
+				if !sortedCars.isEmpty {
+					List(sortedCars) { car in
+						NavigationLink(destination: {
+							DetailView(selectedCar: car, region: car.getLocation())
+						}, label: {
+							VStack(alignment: .leading) {
+								Text(car.getLP())
+									.font(.headline)
+								HStack {
+									Text(getHeading(resultCar:car))
+								}
+							}
+						})
 					}
-				})
+				} else {
+					Text("No cars")
+						.font(.title2)
+						.bold()
+				}
 			}
 			.task {
 				await sharedViewData.loadViewData()

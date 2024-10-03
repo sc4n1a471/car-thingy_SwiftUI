@@ -25,6 +25,10 @@ struct ContentView: View {
 					.tabItem {
 						Label("Map", systemImage: "map")
 					}
+				StatisticsView()
+					.tabItem {
+						Label("Statistics", systemImage: "chart.pie")
+					}
 			}
 		}
 		.ignoresSafeArea()
