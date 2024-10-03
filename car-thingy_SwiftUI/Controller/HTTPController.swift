@@ -10,10 +10,16 @@ import CocoaLumberjackSwift
 
 var carsLoaded: Bool = false
 var coordinatesLoaded: Bool = false
+var statisticsLoaded: Bool = false
 
 func setCarsLoaded(_ newStatus: Bool) {
 	print("carsLoaded: \(newStatus)")
 	carsLoaded = newStatus
+}
+
+func setStatisticsLoaded(_ newStatus: Bool) {
+	print("statisticsLoaded: \(newStatus)")
+	statisticsLoaded = newStatus
 }
 
 
@@ -105,8 +111,8 @@ func deleteQueryInspectionHelper (
 	}.resume()
 }
 
-func deleteQueryInspection(licensePlate: String) async throws -> (success: String?, error: String?) {
-	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased()
+func deleteQueryInspection(licensePlate: String, isQuerySaved: Bool) async throws -> (success: String?, error: String?) {
+	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased() + "?isQuerySaved=\(isQuerySaved)"
 	let urlFormatted = URL(string: url1)
 	var request = URLRequest(url: urlFormatted!)
 	request.httpMethod = "DELETE"
@@ -447,4 +453,51 @@ func deleteCar(licensePlate: String) async throws -> (success: String?, error: S
             }
         }
     })
+}
+
+
+// MARK: Statistics page
+func loadStatistics(_ refresh: Bool = false) async -> (success: Statistics?, error: String?) {
+	if !statisticsLoaded || refresh {
+		let url = getURL(.statistics)
+		
+		do {
+			var request = URLRequest(url: url)
+			request.httpMethod = "GET"
+			request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
+			
+			let (data, metadata) = try await URLSession.shared.data(for: request)
+			
+			return initStats(dataCuccli: data)
+		} catch {
+			DDLogError("Invalid data in loadStatistics: \(error)")
+			return (nil, error.localizedDescription)
+		}
+	}
+	print("Statistics are already loaded")
+	return (nil,nil)
+}
+
+func initStats(dataCuccli: Data) -> (success: Statistics?, error: String?) {
+	var decodedResponse: StatisticsResponse
+	
+	do {
+		decodedResponse = try JSONDecoder().decode(StatisticsResponse.self, from: dataCuccli)
+		
+		switch decodedResponse.status {
+			case "success":
+				setStatisticsLoaded(true)
+				return (decodedResponse.data, nil)
+			case "fail":
+				DDLogError(String(data: dataCuccli, encoding: .utf8) ?? "???")
+				DDLogError("Failed response (initStats): \(decodedResponse.message ?? "No response??")")
+				return (nil, "Server error: \(decodedResponse.message ?? "No response??")")
+			default:
+				return (nil, "Status is not success or fail?")
+		}
+	} catch {
+		DDLogError("initStats error: \(error)")
+		DDLogError(String(data: dataCuccli, encoding: .utf8) ?? "???")
+		return (nil, error.localizedDescription)
+	}
 }

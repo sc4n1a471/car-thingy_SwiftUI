@@ -138,17 +138,15 @@ import CocoaLumberjackSwift
 	func dismissSheet() async {
         self.dataSheetOpened = false
 		
-		if !self.isQuerySaved {
-			do {
+		do {
 				// TODO: If saved, don't delete files, only records from queryInspections
-				let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate)
-				
-				if let safeError = error {
-					self.showAlert(.notQuerySheetView, safeError)
-				}
-			} catch {
-				self.showAlert(.notQuerySheetView, "deleteInspection failed for some reason...")
+			let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate, isQuerySaved: self.isQuerySaved)
+			
+			if let safeError = error {
+				self.showAlert(.notQuerySheetView, safeError)
 			}
+		} catch {
+			self.showAlert(.notQuerySheetView, "deleteQueryInspection failed for some reason...")
 		}
     }
     

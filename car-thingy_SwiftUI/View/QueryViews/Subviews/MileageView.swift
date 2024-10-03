@@ -94,7 +94,7 @@ struct MileageView: View {
                         }
                     }
                 }
-                .onChange(of: onChangeMileageData) { newMileageData in
+                .onChange(of: onChangeMileageData) { oldMileageData, newMileageData in
                     if newMileageData.count != 0 {
                         if newMileageData[0].date.contains(".") {
                             parsedMileageData = parseMileageData(newMileageData)
@@ -162,8 +162,8 @@ struct MileageView: View {
                                     // Map date to chart X position
                                 let startPositionX = proxy.position(forX: dateInterval.start) ?? 0
                                     // Offset the chart X position by chart frame
-                                let midStartPositionX = startPositionX + geo[proxy.plotAreaFrame].origin.x
-                                let lineHeight = geo[proxy.plotAreaFrame].maxY
+								let midStartPositionX = startPositionX + geo[proxy.plotFrame!].origin.x
+								let lineHeight = geo[proxy.plotFrame!].maxY
                                 let boxWidth: CGFloat = 150
                                 let boxOffset = max(0, min(geo.size.width - boxWidth, midStartPositionX - boxWidth / 2))
                                 
