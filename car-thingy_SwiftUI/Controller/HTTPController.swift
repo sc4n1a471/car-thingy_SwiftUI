@@ -111,8 +111,8 @@ func deleteQueryInspectionHelper (
 	}.resume()
 }
 
-func deleteQueryInspection(licensePlate: String) async throws -> (success: String?, error: String?) {
-	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased()
+func deleteQueryInspection(licensePlate: String, isQuerySaved: Bool) async throws -> (success: String?, error: String?) {
+	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased() + "?isQuerySaved=\(isQuerySaved)"
 	let urlFormatted = URL(string: url1)
 	var request = URLRequest(url: urlFormatted!)
 	request.httpMethod = "DELETE"
