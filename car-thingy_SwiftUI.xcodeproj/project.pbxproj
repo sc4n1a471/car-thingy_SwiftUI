@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		570409582AD5A77F00D26228 /* WebsocketResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570409572AD5A77F00D26228 /* WebsocketResponse.swift */; };
+		571F9D242CA998F900728DB6 /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571F9D232CA998F200728DB6 /* Statistics.swift */; };
+		571F9D2D2CA9C50C00728DB6 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571F9D2B2CA9C50C00728DB6 /* StatisticsView.swift */; };
+		571F9D2F2CA9C52700728DB6 /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571F9D2E2CA9C52700728DB6 /* StatisticsViewModel.swift */; };
 		572F0ABD2A1EB48600D73E15 /* Accident.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572F0ABC2A1EB48500D73E15 /* Accident.swift */; };
 		57563E842A1A78E30051B0F1 /* CarQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E832A1A78E30051B0F1 /* CarQuery.swift */; };
 		57563E862A1A7BDC0051B0F1 /* Inspection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57563E852A1A7BDC0051B0F1 /* Inspection.swift */; };
@@ -54,6 +57,9 @@
 
 /* Begin PBXFileReference section */
 		570409572AD5A77F00D26228 /* WebsocketResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsocketResponse.swift; sourceTree = "<group>"; };
+		571F9D232CA998F200728DB6 /* Statistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
+		571F9D2B2CA9C50C00728DB6 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		571F9D2E2CA9C52700728DB6 /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
 		572F0ABC2A1EB48500D73E15 /* Accident.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accident.swift; sourceTree = "<group>"; };
 		57563E832A1A78E30051B0F1 /* CarQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarQuery.swift; sourceTree = "<group>"; };
 		57563E852A1A7BDC0051B0F1 /* Inspection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inspection.swift; sourceTree = "<group>"; };
@@ -112,6 +118,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		571F9D2C2CA9C50C00728DB6 /* StatisticsViews */ = {
+			isa = PBXGroup;
+			children = (
+				571F9D2B2CA9C50C00728DB6 /* StatisticsView.swift */,
+				571F9D2E2CA9C52700728DB6 /* StatisticsViewModel.swift */,
+			);
+			path = StatisticsViews;
+			sourceTree = "<group>";
+		};
 		57563E872A1A7BE20051B0F1 /* Query */ = {
 			isa = PBXGroup;
 			children = (
@@ -190,6 +205,7 @@
 		57A49F342871EFF8006A2712 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				571F9D232CA998F200728DB6 /* Statistics.swift */,
 				572F0ABC2A1EB48500D73E15 /* Accident.swift */,
 				57A49F302871EEA0006A2712 /* Car.swift */,
 				57A49F322871EFE2006A2712 /* CarResponse.swift */,
@@ -206,6 +222,7 @@
 		57A49F352871F001006A2712 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				571F9D2C2CA9C50C00728DB6 /* StatisticsViews */,
 				5795FA96286E1288007E60DF /* ContentView.swift */,
 				57D80D082A5A13170000CCFB /* MyCarViews */,
 				57563E902A1ABD240051B0F1 /* QueryViews */,
@@ -339,6 +356,7 @@
 				57A49F3A2872349B006A2712 /* Database.swift in Sources */,
 				57563E8B2A1A826F0051B0F1 /* QueryView.swift in Sources */,
 				57D80CEB2A59FF4D0000CCFB /* MyCarsView.swift in Sources */,
+				571F9D2F2CA9C52700728DB6 /* StatisticsViewModel.swift in Sources */,
 				5795FA97286E1288007E60DF /* ContentView.swift in Sources */,
 				57C5F1612B000037005F40CC /* NewCarViewModel.swift in Sources */,
 				57A49F2F2871EC85006A2712 /* DetailView.swift in Sources */,
@@ -362,10 +380,12 @@
 				57563E892A1A7D320051B0F1 /* CarQueryResponse.swift in Sources */,
 				570409582AD5A77F00D26228 /* WebsocketResponse.swift in Sources */,
 				57C5F1632B000EF3005F40CC /* MapView.swift in Sources */,
+				571F9D242CA998F900728DB6 /* Statistics.swift in Sources */,
 				57563E8F2A1A94830051B0F1 /* QuerySheetView.swift in Sources */,
 				57B343A42AF05EB20092AB78 /* QueryViewModel.swift in Sources */,
 				578406842AF6EBF00045D4BB /* Restriction.swift in Sources */,
 				57BD24742A4EE6A6000508A3 /* InspectionView.swift in Sources */,
+				571F9D2D2CA9C50C00728DB6 /* StatisticsView.swift in Sources */,
 				57563E862A1A7BDC0051B0F1 /* Inspection.swift in Sources */,
 				57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */,
 				57C5F16A2B00279D005F40CC /* MapDetailView.swift in Sources */,
@@ -501,7 +521,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 412;
+				CURRENT_PROJECT_VERSION = 413;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -539,7 +559,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 412;
+				CURRENT_PROJECT_VERSION = 413;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
