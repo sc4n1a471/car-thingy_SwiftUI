@@ -1,4 +1,4 @@
-    //
+//
     //  QueryView.swift
     //  NodeJS_Thingy_Cars
     //
@@ -14,7 +14,9 @@ struct QueryView: View {
     @State var websocket: Websocket = Websocket()
     @State private var requestedLicensePlate: String = String()
 	@State private var showVersionPopover: Bool = false
-    
+	
+	@State private var verificationCode: String = String()
+	
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
         Binding<String>(
@@ -124,6 +126,19 @@ struct QueryView: View {
                 print("websocket alert confirmed")
             }
         })
+		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
+			SecureField(text: $verificationCode) {}
+			
+			Button("Cancel") {
+				websocket.close()
+			}
+			
+			Button("Submit") {
+				websocket.dismissCodeDialog(verificationCode: verificationCode)
+			}
+		} message: {
+			Text("Pls gimme 2fa code")
+		}
         .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
             Task {
                 await websocket.dismissSheet()

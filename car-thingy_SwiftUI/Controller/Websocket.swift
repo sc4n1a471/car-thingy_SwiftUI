@@ -19,6 +19,8 @@ import CocoaLumberjackSwift
     var isAlert = false
 	var isAlertSheetView = false	// show alert on sheetView only, so it doesn't dismiss the sheet
 	var isQuerySaved = false
+	
+	var verificationDialogOpen = false
     
     var license_plate = String()
     
@@ -149,6 +151,16 @@ import CocoaLumberjackSwift
 			self.showAlert(.notQuerySheetView, "deleteQueryInspection failed for some reason...")
 		}
     }
+	
+	func openCodeDialog() {
+		self.verificationDialogOpen = true
+		self.haptic(type: .standard)
+	}
+	
+	func dismissCodeDialog(verificationCode: String) {
+		self.verificationDialogOpen = false
+		self.sendMessage(verificationCode)
+	}
     
     func setLoading(_ newStatus: Bool) {
         self.isLoading = newStatus
@@ -333,12 +345,14 @@ import CocoaLumberjackSwift
                     let (safeResponse, safeError) = initWebsocketResponse(dataCuccli: jsonData)
                     
                     if let safeResponse {
-                        if safeResponse.status == "success" {
-                            self.close()
-                            await self.getInspections(self.license_plate)
-                            self.isSuccess = true
-                            self.haptic(type: .notification)
-                            return
+						if safeResponse.status == "success" {
+							self.close()
+							await self.getInspections(self.license_plate)
+							self.isSuccess = true
+							self.haptic(type: .notification)
+							return
+						} else if safeResponse.status == "waiting" {
+							openCodeDialog()
                         } else {
                             if let safeKey = safeResponse.key {
                                 if let safeValue = safeResponse.value {
@@ -362,9 +376,11 @@ import CocoaLumberjackSwift
                     print(data)
                     
                     break
-                @unknown default:
-                    break
-            }
+			case .none:
+				print("he")
+			case .some(_):
+				print("he?")
+			}
             
             if self.counter < 100 {
                 print("===========================")
@@ -379,7 +395,7 @@ import CocoaLumberjackSwift
     }
     
     func sendMessage(_ message: String) {
-        guard let data = message.data(using: .utf8) else { return }
+		guard message.data(using: .utf8) != nil else { return }
         webSocketTask?.send(.string(message)) { error in
             if let error = error {
 				DDLogError(error.localizedDescription)
@@ -397,8 +413,8 @@ import CocoaLumberjackSwift
     
     func ping() {
         webSocketTask?.sendPing { error in
-            if let safeError = error {
-				DDLogError("Ping error: \(error?.localizedDescription)")
+			if error != nil {
+				DDLogError("Ping error: \(error?.localizedDescription ?? "??")")
             }
         }
     }
