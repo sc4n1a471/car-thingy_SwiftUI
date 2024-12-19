@@ -521,7 +521,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 413;
+				CURRENT_PROJECT_VERSION = 449;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -538,7 +538,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 6.2.1;
+				MARKETING_VERSION = 7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.car-thingy-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -559,7 +559,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 413;
+				CURRENT_PROJECT_VERSION = 449;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_PREVIEWS = YES;
@@ -576,7 +576,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 6.2.1;
+				MARKETING_VERSION = 7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.car-thingy-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
