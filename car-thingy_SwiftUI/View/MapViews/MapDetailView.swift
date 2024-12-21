@@ -16,6 +16,7 @@ struct MapDetailView: View {
     @Binding var selectedLicensePlate: String?
     @State private var enableScrollView: Bool = true
     @State private var websocket: Websocket = Websocket()
+	@State private var verificationCode: String = String()
     
     let columns = [
         GridItem(.flexible(minimum: 100, maximum: 200)),
@@ -145,6 +146,19 @@ struct MapDetailView: View {
                 print("websocket alert confirmed")
             }
         })
+		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
+			SecureField(text: $verificationCode) {}
+			
+			Button("Cancel") {
+				websocket.close()
+			}
+			
+			Button("Submit") {
+				websocket.dismissCodeDialog(verificationCode: verificationCode)
+			}
+		} message: {
+			Text("Pls gimme 2fa code")
+		}
         .background(.clear)
         .scrollContentBackground(.hidden)
     }

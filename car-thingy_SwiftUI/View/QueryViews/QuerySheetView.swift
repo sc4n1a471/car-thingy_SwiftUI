@@ -13,6 +13,7 @@ struct QuerySheetView: View {
     @Bindable var websocket: Websocket
     @State private var viewModel = ViewModel()
     @State private var locationManager = LocationManager()
+	@State private var verificationCode: String = String()
     @Environment(\.presentationMode) var presentationMode
     var knownCarQuery: Bool = true
     
@@ -98,6 +99,19 @@ struct QuerySheetView: View {
                 print("websocket alert confirmed")
             }
         })
+		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
+			SecureField(text: $verificationCode) {}
+			
+			Button("Cancel") {
+				websocket.close()
+			}
+			
+			Button("Submit") {
+				websocket.dismissCodeDialog(verificationCode: verificationCode)
+			}
+		} message: {
+			Text("Pls gimme 2fa code")
+		}
         .onAppear {
             sharedViewData.haptic(type: .standard)
 			Task {
