@@ -23,6 +23,7 @@ extension QuerySheetView {
         func saveCar(websocket: Websocket, knownCarQuery: Bool = true, locationManager: LocationManager) async -> Bool {
             var saveCar: Car = Car(
 				licensePlate: websocket.license_plate,
+				comment: websocket.comment,
 				createdAt: Date.now.ISO8601Format(),
 				updatedAt: Date.now.ISO8601Format(),
 				brand: websocket.brand,

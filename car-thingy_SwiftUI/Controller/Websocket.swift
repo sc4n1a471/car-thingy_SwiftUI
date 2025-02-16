@@ -37,6 +37,7 @@ import CocoaLumberjackSwift
     var status = String()
     var type_code = String()
     var year = Int()
+	var comment = String()
     
     var accidents = [Accident()]
     var restrictions = [Restriction()]
@@ -57,6 +58,7 @@ import CocoaLumberjackSwift
 		case querySheetView
 	}
     
+	// MARK: init
     init(preview: Bool = false) {
         if preview {
             license_plate = testCar.license_plate
@@ -92,6 +94,7 @@ import CocoaLumberjackSwift
         }
     }
 	
+	// MARK: haptic
 	func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
 		print("Haptic")
 		switch type {
@@ -133,7 +136,8 @@ import CocoaLumberjackSwift
         return formattedLicensePlate
     }
     
-    func openSheet() {
+	// MARK: Sheet
+	func openSheet() {
         self.dataSheetOpened = true
     }
     
@@ -152,6 +156,7 @@ import CocoaLumberjackSwift
 		}
     }
 	
+	// MARK: Code dialog
 	func openCodeDialog() {
 		self.verificationDialogOpen = true
 		self.haptic(type: .standard)
@@ -162,10 +167,12 @@ import CocoaLumberjackSwift
 		self.sendMessage(verificationCode)
 	}
     
+	// MARK: Set/Clear values
     func setLoading(_ newStatus: Bool) {
         self.isLoading = newStatus
     }
     
+    @MainActor
     func setValues(_ value: WebsocketResponseType, key: CarDataType = .brand) {
         switch value {
             case .accidents(let accidents):
@@ -254,6 +261,7 @@ import CocoaLumberjackSwift
         self.performance = Int()
         self.engine_size = Int()
         self.year = Int()
+		self.comment = String()
         
         self.accidents = [Accident()]
         self.restrictions = [Restriction()]
@@ -265,6 +273,7 @@ import CocoaLumberjackSwift
 		self.isQuerySaved = false
     }
     
+	// MARK: Inspections
     func getInspections(_ licensePlate: String) async {
 		let (inspections, error) = await loadQueryInspections(license_plate: licensePlate)
         if let safeInspections = inspections {
@@ -275,6 +284,7 @@ import CocoaLumberjackSwift
         }
     }
 	
+	// MARK: Restricrions
 	func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {
 		var newRestrictions: [Restriction] = []
 		for restriction in stringRestrictions {
@@ -288,6 +298,7 @@ import CocoaLumberjackSwift
 		return newRestrictions
 	}
     
+	// MARK: Alert
 	func showAlert(_ alertLocation: AlertLocations,_ error: String) {
         self.error = error
 		switch alertLocation {
@@ -307,8 +318,10 @@ import CocoaLumberjackSwift
 		self.isAlertSheetView = false
     }
     
-    func connect(_ requestedCar: String) async {
+	// MARK: Connection
+    func connect(_ requestedLicensePlate: String, _ requestedCar: Car? = nil) async {
         self.setLoading(true)
+		
         guard let url = URL(string: getURLasString(.query)) else { return }
         var request = URLRequest(url: url)
 		request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
@@ -322,8 +335,12 @@ import CocoaLumberjackSwift
         self.counter = 0
         self.clearValues()
         
-        self.license_plate = requestedCar
-        self.sendMessage(requestedCar)
+		self.license_plate = requestedLicensePlate
+		self.sendMessage(self.license_plate)
+		
+		if let safeComment = requestedCar?.comment {
+			self.comment = safeComment
+		}
         
             //        receiveMessage()
         await setReceiveHandler()
@@ -356,7 +373,10 @@ import CocoaLumberjackSwift
                         } else {
                             if let safeKey = safeResponse.key {
                                 if let safeValue = safeResponse.value {
-                                    self.setValues(safeValue, key: safeKey)
+									await self.setValues(
+										safeValue,
+										key: safeKey
+									)
                                 }
                             }
 							self.percentage = safeResponse.percentage

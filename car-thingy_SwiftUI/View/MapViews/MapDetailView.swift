@@ -177,7 +177,7 @@ struct MapDetailView: View {
     var queryButton: some View {
         Button(action: {
             Task {
-                await websocket.connect(_:selectedCar.licensePlate)
+				await websocket.connect(selectedCar.licensePlate, selectedCar)
             }
         }, label: {
             Image(systemName: "magnifyingglass")

@@ -92,7 +92,7 @@ struct DetailView: View {
                 }
             }
             
-                // MARK: Map
+			// MARK: Map
             Section {
                 Map(
                     coordinateRegion: $region,
@@ -120,6 +120,8 @@ struct DetailView: View {
         }
         .navigationTitle(selectedCar.getLP())
 		.navigationBarTitleDisplayMode(.large)
+		
+		// MARK: Sheets
         .sheet(isPresented: $sharedViewDataBindable.isEditCarPresented, onDismiss: {
             Task {
                 await loadSelectedCar()
@@ -136,6 +138,8 @@ struct DetailView: View {
             QuerySheetView(websocket: websocket)
                 .presentationDetents([.medium, .large])
         }
+		
+		// MARK: Alerts
         .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
             Button("Websocket got it") {
                 websocket.disableAlert()
@@ -160,6 +164,8 @@ struct DetailView: View {
 		} message: {
 			Text("Pls gimme 2fa code")
 		}
+		
+		// MARK: Other
         .onAppear() {
             sharedViewData.existingCar = selectedCar
             sharedViewData.region = region
@@ -175,7 +181,7 @@ struct DetailView: View {
 		})
     }
     
-    // MARK: Button views
+    // MARK: Query sheet button
     var openQuerySheet: some View {
         Button(action: {
             websocket.openSheet()
@@ -192,6 +198,7 @@ struct DetailView: View {
         .frame(height: 50)
     }
     
+	// MARK: Edit button
     var editButton: some View {
         Button (action: {
             sharedViewData.isEditCarPresented.toggle()
@@ -203,10 +210,11 @@ struct DetailView: View {
         .frame(height: 50)
     }
     
+	// MARK: Query button
     var queryButton: some View {
         Button(action: {
             Task {
-                await websocket.connect(_:selectedCar.licensePlate)
+				await websocket.connect(selectedCar.licensePlate, selectedCar)
             }
         }, label: {
             Image(systemName: "magnifyingglass")
@@ -216,6 +224,7 @@ struct DetailView: View {
         .frame(height: 50)
     }
     
+	// MARK: Delete button
     var deleteButton: some View {
         Button(action: {
             Task {
