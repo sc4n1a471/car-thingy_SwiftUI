@@ -15,6 +15,8 @@ enum SortType: String {
 struct MyCarsView: View {
     @Environment(SharedViewData.self) private var sharedViewData
 	
+	@Namespace private var namespace
+	
 	@State private var path: NavigationPath = NavigationPath()
     @State private var searchCar = String()
 	@State private var openDetailViewAfterUpload = false
@@ -36,8 +38,12 @@ struct MyCarsView: View {
 			VStack {
 				if !sortedCars.isEmpty {
 					List(sortedCars) { car in
-						NavigationLink(destination: {
+						NavigationLink(
+							destination: {
 							DetailView(selectedCar: car, region: car.getLocation())
+								.navigationTransition(
+									.zoom(sourceID: car.licensePlate, in: namespace)
+								)
 						}, label: {
 							VStack(alignment: .leading) {
 								Text(car.getLP())
@@ -47,6 +53,10 @@ struct MyCarsView: View {
 								}
 							}
 						})
+						.matchedTransitionSource(
+							id: car.licensePlate,
+							in: namespace
+						)
 					}
 				} else {
 					Text("No cars")
