@@ -10,7 +10,6 @@ import CocoaLumberjackSwift
 
 struct QuerySheetView: View {
 	@Environment(SharedViewData.self) private var sharedViewData
-    @Bindable var websocket: Websocket
     @State private var viewModel = ViewModel()
     @State private var locationManager = LocationManager()
 	@State private var verificationCode: String = String()
@@ -26,13 +25,16 @@ struct QuerySheetView: View {
     ]
     
     var body: some View {
+		// required because can't use environment as binding
+		@Bindable var sharedViewDataBindable = sharedViewData
+		
         NavigationStack {
             List {
                 if !viewModel.inspectionsOnly {
                     Section {
                         withAnimation {
-                            LazyVGrid(columns: websocket.isLoading ? columns : columns2, content: {
-                                if websocket.isLoading {
+                            LazyVGrid(columns: sharedViewData.websocket.isLoading ? columns : columns2, content: {
+                                if sharedViewData.websocket.isLoading {
                                     showLogs
                                     closeConnection
                                 } else {
@@ -45,69 +47,69 @@ struct QuerySheetView: View {
                     .listRowBackground(Color.clear)
                     
                     Section {
-                        SpecView(header: "Brand", content: websocket.brand)
-                        SpecView(header: "Model", content: websocket.model)
-                        SpecView(header: "Type Code", content: websocket.type_code)
+                        SpecView(header: "Brand", content: sharedViewData.websocket.brand)
+                        SpecView(header: "Model", content: sharedViewData.websocket.model)
+                        SpecView(header: "Type Code", content: sharedViewData.websocket.type_code)
                     }
                     
                     Section {
-                        SpecView(header: "Status", content: websocket.status)
-						SpecView(header: "First registration", content: websocket.first_reg)
-						SpecView(header: "First registration in 🇭🇺", content: websocket.first_reg_hun)
-                        SpecView(header: "Number of owners", content: String(websocket.num_of_owners))
+                        SpecView(header: "Status", content: sharedViewData.websocket.status)
+						SpecView(header: "First registration", content: sharedViewData.websocket.first_reg)
+						SpecView(header: "First registration in 🇭🇺", content: sharedViewData.websocket.first_reg_hun)
+                        SpecView(header: "Number of owners", content: String(sharedViewData.websocket.num_of_owners))
                     }
                     
                     Section {
-                        SpecView(header: "Year", content: String(websocket.year))
-                        SpecView(header: "Engine size", content: String(websocket.engine_size), note: "cm3")
-                        SpecView(header: "Performance", content: String(websocket.performance), note: "HP")
-                        SpecView(header: "Fuel type", content: String(websocket.fuel_type))
-                        SpecView(header: "Gearbox", content: String(websocket.gearbox))
-                        SpecView(header: "Color", content: String(websocket.color))
+                        SpecView(header: "Year", content: String(sharedViewData.websocket.year))
+                        SpecView(header: "Engine size", content: String(sharedViewData.websocket.engine_size), note: "cm3")
+                        SpecView(header: "Performance", content: String(sharedViewData.websocket.performance), note: "HP")
+                        SpecView(header: "Fuel type", content: String(sharedViewData.websocket.fuel_type))
+                        SpecView(header: "Gearbox", content: String(sharedViewData.websocket.gearbox))
+                        SpecView(header: "Color", content: String(sharedViewData.websocket.color))
                     }
                     
                     Section {
-                        MileageView(onChangeMileageData: websocket.mileage, mileageData: $websocket.mileage)
+                        MileageView(onChangeMileageData: sharedViewData.websocket.mileage, mileageData: $sharedViewDataBindable.websocket.mileage)
                     }
                     
                     Section {
-                        SpecView(header: "Restrictions", restrictions: websocket.restrictions)
+                        SpecView(header: "Restrictions", restrictions: sharedViewData.websocket.restrictions)
                     }
                     
                     Section {
-                        SpecView(header: "Accidents", accidents: websocket.accidents)
+                        SpecView(header: "Accidents", accidents: sharedViewData.websocket.accidents)
                     }
                 }
                 
-                InspectionsView(inspections: websocket.inspections)
+                InspectionsView(inspections: sharedViewData.websocket.inspections)
             }
             // MARK: Toolbar items
             .toolbar {
 #if os(macOS)
                 ToolbarItem(placement: .navigationBarLeading, content: {
                     close
-                        .disabled(websocket.isLoading)
+                        .disabled(sharedViewData.websocket.isLoading)
                 })
 #endif
             }
-            .navigationTitle(websocket.getLP())
+            .navigationTitle(sharedViewData.websocket.getLP())
             .scrollContentBackground(.visible)
         }
-		.alert(websocket.error, isPresented: $websocket.isAlertSheetView, actions: {
-            Button("Websocket got it") {
-                websocket.disableAlert()
-                print("websocket alert confirmed")
+		.alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlertSheetView, actions: {
+            Button("sharedViewData.websocket got it") {
+                sharedViewData.websocket.disableAlert()
+                print("sharedViewData.websocket alert confirmed")
             }
         })
-		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
+		.alert("2FA", isPresented: $sharedViewDataBindable.websocket.verificationDialogOpen) {
 			SecureField(text: $verificationCode) {}
 			
 			Button("Cancel") {
-				websocket.close()
+				sharedViewData.websocket.close()
 			}
 			
 			Button("Submit") {
-				websocket.dismissCodeDialog(verificationCode: verificationCode)
+				sharedViewData.websocket.dismissCodeDialog(verificationCode: verificationCode)
 			}
 		} message: {
 			Text("Pls gimme 2fa code")
@@ -118,11 +120,12 @@ struct QuerySheetView: View {
 				DDLogDebug("=============== QuerySheetView open ===============")
 			}
         }
+		.background(.white)
     }
     
     var close: some View {
         Button(action: {
-            presentationMode.wrappedValue.dismiss()
+//            presentationMode.wrappedValue.dismiss()
         }, label: {
             Text("Close")
         })
@@ -130,7 +133,8 @@ struct QuerySheetView: View {
     
     var closeConnection: some View {
         Button(action: {
-            websocket.close()
+            sharedViewData.websocket.close()
+//			sharedViewData.showMiniQueryView = false
         }, label: {
             Image(systemName: "xmark")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -144,19 +148,21 @@ struct QuerySheetView: View {
         Button(action: {
             Task {
 				if let safeLocationManagerMessage = locationManager.message {
-					websocket.showAlert(.querySheetView, safeLocationManagerMessage)
+					sharedViewData.websocket.showAlert(.querySheetView, safeLocationManagerMessage)
+//					sharedViewData.showMiniQueryView = false
 					return
 				}
 				
 				if (locationManager.lastLocation.coordinate.latitude == 40.748443 && locationManager.lastLocation.coordinate.latitude == -73.985650) {
                     DDLogError("Location is Empire State Building")
-					websocket.showAlert(.querySheetView,  "The location data was pointing to Empire State Building, try again...")
+					sharedViewData.websocket.showAlert(.querySheetView,  "The location data was pointing to Empire State Building, try again...")
 					locationManager = LocationManager()
                 } else {
-                    if await viewModel.saveCar(websocket: websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
+                    if await viewModel.saveCar(websocket: sharedViewData.websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
+//				sharedViewData.showMiniQueryView = false
             }
         }, label: {
             Image(systemName: "square.and.arrow.down")
@@ -171,7 +177,7 @@ struct QuerySheetView: View {
         Button(action: {
             viewModel.setPopover(true)
         }) {
-            Gauge(value: websocket.percentage, in: 0...100) {}
+            Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
@@ -179,7 +185,7 @@ struct QuerySheetView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         }.popover(isPresented: $viewModel.showingPopover) {
-            ForEach(websocket.messages, id: \.self) { message in
+            ForEach(sharedViewData.websocket.messages, id: \.self) { message in
                 Text(message)
             }
             .presentationCompactAdaptation((.popover))
@@ -191,6 +197,6 @@ struct QuerySheetView: View {
 }
 
 #Preview {
-    QuerySheetView(websocket: Websocket(preview: true))
+    QuerySheetView()
 		.environment(SharedViewData())
 }

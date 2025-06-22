@@ -12,13 +12,13 @@ import MapKit
 struct DetailView: View {
     @Environment(SharedViewData.self) private var sharedViewData
     @Environment(\.presentationMode) var presentationMode
+	
+	@Namespace var animation
 
     @State var selectedCar: Car
     @State var region: MKCoordinateRegion
     @State private var enableScrollView: Bool = true
-    
-    @State var websocket: Websocket = Websocket()
-	
+    	
 	@State private var verificationCode: String = String()
     
     let columns = [
@@ -40,7 +40,7 @@ struct DetailView: View {
                         } else {
                             editButton
                         }
-                        if websocket.isLoading {
+                        if sharedViewData.websocket.isLoading {
                             openQuerySheet
                         } else {
                             queryButton
@@ -76,7 +76,7 @@ struct DetailView: View {
                 }
                 
                 Section {
-                    MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
+                    MileageView(onChangeMileageData: sharedViewData.websocket.mileage, mileageData: $selectedCar.mileage)
                 }
                 
                 Section {
@@ -129,40 +129,27 @@ struct DetailView: View {
         }) {
             NewCar(isUpload: false)
         }
-        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
-            Task {
-                await websocket.dismissSheet()
-                await loadSelectedCar()
-            }
-        }) {
-            QuerySheetView(websocket: websocket)
-                .presentationDetents([.medium, .large])
-        }
+//        .sheet(isPresented: $sharedViewDataBindable.websocket.dataSheetOpened, onDismiss: {
+//            Task {
+//                sharedViewData.websocket.dismissSheet()
+//                await loadSelectedCar()
+//            }
+//        }) {
+//            QuerySheetView()
+//                .presentationDetents([.medium, .large])
+//        }
 		
 		// MARK: Alerts
-        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
-            Button("Websocket got it") {
-                websocket.disableAlert()
-                print("websocket alert confirmed")
+        .alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
+            Button("sharedViewData.websocket got it") {
+                sharedViewData.websocket.disableAlert()
+                print("sharedViewData.websocket alert confirmed")
             }
         })
 		.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertDetailView) {
 			Button("Got it") {
 				print("alert confirmed")
 			}
-		}
-		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
-			SecureField(text: $verificationCode) {}
-			
-			Button("Cancel") {
-				websocket.close()
-			}
-			
-			Button("Submit") {
-				websocket.dismissCodeDialog(verificationCode: verificationCode)
-			}
-		} message: {
-			Text("Pls gimme 2fa code")
 		}
 		
 		// MARK: Other
@@ -184,9 +171,9 @@ struct DetailView: View {
     // MARK: Query sheet button
     var openQuerySheet: some View {
         Button(action: {
-            websocket.openSheet()
+            sharedViewData.websocket.openSheet()
         }) {
-            Gauge(value: websocket.percentage, in: 0...100) {}
+            Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
@@ -214,7 +201,8 @@ struct DetailView: View {
     var queryButton: some View {
         Button(action: {
             Task {
-				await websocket.connect(selectedCar.licensePlate, selectedCar)
+				sharedViewData.showMiniQueryView = true
+				await sharedViewData.websocket.connect(selectedCar.licensePlate, selectedCar)
             }
         }, label: {
             Image(systemName: "magnifyingglass")
@@ -269,6 +257,9 @@ struct DetailView: View {
 }
 
 #Preview {
-    DetailView(selectedCar: previewCar, region: previewCar.getLocation())
+	DetailView(
+		selectedCar: previewCar,
+		region: previewCar.getLocation()
+	)
         .environment(SharedViewData())
 }

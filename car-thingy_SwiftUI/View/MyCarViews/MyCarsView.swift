@@ -16,7 +16,7 @@ struct MyCarsView: View {
     @Environment(SharedViewData.self) private var sharedViewData
 	
 	@Namespace private var namespace
-	
+		
 	@State private var path: NavigationPath = NavigationPath()
     @State private var searchCar = String()
 	@State private var openDetailViewAfterUpload = false
@@ -40,7 +40,7 @@ struct MyCarsView: View {
 					List(sortedCars) { car in
 						NavigationLink(
 							destination: {
-							DetailView(selectedCar: car, region: car.getLocation())
+								DetailView(selectedCar: car, region: car.getLocation())
 								.navigationTransition(
 									.zoom(sourceID: car.licensePlate, in: namespace)
 								)

@@ -10,7 +10,15 @@ import MapKit
 import CocoaLumberjackSwift
 
 struct ContentView: View {
+	@State private var expand: Bool = false
+	@State private var verificationCode: String = String()
+	@Environment(SharedViewData.self) private var sharedViewData
+	@Namespace var animation
+	
     var body: some View {
+		// required because can't use environment as binding
+		@Bindable var sharedViewDataBindable = sharedViewData
+		
 		VStack {
 			TabView {
 				QueryView()
@@ -39,6 +47,33 @@ struct ContentView: View {
 			fileLogger.logFileManager.maximumNumberOfLogFiles = 7
 			DDLog.add(fileLogger)
 		}
+		.tabBarMinimizeBehavior(.onScrollDown)
+		.tabViewBottomAccessory {
+			MiniQuerySheetView(sharedViewData)
+				.matchedTransitionSource(id: "MINIPLAYER", in: animation)
+				.onTapGesture {
+					sharedViewData.websocket.dataSheetOpened.toggle()
+				}
+		}
+		.fullScreenCover(isPresented: $sharedViewDataBindable.websocket.dataSheetOpened, onDismiss: {
+			Task {
+				sharedViewData.websocket.dismissSheet()
+			}
+		}) {
+			ScrollView {}
+			.safeAreaInset(edge: .top, spacing: 0) {
+				VStack(spacing: 10) {
+					Capsule()
+						.fill(.primary.secondary)
+						.frame(width: 35, height: 3)
+					
+					QuerySheetView(knownCarQuery: false)
+				}
+				 .navigationTransition(.zoom(sourceID: "MINIPLAYER", in: animation))
+			}
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.background(.background)
+		}
     }
 }
 
@@ -50,6 +85,37 @@ extension View {
             self
         }
     }
+}
+
+extension View {
+	@ViewBuilder
+	func MiniQuerySheetView(_ sharedViewData: SharedViewData) -> some View {
+		if sharedViewData.showMiniQueryView {
+			HStack {
+				Text(
+					sharedViewData.websocket.license_plate
+				)
+				
+				if (sharedViewData.websocket.isLoading) {
+					Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
+						.gaugeStyle(.accessoryCircularCapacity)
+						.tint(.blue)
+						.scaleEffect(0.5)
+						.frame(maxWidth: 200, maxHeight: 50)
+					
+					Button {
+						sharedViewData.websocket.close()
+					} label: {
+						Image(systemName: "xmark")
+							.contentShape(.rect)
+							.foregroundColor(.red)
+					}
+					.padding(.trailing)
+				}
+			}
+			.padding(.horizontal, 15)
+		}
+	}
 }
 
 extension View {

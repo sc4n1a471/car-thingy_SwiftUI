@@ -26,7 +26,10 @@ import CocoaLumberjackSwift
     var newCar: Car = Car()
     var existingCar: Car = Car()
 	var returnNewCar: Car = Car()
-    
+	
+	var websocket: Websocket = Websocket()
+	var showMiniQueryView = false
+	    
     var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
           latitude: 37.789467,

@@ -15,6 +15,7 @@ import CocoaLumberjackSwift
     var isLoading = Bool()
     var isSuccess = false
     var dataSheetOpened = false
+	var he = false
     var error = String()
     var isAlert = false
 	var isAlertSheetView = false	// show alert on sheetView only, so it doesn't dismiss the sheet
@@ -141,23 +142,24 @@ import CocoaLumberjackSwift
         self.dataSheetOpened = true
     }
     
-	func dismissSheet() async {
+	func dismissSheet() {
         self.dataSheetOpened = false
 		
-		do {
-				// TODO: If saved, don't delete files, only records from queryInspections
-			let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate, isQuerySaved: self.isQuerySaved)
-			
-			if let safeError = error {
-				self.showAlert(.notQuerySheetView, safeError)
-			}
-		} catch {
-			self.showAlert(.notQuerySheetView, "deleteQueryInspection failed for some reason...")
-		}
+//		do {
+//				// TODO: If saved, don't delete files, only records from queryInspections
+//			let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate, isQuerySaved: self.isQuerySaved)
+//			
+//			if let safeError = error {
+//				self.showAlert(.notQuerySheetView, safeError)
+//			}
+//		} catch {
+//			self.showAlert(.notQuerySheetView, "deleteQueryInspection failed for some reason...")
+//		}
     }
 	
 	// MARK: Code dialog
 	func openCodeDialog() {
+		self.dataSheetOpened = true
 		self.verificationDialogOpen = true
 		self.haptic(type: .standard)
 	}

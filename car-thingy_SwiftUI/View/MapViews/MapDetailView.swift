@@ -126,15 +126,15 @@ struct MapDetailView: View {
         }) {
             NewCar(isUpload: false)
         }
-        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
-            Task {
-                await websocket.dismissSheet()
-                await loadSelectedCar()
-            }
-        }) {
-            QuerySheetView(websocket: websocket)
-                .presentationDetents([.medium, .large])
-        }
+//        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
+//            Task {
+//                websocket.dismissSheet()
+//                await loadSelectedCar()
+//            }
+//        }) {
+//            QuerySheetView()
+//                .presentationDetents([.medium, .large])
+//        }
         .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMapView) {
             Button("Got it") {
                 print("alert confirmed")
@@ -177,6 +177,7 @@ struct MapDetailView: View {
     var queryButton: some View {
         Button(action: {
             Task {
+				sharedViewData.showMiniQueryView = true
 				await websocket.connect(selectedCar.licensePlate, selectedCar)
             }
         }, label: {
