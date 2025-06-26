@@ -93,7 +93,6 @@ struct QuerySheetView: View {
 #endif
             }
             .navigationTitle(sharedViewData.websocket.getLP())
-            .scrollContentBackground(.visible)
         }
 		.alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlertSheetView, actions: {
             Button("sharedViewData.websocket got it") {
@@ -120,7 +119,6 @@ struct QuerySheetView: View {
 				DDLogDebug("=============== QuerySheetView open ===============")
 			}
         }
-		.background(.white)
     }
     
     var close: some View {
@@ -138,7 +136,6 @@ struct QuerySheetView: View {
         }, label: {
             Image(systemName: "xmark")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .frame(height: 50)
         })
         .buttonStyle(.bordered)
         .tint(.red)
@@ -181,7 +178,6 @@ struct QuerySheetView: View {
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
-                .frame(width: 25, height: 25)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         }.popover(isPresented: $viewModel.showingPopover) {
@@ -198,5 +194,10 @@ struct QuerySheetView: View {
 
 #Preview {
     QuerySheetView()
+		.environment(SharedViewData())
+}
+
+#Preview {
+	ContentView()
 		.environment(SharedViewData())
 }

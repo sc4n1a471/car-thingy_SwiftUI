@@ -20,7 +20,7 @@ struct MyCarsView: View {
 	@State private var path: NavigationPath = NavigationPath()
     @State private var searchCar = String()
 	@State private var openDetailViewAfterUpload = false
-	@State private var sortType: SortType = .licensePlate
+	@State private var sortType: SortType = .createdAt
 	var sortedCars: [Car] {
 		switch sortType {
 			case .licensePlate:

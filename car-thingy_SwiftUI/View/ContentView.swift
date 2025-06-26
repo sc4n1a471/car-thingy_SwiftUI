@@ -50,7 +50,7 @@ struct ContentView: View {
 		.tabBarMinimizeBehavior(.onScrollDown)
 		.tabViewBottomAccessory {
 			MiniQuerySheetView(sharedViewData)
-				.matchedTransitionSource(id: "MINIPLAYER", in: animation)
+				.matchedTransitionSource(id: "mini-query-id", in: animation)
 				.onTapGesture {
 					sharedViewData.websocket.dataSheetOpened.toggle()
 				}
@@ -60,19 +60,21 @@ struct ContentView: View {
 				sharedViewData.websocket.dismissSheet()
 			}
 		}) {
-			ScrollView {}
-			.safeAreaInset(edge: .top, spacing: 0) {
-				VStack(spacing: 10) {
-					Capsule()
-						.fill(.primary.secondary)
-						.frame(width: 35, height: 3)
-					
-					QuerySheetView(knownCarQuery: false)
-				}
-				 .navigationTransition(.zoom(sourceID: "MINIPLAYER", in: animation))
+			VStack(spacing: 10) {
+				Spacer()
+				Spacer()
+				Spacer()
+				Spacer()
+				Capsule()
+					.fill(.primary.secondary)
+					.frame(width: 35, height: 3)
+					.padding(.top)
+				
+				QuerySheetView(knownCarQuery: false)
 			}
-			.frame(maxWidth: .infinity, maxHeight: .infinity)
-			.background(.background)
+			.navigationTransition(.zoom(sourceID: "mini-query-id", in: animation))
+			.ignoresSafeArea()
+			.background(.background.secondary)
 		}
     }
 }

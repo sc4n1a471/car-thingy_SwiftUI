@@ -18,7 +18,8 @@ import CocoaLumberjackSwift
 	var showAlertDetailView = false
 	var showAlertQueryView = false
 	var showAlertMapView = false
-	
+	var showMiniQueryView = false
+
     var isLoading = false
     var isNewCarPresented = false
     var isEditCarPresented = false
@@ -28,7 +29,6 @@ import CocoaLumberjackSwift
 	var returnNewCar: Car = Car()
 	
 	var websocket: Websocket = Websocket()
-	var showMiniQueryView = false
 	    
     var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(

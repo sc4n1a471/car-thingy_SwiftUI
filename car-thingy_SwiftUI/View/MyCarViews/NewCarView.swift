@@ -152,9 +152,10 @@ struct NewCar: View {
                     close
                 })
                 ToolbarItemGroup(placement: .navigationBarTrailing, content: {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .isHidden(!sharedViewData.isLoading)
+					if sharedViewData.isLoading {
+						ProgressView()
+							.progressViewStyle(CircularProgressViewStyle())
+					}
                     
                     save
                         .disabled(sharedViewData.isLoading)
@@ -247,8 +248,12 @@ struct NewCar: View {
                 }
             }
         }, label: {
-			Image(systemName: "square.and.arrow.down.fill")
+			Image(systemName: "arrow.down")
+				.foregroundStyle(.white)
+				.font(.system(size: 20))
         })
+		.buttonStyle(.borderedProminent)
+		.padding(-5)
     }
     
     var close: some View {
@@ -256,7 +261,12 @@ struct NewCar: View {
             presentationMode.wrappedValue.dismiss()
         }, label: {
             Image(systemName: "xmark")
+				.font(.system(size: 20))
         })
+		.glassEffect()
+		.tint(.red)
+		.buttonStyle(.borderedProminent)
+		.padding(-5)
     }
 }
 

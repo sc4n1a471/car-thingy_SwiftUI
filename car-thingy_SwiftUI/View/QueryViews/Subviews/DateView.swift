@@ -38,7 +38,8 @@ struct DateView: View {
 				Image(systemName: "info.circle")
 					.foregroundStyle(.gray)
 			} else {
-				Image(systemName: "info.circle.fill")
+				Image(systemName: "info")
+					.foregroundStyle(.black)
 			}
 		}.popover(isPresented: $showPopover) {
 			VStack {
@@ -73,6 +74,7 @@ struct DateView: View {
 				.clipShape(Circle())
 				.buttonStyle(.bordered)
 		}
+		.buttonStyle(.bordered)
     }
 }
 

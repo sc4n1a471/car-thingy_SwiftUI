@@ -153,17 +153,20 @@ struct DetailView: View {
 		}
 		
 		// MARK: Other
-        .onAppear() {
-            sharedViewData.existingCar = selectedCar
-            sharedViewData.region = region
-            Task {
-                await loadSelectedCar()
-            }
-        }
+		.onAppear() {
+			sharedViewData.existingCar = selectedCar
+			sharedViewData.region = region
+			Task {
+				await loadSelectedCar()
+			}
+		}
+		
+		.refreshable {
+			await loadSelectedCar()
+		}
 		.toolbar(content: {
 			ToolbarItem(placement: .topBarTrailing, content: {
 				DateView(car: selectedCar, mapView: false)
-					.frame(maxWidth: .infinity, alignment: .trailing)
 			})
 		})
     }
@@ -262,4 +265,8 @@ struct DetailView: View {
 		region: previewCar.getLocation()
 	)
         .environment(SharedViewData())
+}
+#Preview {
+	MyCarsView()
+		.environment(SharedViewData())
 }

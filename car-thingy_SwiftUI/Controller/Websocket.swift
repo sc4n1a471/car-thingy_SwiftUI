@@ -15,7 +15,6 @@ import CocoaLumberjackSwift
     var isLoading = Bool()
     var isSuccess = false
     var dataSheetOpened = false
-	var he = false
     var error = String()
     var isAlert = false
 	var isAlertSheetView = false	// show alert on sheetView only, so it doesn't dismiss the sheet

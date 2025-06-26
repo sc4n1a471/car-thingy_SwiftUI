@@ -41,9 +41,9 @@ struct MapView: View {
         }, content: {
             MapDetailView(selectedLicensePlate: $selectedLicensePlate)
 				.presentationDetents(
-					viewModel.knownCar ? [.medium, .large] : [.fraction(0.35), .medium, .large]
+					viewModel.knownCar ? [.medium, .large] : [.height(150), .medium, .large]
 				)
-                .presentationBackground(.ultraThickMaterial)
+				.presentationBackgroundInteraction(.enabled)
         })
         .onChange(of: selectedLicensePlate) {
             if let selectedLicensePlate {
