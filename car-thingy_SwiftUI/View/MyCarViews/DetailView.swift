@@ -51,6 +51,11 @@ struct DetailView: View {
             .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
+			.toolbar(content: {
+				ToolbarItem(placement: .topBarTrailing, content: {
+					DateView(car: selectedCar, mapView: false)
+				})
+			})
             
             if selectedCar.brand != nil {
                 Section {
@@ -164,11 +169,6 @@ struct DetailView: View {
 		.refreshable {
 			await loadSelectedCar()
 		}
-		.toolbar(content: {
-			ToolbarItem(placement: .topBarTrailing, content: {
-				DateView(car: selectedCar, mapView: false)
-			})
-		})
     }
     
     // MARK: Query sheet button

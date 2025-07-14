@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+enum EnvPickerSelections: String {
+	case prod = "Production"
+	case dev = "Development"
+	case local = "Local"
+}
+
 struct QueryView: View {
 	@Environment(SharedViewData.self) private var sharedViewData
 	
@@ -15,8 +21,9 @@ struct QueryView: View {
     @State private var viewModel = ViewModel()
     @State private var requestedLicensePlate: String = String()
 	@State private var showVersionPopover: Bool = false
-	
 	@State private var verificationCode: String = String()
+	
+	@State private var envPickerSelection: EnvPickerSelections = .prod
 	
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -57,13 +64,14 @@ struct QueryView: View {
 					Text("Request")
 						.frame(maxWidth: 200, maxHeight: 50)
 				}
-				.glassEffect(
-					.regular
-						.tint((
-							!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
-						).opacity(0.35))
-						.interactive(), in: .rect(cornerRadius: 16.0)
-				)
+//				.glassEffect(
+//					.regular
+//						.tint((
+//							!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
+//						).opacity(0.35))
+//						.interactive(), in: .rect(cornerRadius: 16.0)
+//				)
+				.buttonStyle(.borderedProminent)
                 
                 Button {
                     Task {
@@ -75,26 +83,18 @@ struct QueryView: View {
                         .frame(maxWidth: 200, maxHeight: 50)
                 }
                 .disabled(sharedViewData.websocket.isLoading)
-				.glassEffect(
-					.regular
-						.tint((
-							!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
-						).opacity(0.35)).interactive(),
-					in: .rect(cornerRadius: 16.0)
-				)
+//				.glassEffect(
+//					.regular
+//						.tint((
+//							!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
+//						).opacity(0.35)).interactive(),
+//					in: .rect(cornerRadius: 16.0)
+//				)
+				.buttonStyle(.borderedProminent)
+				.tint(Color.secondary)
             }
             .padding()
             .toolbar {
-//				if sharedViewData.websocket.isSuccess {
-//					ToolbarItemGroup(placement: .topBarTrailing, content: {
-//						Button(action: {
-//							sharedViewData.websocket.openSheet()
-//						}) {
-//							Image(systemName: "tray")
-//						}
-//					})
-//				}
-				
 				ToolbarItem(placement: .topBarLeading, content: {
 					Button(action: {
 						showVersionPopover = true
@@ -115,7 +115,7 @@ struct QueryView: View {
 							
 							Divider()
 							
-							Text(env == "prod" ? "Production" : "Development")
+							Text(envPickerSelection.rawValue)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.padding()
 						}
@@ -123,6 +123,10 @@ struct QueryView: View {
 						.presentationCompactAdaptation(.none)
 						.presentationBackground(.clear)
 					}
+				})
+				
+				ToolbarItem(placement: .topBarTrailing, content: {
+					changeEnv
 				})
             }
             .navigationTitle("Car Query")
@@ -134,34 +138,35 @@ struct QueryView: View {
                 print("sharedViewData.websocket alert confirmed")
             }
         })
-//        .sheet(isPresented: $sharedViewData.websocket.dataSheetOpened, onDismiss: {
-//            Task {
-//                sharedViewData.websocket.dismissSheet()
-//            }
-//        }) {
-//            QuerySheetView(sharedViewData.websocket: sharedViewData.websocket, knownCarQuery: false)
-//                .presentationDetents([.medium, .large])
-//        }
     }
 	
-//	var openQuerySheet: some View {
-//		Button(action: {
-//			sharedViewData.websocket.openSheet()
-//		}) {
-//			Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
-//				.gaugeStyle(.accessoryCircularCapacity)
-//				.tint(.blue)
-//				.scaleEffect(0.5)
-//				.frame(maxWidth: 200, maxHeight: 50)
-//		}
-//		.glassEffect(
-//			.regular
-//				.tint((
-//					!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
-//				).opacity(0.35))
-//				.interactive(), in: .rect(cornerRadius: 16.0)
-//		)
-//	}
+	var changeEnv: some View {
+		Menu(content: {
+			Menu(content: {
+				Picker("he", systemImage: "line.3.horizontal.decrease.circle", selection: $envPickerSelection, content: {
+					Text("Production").tag(EnvPickerSelections.prod)
+					Text("Development").tag(EnvPickerSelections.dev)
+					Text("Local").tag(EnvPickerSelections.local)
+				})
+				.onChange(of: envPickerSelection, {
+					switch envPickerSelection {
+					case .prod:
+						setProd()
+					case .dev:
+						setDev()
+					case .local:
+						setLocal()
+					}
+				})
+			}, label: {
+				Text("Environment")
+				Image(systemName: "server.rack")
+				Text(envPickerSelection.rawValue)
+			})
+		}, label: {
+			Image(systemName: "ellipsis.circle")
+		})
+	}
 }
 
 #Preview {

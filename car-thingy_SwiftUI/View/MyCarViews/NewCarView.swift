@@ -158,7 +158,6 @@ struct NewCar: View {
 					}
                     
                     save
-                        .disabled(sharedViewData.isLoading)
                 })
             }
 			.scrollContentBackground(.visible)
@@ -250,10 +249,9 @@ struct NewCar: View {
         }, label: {
 			Image(systemName: "arrow.down")
 				.foregroundStyle(.white)
-				.font(.system(size: 20))
         })
 		.buttonStyle(.borderedProminent)
-		.padding(-5)
+		.disabled(sharedViewData.isLoading)
     }
     
     var close: some View {
@@ -261,12 +259,9 @@ struct NewCar: View {
             presentationMode.wrappedValue.dismiss()
         }, label: {
             Image(systemName: "xmark")
-				.font(.system(size: 20))
         })
-		.glassEffect()
 		.tint(.red)
 		.buttonStyle(.borderedProminent)
-		.padding(-5)
     }
 }
 

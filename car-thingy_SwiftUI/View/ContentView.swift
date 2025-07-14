@@ -13,6 +13,7 @@ struct ContentView: View {
 	@State private var expand: Bool = false
 	@State private var verificationCode: String = String()
 	@Environment(SharedViewData.self) private var sharedViewData
+	@Environment(\.colorScheme) var colorScheme
 	@Namespace var animation
 	
     var body: some View {
@@ -74,18 +75,12 @@ struct ContentView: View {
 			}
 			.navigationTransition(.zoom(sourceID: "mini-query-id", in: animation))
 			.ignoresSafeArea()
-			.background(.background.secondary)
+			.background(
+				colorScheme == .dark ? .black : Color(
+					.secondarySystemBackground
+				)
+			)
 		}
-    }
-}
-
-extension View {
-    @ViewBuilder func isHidden(_ isHidden: Bool) -> some View {
-        if isHidden {
-            self.hidden()
-        } else {
-            self
-        }
     }
 }
 

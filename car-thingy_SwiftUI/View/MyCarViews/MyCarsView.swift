@@ -74,12 +74,7 @@ struct MyCarsView: View {
 			}
 			.toolbar {
 				ToolbarItemGroup(placement: .topBarLeading, content: {
-					if sharedViewData.isLoading {
-						ProgressView()
-							.progressViewStyle(CircularProgressViewStyle())
-					} else {
-						refreshButton
-					}
+					refreshButton
 				})
 				
 				ToolbarItemGroup(placement: .topBarTrailing, content: {
@@ -160,8 +155,9 @@ struct MyCarsView: View {
 				await sharedViewData.loadViewData(true)
             }
         }, label: {
-            Image(systemName: "arrow.clockwise")
+            Image(systemName: "arrow.clockwise.circle")
         })
+		.disabled(sharedViewData.isLoading)
     }
 	
 	var submenu: some View {

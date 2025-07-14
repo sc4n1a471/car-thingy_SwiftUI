@@ -35,11 +35,10 @@ struct DateView: View {
 			showPopover = true
 		}) {
 			if mapView {
-				Image(systemName: "info.circle")
+				Image(systemName: "calendar")
 					.foregroundStyle(.gray)
 			} else {
-				Image(systemName: "info")
-					.foregroundStyle(.black)
+				Image(systemName: "calendar")
 			}
 		}.popover(isPresented: $showPopover) {
 			VStack {
@@ -74,12 +73,15 @@ struct DateView: View {
 				.clipShape(Circle())
 				.buttonStyle(.bordered)
 		}
-		.buttonStyle(.bordered)
+//		.buttonStyle(.bordered)
     }
 }
 
 #Preview {
-//	DateView(car: previewCar, mapView: false)
-	MyCarsView()
-		.environment(SharedViewData())
+	DateView(car: previewCar, mapView: false)
+}
+
+#Preview {
+		MyCarsView()
+			.environment(SharedViewData())
 }
