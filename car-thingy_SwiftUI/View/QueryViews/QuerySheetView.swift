@@ -156,6 +156,8 @@ struct QuerySheetView: View {
 					locationManager = LocationManager()
                 } else {
                     if await viewModel.saveCar(websocket: sharedViewData.websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
+						sharedViewData.websocket.isSuccess = false
+						sharedViewData.websocket.areImagesLoaded = false
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
@@ -168,6 +170,7 @@ struct QuerySheetView: View {
         })
         .buttonStyle(.bordered)
         .tint(.green)
+		.disabled(!sharedViewData.websocket.areImagesLoaded)
     }
     
     var showLogs: some View {

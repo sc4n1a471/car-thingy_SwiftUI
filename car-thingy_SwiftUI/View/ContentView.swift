@@ -89,10 +89,8 @@ extension View {
 	func MiniQuerySheetView(_ sharedViewData: SharedViewData) -> some View {
 		if sharedViewData.showMiniQueryView {
 			HStack {
-				Text(
-					sharedViewData.websocket.license_plate
-				)
-				
+				Text(sharedViewData.websocket.license_plate)
+					.font(.headline)
 				if (sharedViewData.websocket.isLoading) {
 					Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
 						.gaugeStyle(.accessoryCircularCapacity)

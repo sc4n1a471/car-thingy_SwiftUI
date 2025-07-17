@@ -74,7 +74,12 @@ struct MyCarsView: View {
 			}
 			.toolbar {
 				ToolbarItemGroup(placement: .topBarLeading, content: {
-					refreshButton
+					if sharedViewData.isLoading {
+						ProgressView()
+							.progressViewStyle(CircularProgressViewStyle())
+					} else {
+						refreshButton
+					}
 				})
 				
 				ToolbarItemGroup(placement: .topBarTrailing, content: {

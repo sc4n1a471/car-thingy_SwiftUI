@@ -96,7 +96,7 @@ struct NewCar: View {
                     TextField("License Plate", text: textBindingLicensePlate)
                         .focused($focusedField, equals: .newLicensePlate)
                 } header: {
-                    Text("License Plate")
+					Text("License Plate")
                 }
                 
                 Section {
@@ -155,9 +155,9 @@ struct NewCar: View {
 					if sharedViewData.isLoading {
 						ProgressView()
 							.progressViewStyle(CircularProgressViewStyle())
+					} else {
+						save
 					}
-                    
-                    save
                 })
             }
 			.scrollContentBackground(.visible)
@@ -251,7 +251,7 @@ struct NewCar: View {
 				.foregroundStyle(.white)
         })
 		.buttonStyle(.borderedProminent)
-		.disabled(sharedViewData.isLoading)
+		.disabled(ezLenniCar.licensePlate.isEmpty)
     }
     
     var close: some View {

@@ -14,6 +14,7 @@ import CocoaLumberjackSwift
     var percentage = Double()
     var isLoading = Bool()
     var isSuccess = false
+	var areImagesLoaded = false
     var dataSheetOpened = false
     var error = String()
     var isAlert = false
@@ -272,6 +273,8 @@ import CocoaLumberjackSwift
         self.messages = [String()]
 		
 		self.isQuerySaved = false
+		self.isSuccess = false
+		self.areImagesLoaded = false
     }
     
 	// MARK: Inspections
@@ -279,9 +282,11 @@ import CocoaLumberjackSwift
 		let (inspections, error) = await loadQueryInspections(license_plate: licensePlate)
         if let safeInspections = inspections {
             self.inspections = safeInspections
+			self.areImagesLoaded = true
         }
         if let safeError = error {
 			self.showAlert(.querySheetView, safeError)
+			self.areImagesLoaded = true
         }
     }
 	
