@@ -7,11 +7,13 @@
 
 import SwiftUI
 import CocoaLumberjackSwift
+import MapKit
 
 struct QuerySheetView: View {
 	@Environment(SharedViewData.self) private var sharedViewData
     @State private var viewModel = ViewModel()
     @State private var locationManager = LocationManager()
+    @State private var location: CLLocation?
 	@State private var verificationCode: String = String()
     @Environment(\.presentationMode) var presentationMode
     var knownCarQuery: Bool = true
@@ -117,6 +119,7 @@ struct QuerySheetView: View {
             sharedViewData.haptic(type: .standard)
 			Task {
 				DDLogDebug("=============== QuerySheetView open ===============")
+                await updateLocation()
 			}
         }
     }
@@ -192,6 +195,18 @@ struct QuerySheetView: View {
         }
         .buttonStyle(.bordered)
         .tint(.blue)
+    }
+    
+    // MARK: Get the current user location if available
+    func updateLocation() async {
+        do {
+            DDLogVerbose("Getting location...")
+            // 1. Get the current location from the location manager
+            self.location = try await locationManager.currentLocation
+            DDLogVerbose("Got location: \(self.location)")
+        } catch {
+            DDLogError("Could not get user location: \(error.localizedDescription)")
+        }
     }
 }
 

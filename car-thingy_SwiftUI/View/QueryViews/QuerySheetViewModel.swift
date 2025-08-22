@@ -9,7 +9,6 @@ import Foundation
 
 extension QuerySheetView {
     @Observable class ViewModel {
-            //    @State var queriedCar: CarQuery
         var isRestrictionsExpanded = false
         var isAccidentsExpanded = false
         var showingPopover = false
@@ -62,12 +61,6 @@ extension QuerySheetView {
 				saveCar.latitude = locationManager.lastLocation.coordinate.latitude
 				saveCar.longitude = locationManager.lastLocation.coordinate.longitude
 				print("Saving car with coordinates... (\(saveCar.latitude), \(saveCar.longitude))")
-				
-				if saveCar.latitude == 40.748443 && saveCar.longitude == -73.985650 {
-					print("Coordinates were default values")
-					websocket.showAlert(.querySheetView, "Coordinates are pointing to Empire State Building...")
-					return false
-				}
             }
             
             let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)

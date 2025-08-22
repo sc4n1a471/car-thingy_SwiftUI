@@ -8,6 +8,7 @@
 import SwiftUI
 import MapKit
 import CocoaLumberjackSwift
+import AppIntents
 
 struct ContentView: View {
 	@State private var expand: Bool = false
@@ -21,24 +22,23 @@ struct ContentView: View {
 		@Bindable var sharedViewDataBindable = sharedViewData
 		
 		VStack {
-			TabView {
-				QueryView()
-					.tabItem {
-						Label("Query Car", systemImage: "magnifyingglass")
-					}
-				MyCarsView()
-					.tabItem {
-						Label("My Cars", systemImage: "tray.full")
-					}
-				MapView()
-					.tabItem {
-						Label("Map", systemImage: "map")
-					}
-				StatisticsView()
-					.tabItem {
-						Label("Statistics", systemImage: "chart.pie")
-					}
-			}
+            TabView {
+                Tab("Query Car", systemImage: "icloud.and.arrow.down") {
+                    QueryView()
+                }
+                
+                Tab("My Cars", systemImage: "tray.full", role: .search) {
+                    MyCarsView()
+                }
+                
+                Tab("Map", systemImage: "map") {
+                    MapView()
+                }
+                
+                Tab("Statistics", systemImage: "chart.pie") {
+                    StatisticsView()
+                }
+            }
 		}
 		.ignoresSafeArea()
 		.task {
@@ -150,3 +150,53 @@ struct ContentViewModifier: ViewModifier {
     ContentView()
         .environment(SharedViewData())
 }
+
+// MARK: AppIntent
+struct NewCarIntent: AppIntent {
+    static var title: LocalizedStringResource = "Add new license plate"
+    static var supportedModes: IntentModes = .foreground(.dynamic)
+    
+    @Parameter(title: "License plate") var licensePlate: String
+    
+    @MainActor
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let locationManager = LocationManager()
+        var location: CLLocation?
+        var region: MKCoordinateRegion?
+        
+        do {
+            DDLogVerbose("AppIntent: Getting location...")
+            // 1. Get the current location from the location manager
+            location = try await locationManager.currentLocation
+            region = locationManager.region
+            DDLogVerbose("AppIntent: Got location: \(location)")
+            DDLogVerbose("AppIntent: \(locationManager.region.center.latitude), \(locationManager.region.center.longitude)")
+        } catch {
+            DDLogError("Could not get user location: \(error.localizedDescription)")
+        }
+        
+        var newCar: Car = Car()
+        newCar.licensePlate = licensePlate
+        newCar.latitude = region!.center.latitude
+        newCar.longitude = region!.center.longitude
+        
+        newCar.updatedAt = Date.now.ISO8601Format()
+        newCar.mileage = []
+        
+        newCar.createdAt = Date.now.ISO8601Format()
+        
+        let (safeMessage, safeError) = await saveData(uploadableCarData: newCar, isPost: true, lpOnly: false)
+        
+        if let safeMessage {
+            DDLogVerbose("Upload was successful: \(safeMessage)")
+            return .result(dialog: "Car uploaded successfully! 👍")
+        }
+        
+        if let safeError {
+            DDLogVerbose("Upload failed: \(safeError)")
+            return .result(dialog: "Adding license plate failed with this error 👎: \(safeError) ")
+        }
+        return .result(dialog: "No safeMessage/safeError???")
+    }
+}
+

@@ -35,17 +35,12 @@ struct NewCar: View {
     @State private var oldLicensePlate = String()
     
     @State var locationManager = LocationManager()
+    @State var location: CLLocation?
+    @State private var position: MapCameraPosition = .automatic
+    // MARK: Position of the MapCamera
     @State private var customLatitude: String = String()
     @State private var customLongitude: String = String()
     @State private var selectedMap = MapType.custom
-	
-	var userLatitude: String {
-		return "\(locationManager.lastLocation.coordinate.latitude)"
-	}
-	
-	var userLongitude: String {
-		return "\(locationManager.lastLocation.coordinate.longitude)"
-	}
 	    
     private var isUpload: Bool
     
@@ -116,11 +111,9 @@ struct NewCar: View {
                                 .keyboardType(.decimalPad)
 								.padding()
                         } else if (selectedMap == MapType.current || isUpload) {
-							Map(initialPosition: .region(locationManager.region)){
+                            Map(position: $position) {
 								UserAnnotation()
 							}.frame(height: 200)
-							
-							
                         } else if (selectedMap == MapType.existing || !isUpload) {
 							Map(initialPosition: .region(sharedViewData.region)) {
 								Marker("", coordinate: ezLenniCar.getLocation().center)
@@ -179,6 +172,7 @@ struct NewCar: View {
                     focusedField = .newLicensePlate
                 }
             }
+            Task { await self.updateLocation() }
         }
     }
     
@@ -196,14 +190,9 @@ struct NewCar: View {
 						sharedViewData.showAlert(.newCar, safeLocationManagerMessage)
 						return
 					}
-					
-					if locationManager.region.center.latitude == 40.748443 && locationManager.region.center.longitude == -73.985650 {
-						sharedViewData.showAlert(.newCar, "The location data was 0, try again...")
-						return
-					}
                         
-					ezLenniCar.latitude = Double(userLatitude) ?? 127.0
-					ezLenniCar.longitude = Double(userLongitude) ?? 36.0
+                    ezLenniCar.latitude = Double(location?.coordinate.latitude ?? 127.0)
+                    ezLenniCar.longitude = Double(location?.coordinate.longitude ?? 36.0)
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
@@ -262,6 +251,33 @@ struct NewCar: View {
         })
 		.tint(.red)
 		.buttonStyle(.borderedProminent)
+    }
+    
+    // MARK: Get the current user location if available
+    func updateLocation() async {
+        do {
+            DDLogVerbose("Getting location...")
+            // 1. Get the current location from the location manager
+            self.location = try await locationManager.currentLocation
+            DDLogVerbose("Got location: \(self.location)")
+            // 2. Update the camera position of the map to center around the user location
+            self.updateMapPosition()
+        } catch {
+            DDLogError("Could not get user location: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: Change the camera of the Map view
+    func updateMapPosition() {
+        if let location = self.location {
+            let regionCenter = CLLocationCoordinate2D(
+                latitude: location.coordinate.latitude,
+                longitude: location.coordinate.longitude
+            )
+            let regionSpan = MKCoordinateSpan(latitudeDelta: 0.125, longitudeDelta: 0.125)
+            
+            self.position = .region(MKCoordinateRegion(center: regionCenter, span: regionSpan))
+        }
     }
 }
 
