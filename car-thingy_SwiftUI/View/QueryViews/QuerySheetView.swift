@@ -51,21 +51,21 @@ struct QuerySheetView: View {
                     Section {
                         SpecView(header: "Brand", content: sharedViewData.websocket.brand)
                         SpecView(header: "Model", content: sharedViewData.websocket.model)
-                        SpecView(header: "Type Code", content: sharedViewData.websocket.type_code)
+                        SpecView(header: "Type Code", content: sharedViewData.websocket.typeCode)
                     }
                     
                     Section {
                         SpecView(header: "Status", content: sharedViewData.websocket.status)
-						SpecView(header: "First registration", content: sharedViewData.websocket.first_reg)
-						SpecView(header: "First registration in 🇭🇺", content: sharedViewData.websocket.first_reg_hun)
-                        SpecView(header: "Number of owners", content: String(sharedViewData.websocket.num_of_owners))
+						SpecView(header: "First registration", content: sharedViewData.websocket.firstReg)
+						SpecView(header: "First registration in 🇭🇺", content: sharedViewData.websocket.firstRegHun)
+                        SpecView(header: "Number of owners", content: String(sharedViewData.websocket.numOfOwners))
                     }
                     
                     Section {
                         SpecView(header: "Year", content: String(sharedViewData.websocket.year))
-                        SpecView(header: "Engine size", content: String(sharedViewData.websocket.engine_size), note: "cm3")
+                        SpecView(header: "Engine size", content: String(sharedViewData.websocket.engineSize), note: "cm3")
                         SpecView(header: "Performance", content: String(sharedViewData.websocket.performance), note: "HP")
-                        SpecView(header: "Fuel type", content: String(sharedViewData.websocket.fuel_type))
+                        SpecView(header: "Fuel type", content: String(sharedViewData.websocket.fuelType))
                         SpecView(header: "Gearbox", content: String(sharedViewData.websocket.gearbox))
                         SpecView(header: "Color", content: String(sharedViewData.websocket.color))
                     }
