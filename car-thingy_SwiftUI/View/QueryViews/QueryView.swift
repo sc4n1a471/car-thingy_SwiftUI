@@ -57,20 +57,16 @@ struct QueryView: View {
 				
 				Button {
 					Task {
-						lpTextFieldFocused = false
-						await sharedViewData.websocket.connect(requestedLicensePlate)
+                        if requestedLicensePlate != "" {
+                            lpTextFieldFocused = false
+                            sharedViewData.showMiniQueryView = true
+                            await sharedViewData.websocket.connect(requestedLicensePlate)
+                        }
 					}
 				} label: {
 					Text("Request")
 						.frame(maxWidth: 200, maxHeight: 50)
 				}
-//				.glassEffect(
-//					.regular
-//						.tint((
-//							!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
-//						).opacity(0.35))
-//						.interactive(), in: .rect(cornerRadius: 16.0)
-//				)
 				.buttonStyle(.borderedProminent)
                 
                 Button {
@@ -83,13 +79,6 @@ struct QueryView: View {
                         .frame(maxWidth: 200, maxHeight: 50)
                 }
                 .disabled(sharedViewData.websocket.isLoading)
-//				.glassEffect(
-//					.regular
-//						.tint((
-//							!sharedViewData.websocket.isLoading ? Color.blue : Color.gray
-//						).opacity(0.35)).interactive(),
-//					in: .rect(cornerRadius: 16.0)
-//				)
 				.buttonStyle(.borderedProminent)
 				.tint(Color.secondary)
             }
