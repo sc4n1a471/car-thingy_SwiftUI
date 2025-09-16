@@ -16,11 +16,11 @@ struct MyCarsView: View {
     @Environment(SharedViewData.self) private var sharedViewData
 	
 	@Namespace private var namespace
-	
+		
 	@State private var path: NavigationPath = NavigationPath()
     @State private var searchCar = String()
 	@State private var openDetailViewAfterUpload = false
-	@State private var sortType: SortType = .licensePlate
+	@State private var sortType: SortType = .createdAt
 	var sortedCars: [Car] {
 		switch sortType {
 			case .licensePlate:
@@ -37,27 +37,34 @@ struct MyCarsView: View {
 		NavigationStack(path: $path.animation()) {
 			VStack {
 				if !sortedCars.isEmpty {
-					List(sortedCars) { car in
-						NavigationLink(
-							destination: {
-							DetailView(selectedCar: car, region: car.getLocation())
-								.navigationTransition(
-									.zoom(sourceID: car.licensePlate, in: namespace)
-								)
-						}, label: {
-							VStack(alignment: .leading) {
-								Text(car.getLP())
-									.font(.headline)
-								HStack {
-									Text(getHeading(resultCar:car))
-								}
-							}
-						})
-						.matchedTransitionSource(
-							id: car.licensePlate,
-							in: namespace
-						)
-					}
+                    List {
+                        ForEach(sortedCars) { car in
+                            NavigationLink(
+                                destination: {
+                                    DetailView(selectedCar: car, region: car.getLocation())
+                                        .navigationTransition(
+                                            .zoom(sourceID: car.licensePlate, in: namespace)
+                                        )
+                                }, label: {
+                                    VStack(alignment: .leading) {
+                                        Text(car.getLP())
+                                            .font(.headline)
+                                        HStack {
+                                            Text(getHeading(resultCar:car))
+                                        }
+                                    }
+                                })
+                            .matchedTransitionSource(
+                                id: car.licensePlate,
+                                in: namespace
+                            )
+                        }
+                        .onDelete { index in
+                            Task {
+                                await deleteCar(at: index)
+                            }
+                        }
+                    }
 				} else {
 					Text("No cars")
 						.font(.title2)
@@ -103,6 +110,7 @@ struct MyCarsView: View {
 				await sharedViewData.loadViewData(true)
 			}
 			.searchable(text: $searchCar, placement: .toolbar)
+            .searchToolbarBehavior(.automatic)
 			.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMyCars) {
 				Button("Got it") {
 					print("alert confirmed")
@@ -160,8 +168,9 @@ struct MyCarsView: View {
 				await sharedViewData.loadViewData(true)
             }
         }, label: {
-            Image(systemName: "arrow.clockwise")
+            Image(systemName: "arrow.clockwise.circle")
         })
+		.disabled(sharedViewData.isLoading)
     }
 	
 	var submenu: some View {
@@ -233,9 +242,31 @@ struct MyCarsView: View {
             return "Unknown car!"
         }
     }
+    
+    func deleteCar(at offsets: IndexSet) async {
+        do {
+            // Find the car to delete using the index in the sorted list
+            let carToDelete = sortedCars[offsets.first!]
+            // Find this car's index in the base array
+            if let baseIndex = sharedViewData.cars.firstIndex(where: { $0.licensePlate == carToDelete.licensePlate }) {
+                let (successMsg, errorMsg) = try await car_thingy_SwiftUI.deleteCar(licensePlate: carToDelete.licensePlate)
+
+                if successMsg != nil {
+                    sharedViewData.cars.remove(at: baseIndex)
+                }
+
+                if let safeErrorMsg = errorMsg {
+                    sharedViewData.showAlert(.detailView, safeErrorMsg)
+                }
+            }
+        } catch {
+            sharedViewData.showAlert(.detailView, error.localizedDescription)
+        }
+    }
 }
 
 #Preview {
 	MyCarsView()
 		.environment(SharedViewData())
 }
+

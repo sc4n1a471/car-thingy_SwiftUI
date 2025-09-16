@@ -14,6 +14,7 @@ import CocoaLumberjackSwift
     var percentage = Double()
     var isLoading = Bool()
     var isSuccess = false
+	var areImagesLoaded = false
     var dataSheetOpened = false
     var error = String()
     var isAlert = false
@@ -22,20 +23,20 @@ import CocoaLumberjackSwift
 	
 	var verificationDialogOpen = false
     
-    var license_plate = String()
+    var licensePlate = String()
     
     var brand = String()
     var color = String()
-    var engine_size = Int()
-    var first_reg = String()
-    var first_reg_hun = String()
-    var fuel_type = String()
+    var engineSize = Int()
+    var firstReg = String()
+    var firstRegHun = String()
+    var fuelType = String()
     var gearbox = String()
     var model = String()
-    var num_of_owners = Int()
+    var numOfOwners = Int()
     var performance = Int()
     var status = String()
-    var type_code = String()
+    var typeCode = String()
     var year = Int()
 	var comment = String()
     
@@ -61,16 +62,16 @@ import CocoaLumberjackSwift
 	// MARK: init
     init(preview: Bool = false) {
         if preview {
-            license_plate = testCar.license_plate
+            licensePlate = testCar.license_plate
             brand = testCar.brand
             color = testCar.color
-            engine_size = testCar.engine_size
-            first_reg = testCar.first_reg
-            first_reg_hun = testCar.first_reg_hun
-            fuel_type = testCar.fuel_type
+            engineSize = testCar.engine_size
+            firstReg = testCar.first_reg
+            firstRegHun = testCar.first_reg_hun
+            fuelType = testCar.fuel_type
             gearbox = testCar.gearbox
             model = testCar.model
-            num_of_owners = testCar.num_of_owners
+            numOfOwners = testCar.num_of_owners
             performance = testCar.performance
             status = testCar.status
             year = testCar.year
@@ -114,7 +115,7 @@ import CocoaLumberjackSwift
 	}
     
     func getLP() -> String {
-        var formattedLicensePlate = self.license_plate.uppercased()
+        var formattedLicensePlate = self.licensePlate.uppercased()
         
         if (formattedLicensePlate != "ERROR") {
             var numOfLetters = 0
@@ -128,7 +129,7 @@ import CocoaLumberjackSwift
             formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
             
                 // if it's the new license plate
-            if (self.license_plate.count > 6) {
+            if (self.licensePlate.count > 6) {
                 formattedLicensePlate.insert(contentsOf: " ", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 2))
             }
         }
@@ -141,23 +142,24 @@ import CocoaLumberjackSwift
         self.dataSheetOpened = true
     }
     
-	func dismissSheet() async {
+	func dismissSheet() {
         self.dataSheetOpened = false
 		
-		do {
-				// TODO: If saved, don't delete files, only records from queryInspections
-			let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate, isQuerySaved: self.isQuerySaved)
-			
-			if let safeError = error {
-				self.showAlert(.notQuerySheetView, safeError)
-			}
-		} catch {
-			self.showAlert(.notQuerySheetView, "deleteQueryInspection failed for some reason...")
-		}
+//		do {
+//				// TODO: If saved, don't delete files, only records from queryInspections
+//			let (_, error) = try await deleteQueryInspection(licensePlate: self.license_plate, isQuerySaved: self.isQuerySaved)
+//			
+//			if let safeError = error {
+//				self.showAlert(.notQuerySheetView, safeError)
+//			}
+//		} catch {
+//			self.showAlert(.notQuerySheetView, "deleteQueryInspection failed for some reason...")
+//		}
     }
 	
 	// MARK: Code dialog
 	func openCodeDialog() {
+		self.dataSheetOpened = true
 		self.verificationDialogOpen = true
 		self.haptic(type: .standard)
 	}
@@ -178,7 +180,7 @@ import CocoaLumberjackSwift
             case .accidents(let accidents):
                 self.accidents = accidents
             case .restrictions(let restrictions):
-				self.restrictions = parseRestrictions(restrictions, self.license_plate)
+				self.restrictions = parseRestrictions(restrictions, self.licensePlate)
             case .mileage(let mileage):
                 self.mileage = mileage
             case .stringValue(let stringValue):
@@ -193,13 +195,13 @@ import CocoaLumberjackSwift
                         self.color = stringValue
                         break
                     case CarDataType.first_reg:
-                        self.first_reg = stringValue
+                        self.firstReg = stringValue
                         break
                     case CarDataType.first_reg_hun:
-                        self.first_reg_hun = stringValue
+                        self.firstRegHun = stringValue
                         break
                     case CarDataType.fuel_type:
-                        self.fuel_type = stringValue
+                        self.fuelType = stringValue
                         break
                     case CarDataType.gearbox:
                         self.gearbox = stringValue
@@ -211,10 +213,10 @@ import CocoaLumberjackSwift
                         self.status = stringValue
                         break
                     case CarDataType.type_code:
-                        self.type_code = stringValue
+                        self.typeCode = stringValue
                         break
                     case CarDataType.license_plate:
-                        self.license_plate = license_plate
+                        self.licensePlate = licensePlate
                         break
                     default:
                         break
@@ -222,10 +224,10 @@ import CocoaLumberjackSwift
             case .intValue(let intValue):
                 switch key {
                     case CarDataType.engine_size:
-                        self.engine_size = intValue
+                        self.engineSize = intValue
                         break
                     case CarDataType.num_of_owners:
-                        self.num_of_owners = intValue
+                        self.numOfOwners = intValue
                         break
                     case CarDataType.performance:
                         self.performance = intValue
@@ -249,17 +251,17 @@ import CocoaLumberjackSwift
     func clearValues() {
         self.brand = String()
         self.color = String()
-        self.first_reg = String()
-        self.first_reg_hun = String()
-        self.fuel_type = String()
+        self.firstReg = String()
+        self.firstRegHun = String()
+        self.fuelType = String()
         self.gearbox = String()
         self.model = String()
         self.status = String()
-        self.type_code = String()
+        self.typeCode = String()
         
-        self.num_of_owners = Int()
+        self.numOfOwners = Int()
         self.performance = Int()
-        self.engine_size = Int()
+        self.engineSize = Int()
         self.year = Int()
 		self.comment = String()
         
@@ -271,6 +273,8 @@ import CocoaLumberjackSwift
         self.messages = [String()]
 		
 		self.isQuerySaved = false
+		self.isSuccess = false
+		self.areImagesLoaded = false
     }
     
 	// MARK: Inspections
@@ -278,9 +282,11 @@ import CocoaLumberjackSwift
 		let (inspections, error) = await loadQueryInspections(license_plate: licensePlate)
         if let safeInspections = inspections {
             self.inspections = safeInspections
+			self.areImagesLoaded = true
         }
         if let safeError = error {
 			self.showAlert(.querySheetView, safeError)
+			self.areImagesLoaded = true
         }
     }
 	
@@ -335,8 +341,8 @@ import CocoaLumberjackSwift
         self.counter = 0
         self.clearValues()
         
-		self.license_plate = requestedLicensePlate
-		self.sendMessage(self.license_plate)
+		self.licensePlate = requestedLicensePlate
+		self.sendMessage(self.licensePlate)
 		
 		if let safeComment = requestedCar?.comment {
 			self.comment = safeComment
@@ -364,7 +370,7 @@ import CocoaLumberjackSwift
                     if let safeResponse {
 						if safeResponse.status == "success" {
 							self.close()
-							await self.getInspections(self.license_plate)
+							await self.getInspections(self.licensePlate)
 							self.isSuccess = true
 							self.haptic(type: .notification)
 							return

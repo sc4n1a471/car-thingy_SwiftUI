@@ -268,8 +268,8 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
                 
         return initSaveResponse(dataCuccli: data)
     } catch {
-		DDLogError("Checkout failed.")
-        return (nil, "Checkout failed")
+		DDLogError("saveData failed: \(error.localizedDescription)")
+        return (nil, "saveData failed: \(error.localizedDescription)")
     }
 }
 
