@@ -191,8 +191,17 @@ struct NewCar: View {
 						return
 					}
                         
-                    ezLenniCar.latitude = Double(location?.coordinate.latitude ?? 127.0)
-                    ezLenniCar.longitude = Double(location?.coordinate.longitude ?? 36.0)
+                    do {
+                        DDLogVerbose("AppIntent: Getting location...")
+                        location = try await locationManager.currentLocation
+                        DDLogVerbose("NewCar: Got location: \(location)")
+                        DDLogVerbose("NewCar: \(locationManager.region.center.latitude), \(locationManager.region.center.longitude)")
+                        ezLenniCar.latitude = location!.coordinate.latitude
+                        ezLenniCar.longitude = location!.coordinate.longitude
+
+                    } catch {
+                        DDLogError("Could not get user location: \(error.localizedDescription)")
+                    }
                 }
                 
                 oldLicensePlate = oldLicensePlate.uppercased()
