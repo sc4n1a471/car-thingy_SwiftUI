@@ -9,7 +9,8 @@ What is it good for:
 - Shows you stats of the saved cars, currently number of known/unknown cars and saved cars of each brands
 
 
-<img width="5456" height="8237" alt="car-thingy_SwiftUI" src="https://github.com/user-attachments/assets/d5440e33-7f74-4b2d-a418-24f3b97128e6" />
+<img width="2728" height="4118" alt="car-thingy_SwiftUI@0 5x" src="https://github.com/user-attachments/assets/2389c6d8-3366-49c6-9b42-84f3aa4263a0" />
+
 
 
 
