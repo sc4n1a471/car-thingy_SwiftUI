@@ -21,32 +21,32 @@ struct MileageView: View {
     var body: some View {
         if !mileageData.isEmpty {
             VStack(spacing: 15) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Mileage")
-                            .font(.footnote)
-                            .foregroundColor(Color.gray)
-                        
-                        HStack {
-                            Text("\(mileageData.last?.mileage ?? 0)")
-                                .font(.system(size: 25)).bold()
-                            Text("km")
-                                .font(.body.bold())
-                                .foregroundColor(Color.gray)
-                                .padding(.top, 2)
-                        }
-                        
-                        withAnimation {
-                            Text("\(calculateAvgMileage(mileageData)) km / year")
-                                .font(.footnote)
-                                .foregroundColor(Color.gray)
-                                .animation(.easeIn)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .isHidden(hideLabels)
-                .frame(maxHeight: 75)
+				HStack {
+					VStack(alignment: .leading, spacing: 6) {
+						Text("Mileage")
+							.font(.footnote)
+							.foregroundColor(Color.gray)
+						
+						HStack {
+							Text("\(mileageData.last?.mileage ?? 0)")
+								.font(.system(size: 25)).bold()
+							Text("km")
+								.font(.body.bold())
+								.foregroundColor(Color.gray)
+								.padding(.top, 2)
+						}
+						
+						withAnimation {
+							Text("\(calculateAvgMileage(mileageData)) km / year")
+								.font(.footnote)
+								.foregroundColor(Color.gray)
+								.animation(.easeIn)
+						}
+					}
+					.frame(maxWidth: .infinity, alignment: .leading)
+				}
+				.frame(maxHeight: 75)
+				.opacity(hideLabels ? 0 : 1)
                 
                 Chart {
                     ForEach(parsedMileageData, id: \.id) { data in

@@ -44,8 +44,13 @@ struct SpecView: View {
                 return
             }
         }
+		
+		if self.content == "" {
+			showElement = false
+			return
+		}
         
-        if self.content != nil {
+		if self.content != nil {
             showElement = true
             return
         }

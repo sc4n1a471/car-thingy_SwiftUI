@@ -9,7 +9,6 @@ import Foundation
 
 extension QuerySheetView {
     @Observable class ViewModel {
-            //    @State var queriedCar: CarQuery
         var isRestrictionsExpanded = false
         var isAccidentsExpanded = false
         var showingPopover = false
@@ -22,26 +21,26 @@ extension QuerySheetView {
         
         func saveCar(websocket: Websocket, knownCarQuery: Bool = true, locationManager: LocationManager) async -> Bool {
             var saveCar: Car = Car(
-				licensePlate: websocket.license_plate,
+				licensePlate: websocket.licensePlate,
 				comment: websocket.comment,
 				createdAt: Date.now.ISO8601Format(),
 				updatedAt: Date.now.ISO8601Format(),
 				brand: websocket.brand,
 				color: websocket.color,
-				engineSize: websocket.engine_size,
-				firstReg: websocket.first_reg,
-				firstRegHun: websocket.first_reg_hun,
-				fuelType: websocket.fuel_type,
+				engineSize: websocket.engineSize,
+				firstReg: websocket.firstReg,
+				firstRegHun: websocket.firstRegHun,
+				fuelType: websocket.fuelType,
 				gearbox: websocket.gearbox,
 				model: websocket.model,
-				numOfOwners: websocket.num_of_owners,
+				numOfOwners: websocket.numOfOwners,
 				performance: websocket.performance,
 				status: websocket.status,
-				typeCode: websocket.type_code,
+				typeCode: websocket.typeCode,
 				year: websocket.year,
 				accidents: websocket.accidents,
                 restrictions: websocket.restrictions,
-                mileage: parseMileage(websocket.mileage, websocket.license_plate),
+                mileage: parseMileage(websocket.mileage, websocket.licensePlate),
 				inspections: []
             )
 			
@@ -57,17 +56,11 @@ extension QuerySheetView {
 			}
             
             if !knownCarQuery {
-                saveCar.licensePlate = websocket.license_plate
+                saveCar.licensePlate = websocket.licensePlate
 				print(locationManager.lastLocation)
 				saveCar.latitude = locationManager.lastLocation.coordinate.latitude
 				saveCar.longitude = locationManager.lastLocation.coordinate.longitude
 				print("Saving car with coordinates... (\(saveCar.latitude), \(saveCar.longitude))")
-				
-				if saveCar.latitude == 40.748443 && saveCar.longitude == -73.985650 {
-					print("Coordinates were default values")
-					websocket.showAlert(.querySheetView, "Coordinates are pointing to Empire State Building...")
-					return false
-				}
             }
             
             let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)

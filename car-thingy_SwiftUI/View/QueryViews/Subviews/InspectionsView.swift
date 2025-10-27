@@ -57,6 +57,9 @@ struct InspectionsView: View {
 }
 
 #Preview {
-	DetailView(selectedCar: previewCar, region: previewCar.getLocation())
+	DetailView(
+		selectedCar: previewCar,
+		region: previewCar.getLocation()
+	)
 		.environment(SharedViewData())
 }

@@ -22,15 +22,11 @@ struct DateView: View {
 		dateFormat.timeZone = TimeZone(secondsFromGMT: 7200)!
 		
 		if let safeDate = self.car.getDate(.updatedAt) {
-			updatedAt = "Updated: \(safeDate.formatted(dateFormat))"
-		} else {
-			updatedAt = "Updated: Never"
+			updatedAt = "\(safeDate.formatted(dateFormat))"
 		}
 		
 		if let safeDate = self.car.getDate(.createdAt) {
-			createdAt = "Created: \(safeDate.formatted(dateFormat))"
-		} else {
-			createdAt = "Created: Never"
+			createdAt = "\(safeDate.formatted(dateFormat))"
 		}
 	}
 	
@@ -39,20 +35,34 @@ struct DateView: View {
 			showPopover = true
 		}) {
 			if mapView {
-				Image(systemName: "info.circle")
+				Image(systemName: "calendar")
 					.foregroundStyle(.gray)
 			} else {
-				Image(systemName: "info.circle.fill")
+				Image(systemName: "calendar")
 			}
 		}.popover(isPresented: $showPopover) {
 			VStack {
-				Text(createdAt)
-					.frame(maxWidth: .infinity, alignment: .leading)
-					.padding()
+				VStack {
+					Text(createdAt)
+						.font(.system(size: 22)).bold()
+						.frame(maxWidth: .infinity, alignment: .leading)
+					Text("Created")
+						.font(.body.bold())
+						.foregroundColor(Color.gray)
+				}
+				.padding()
+				
 				Divider()
-				Text(updatedAt)
-					.frame(maxWidth: .infinity, alignment: .leading)
-					.padding()
+				
+				VStack {
+					Text(updatedAt)
+						.font(.system(size: 22)).bold()
+						.frame(maxWidth: .infinity, alignment: .leading)
+					Text("Updated")
+						.font(.body.bold())
+						.foregroundColor(Color.gray)
+				}
+				.padding()
 			}
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
 			.presentationCompactAdaptation(.none)
@@ -63,9 +73,15 @@ struct DateView: View {
 				.clipShape(Circle())
 				.buttonStyle(.bordered)
 		}
+//		.buttonStyle(.bordered)
     }
 }
 
 #Preview {
 	DateView(car: previewCar, mapView: false)
+}
+
+#Preview {
+		MyCarsView()
+			.environment(SharedViewData())
 }

@@ -7,15 +7,23 @@
 
 import SwiftUI
 
+enum EnvPickerSelections: String {
+	case prod = "Production"
+	case dev = "Development"
+	case local = "Local"
+}
+
 struct QueryView: View {
+	@Environment(SharedViewData.self) private var sharedViewData
+	
     @FocusState private var lpTextFieldFocused: Bool
     
     @State private var viewModel = ViewModel()
-    @State var websocket: Websocket = Websocket()
     @State private var requestedLicensePlate: String = String()
 	@State private var showVersionPopover: Bool = false
-	
 	@State private var verificationCode: String = String()
+	
+	@State private var envPickerSelection: EnvPickerSelections = .prod
 	
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -33,6 +41,9 @@ struct QueryView: View {
     }
     
     var body: some View {
+		// required because can't use environment as binding
+		@Bindable var sharedViewDataBindable = sharedViewData
+		
         NavigationStack {
             VStack(spacing: 50) {
                 Section {
@@ -44,49 +55,35 @@ struct QueryView: View {
                         .focused($lpTextFieldFocused)
                 }
 				
-				if websocket.isLoading {
-					openQuerySheet
-				} else {
-					Button {
-						Task {
-							lpTextFieldFocused = false
-							await websocket.connect(requestedLicensePlate)
-						}
-					} label: {
-						Text("Request")
-							.frame(maxWidth: 200, maxHeight: 50)
+				Button {
+					Task {
+                        if requestedLicensePlate != "" {
+                            lpTextFieldFocused = false
+                            sharedViewData.showMiniQueryView = true
+                            await sharedViewData.websocket.connect(requestedLicensePlate)
+                        }
 					}
-					.buttonStyle(.borderless)
-					.foregroundColor(.white)
-					.background(!websocket.isLoading ? Color.blue : Color.gray)
-					.cornerRadius(10)
+				} label: {
+					Text("Request")
+						.frame(maxWidth: 200, maxHeight: 50)
 				}
+				.buttonStyle(.borderedProminent)
                 
                 Button {
                     Task {
-                        await websocket.connect("test111")
+						sharedViewData.showMiniQueryView = true
+                        await sharedViewData.websocket.connect("test111")
                     }
                 } label: {
                     Text("Test Request")
                         .frame(maxWidth: 200, maxHeight: 50)
                 }
-                .buttonStyle(.borderless)
-                .foregroundColor(.white)
-                .background(!websocket.isLoading ? Color.blue : Color.gray)
-                .cornerRadius(10)
-                .disabled(websocket.isLoading)
+                .disabled(sharedViewData.websocket.isLoading)
+				.buttonStyle(.borderedProminent)
+				.tint(Color.secondary)
             }
             .padding()
             .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing, content: {
-                    Button(action: {
-                        websocket.openSheet()
-                    }) {
-                        Image(systemName: "tray")
-                    }
-                    .isHidden(!websocket.isSuccess)
-                })
-				
 				ToolbarItem(placement: .topBarLeading, content: {
 					Button(action: {
 						showVersionPopover = true
@@ -107,7 +104,7 @@ struct QueryView: View {
 							
 							Divider()
 							
-							Text(env == "prod" ? "Production" : "Development")
+							Text(envPickerSelection.rawValue)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.padding()
 						}
@@ -116,58 +113,54 @@ struct QueryView: View {
 						.presentationBackground(.clear)
 					}
 				})
+				
+				ToolbarItem(placement: .topBarTrailing, content: {
+					changeEnv
+				})
             }
             .navigationTitle("Car Query")
 			.navigationBarTitleDisplayMode(.large)
         }
-        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
-            Button("Websocket got it") {
-                websocket.disableAlert()
-                print("websocket alert confirmed")
+        .alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
+            Button("sharedViewData.websocket got it") {
+                sharedViewData.websocket.disableAlert()
+                print("sharedViewData.websocket alert confirmed")
             }
         })
-		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
-			SecureField(text: $verificationCode) {}
-			
-			Button("Cancel") {
-				websocket.close()
-			}
-			
-			Button("Submit") {
-				websocket.dismissCodeDialog(verificationCode: verificationCode)
-			}
-		} message: {
-			Text("Pls gimme 2fa code")
-		}
-        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
-            Task {
-                await websocket.dismissSheet()
-            }
-        }) {
-            QuerySheetView(websocket: websocket, knownCarQuery: false)
-                .presentationDetents([.medium, .large])
-        }
     }
 	
-	var openQuerySheet: some View {
-		Button(action: {
-			websocket.openSheet()
-		}) {
-			Gauge(value: websocket.percentage, in: 0...100) {}
-				.gaugeStyle(.accessoryCircularCapacity)
-				.tint(.blue)
-				.scaleEffect(0.5)
-//				.frame(width: 25, height: 25)
-//				.frame(maxWidth: .infinity, maxHeight: .infinity)
-				.frame(maxWidth: 175, maxHeight: 37)
-		}
-		.buttonStyle(.bordered)
-		.tint(.blue)
+	var changeEnv: some View {
+		Menu(content: {
+			Menu(content: {
+				Picker("he", systemImage: "line.3.horizontal.decrease.circle", selection: $envPickerSelection, content: {
+					Text("Production").tag(EnvPickerSelections.prod)
+					Text("Development").tag(EnvPickerSelections.dev)
+					Text("Local").tag(EnvPickerSelections.local)
+				})
+				.onChange(of: envPickerSelection, {
+					switch envPickerSelection {
+					case .prod:
+						setProd()
+					case .dev:
+						setDev()
+					case .local:
+						setLocal()
+					}
+				})
+			}, label: {
+				Text("Environment")
+				Image(systemName: "server.rack")
+				Text(envPickerSelection.rawValue)
+			})
+		}, label: {
+			Image(systemName: "ellipsis.circle")
+		})
 	}
 }
 
 #Preview {
 	QueryView()
+		.environment(SharedViewData())
 		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
 		.previewDisplayName("iPhone 13 Pro")
 		//        QueryView()

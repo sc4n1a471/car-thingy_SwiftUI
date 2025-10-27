@@ -8,7 +8,10 @@ What is it good for:
 - When a car is saved, it also saves the coordinates, so there is a map of all of the cars with markers, colored based on known/unknown boolean
 - Shows you stats of the saved cars, currently number of known/unknown cars and saved cars of each brands
 
-![Untitled 2](https://github.com/user-attachments/assets/e19d8562-bae4-4b81-b844-e72867507464)
+
+<img width="2728" height="4118" alt="car-thingy_SwiftUI@0 5x" src="https://github.com/user-attachments/assets/2389c6d8-3366-49c6-9b42-84f3aa4263a0" />
+
+
 
 
 ![Alt](https://repobeats.axiom.co/api/embed/edb3a5f540ee24442331a8059a1f3bd3fb1ace81.svg "Repobeats analytics image")

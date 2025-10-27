@@ -15,7 +15,6 @@ struct MapDetailView: View {
     @State private var selectedCar: Car = Car()
     @Binding var selectedLicensePlate: String?
     @State private var enableScrollView: Bool = true
-    @State private var websocket: Websocket = Websocket()
 	@State private var verificationCode: String = String()
     
     let columns = [
@@ -29,7 +28,7 @@ struct MapDetailView: View {
 	]
     
     var body: some View {
-            // required because can't use environment as binding
+		// required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
         
 		LazyVGrid(columns: columns2, content: {
@@ -57,7 +56,7 @@ struct MapDetailView: View {
                         } else {
                             editButton
                         }
-                        if websocket.isLoading {
+						if sharedViewData.websocket.isLoading {
                             openQuerySheet
                         } else {
                             queryButton
@@ -94,7 +93,7 @@ struct MapDetailView: View {
 				}
 				
 				Section {
-					MileageView(onChangeMileageData: websocket.mileage, mileageData: $selectedCar.mileage)
+					MileageView(onChangeMileageData: sharedViewData.websocket.mileage, mileageData: $selectedCar.mileage)
 				}
 				
 				Section {
@@ -126,35 +125,35 @@ struct MapDetailView: View {
         }) {
             NewCar(isUpload: false)
         }
-        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
-            Task {
-                await websocket.dismissSheet()
-                await loadSelectedCar()
-            }
-        }) {
-            QuerySheetView(websocket: websocket)
-                .presentationDetents([.medium, .large])
-        }
+//        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
+//            Task {
+//                websocket.dismissSheet()
+//                await loadSelectedCar()
+//            }
+//        }) {
+//            QuerySheetView()
+//                .presentationDetents([.medium, .large])
+//        }
         .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMapView) {
             Button("Got it") {
                 print("alert confirmed")
             }
         }
-        .alert(websocket.error, isPresented: $websocket.isAlert, actions: {
+		.alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
             Button("Websocket got it") {
-                websocket.disableAlert()
+				sharedViewData.websocket.disableAlert()
                 print("websocket alert confirmed")
             }
         })
-		.alert("2FA", isPresented: $websocket.verificationDialogOpen) {
+		.alert("2FA", isPresented: $sharedViewDataBindable.websocket.verificationDialogOpen) {
 			SecureField(text: $verificationCode) {}
 			
 			Button("Cancel") {
-				websocket.close()
+				sharedViewData.websocket.close()
 			}
 			
 			Button("Submit") {
-				websocket.dismissCodeDialog(verificationCode: verificationCode)
+				sharedViewData.websocket.dismissCodeDialog(verificationCode: verificationCode)
 			}
 		} message: {
 			Text("Pls gimme 2fa code")
@@ -177,14 +176,15 @@ struct MapDetailView: View {
     var queryButton: some View {
         Button(action: {
             Task {
-				await websocket.connect(selectedCar.licensePlate, selectedCar)
+				sharedViewData.showMiniQueryView = true
+				await sharedViewData.websocket.connect(selectedCar.licensePlate, selectedCar)
             }
         }, label: {
             Image(systemName: "magnifyingglass")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
         .buttonStyle(.borderedProminent)
-        .disabled(websocket.isLoading)
+		.disabled(sharedViewData.websocket.isLoading)
     }
     
     var deleteButton: some View {
@@ -215,9 +215,9 @@ struct MapDetailView: View {
     
     var openQuerySheet: some View {
         Button(action: {
-            websocket.openSheet()
+			sharedViewData.websocket.openSheet()
         }) {
-            Gauge(value: websocket.percentage, in: 0...100) {}
+			Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
