@@ -245,7 +245,7 @@ func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: 
     }
 }
 
-func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -> (response: String?, error: String?) {
+func saveData(uploadableCarData: Car, isPost: Bool) async -> (response: String?, error: String?) {
     uploadableCarData.toString()
     
     guard let encoded = try? JSONEncoder().encode(uploadableCarData) else {
@@ -253,9 +253,7 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
         return (nil, "Failed to encode car")
     }
     
-    var url: URL
-    url = lpOnly ? getURL(.licensePlate) : getURL(.cars)
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: getURL(.cars))
     
     request.httpMethod = isPost ? "POST" : "PUT"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")

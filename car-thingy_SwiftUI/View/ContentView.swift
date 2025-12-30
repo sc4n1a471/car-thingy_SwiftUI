@@ -12,11 +12,11 @@ import AppIntents
 
 struct ContentView: View {
 	@State private var expand: Bool = false
-	@State private var verificationCode: String = String()
 	@Environment(SharedViewData.self) private var sharedViewData
 	@Environment(\.colorScheme) var colorScheme
 	@Namespace var animation
 	
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
 		@Bindable var sharedViewDataBindable = sharedViewData
@@ -53,12 +53,12 @@ struct ContentView: View {
 			MiniQuerySheetView(sharedViewData)
 				.matchedTransitionSource(id: "mini-query-id", in: animation)
 				.onTapGesture {
-					sharedViewData.websocket.dataSheetOpened.toggle()
+					sharedViewData.socketio.dataSheetOpened.toggle()
 				}
 		}
-		.fullScreenCover(isPresented: $sharedViewDataBindable.websocket.dataSheetOpened, onDismiss: {
+		.fullScreenCover(isPresented: $sharedViewDataBindable.socketio.dataSheetOpened, onDismiss: {
 			Task {
-				sharedViewData.websocket.dismissSheet()
+				sharedViewData.socketio.dismissSheet()
 			}
 		}) {
 			VStack(spacing: 10) {
@@ -84,22 +84,39 @@ struct ContentView: View {
     }
 }
 
+// MARK: IF extension, used only in DateView
+extension View {
+        /// Applies the given transform if the given condition evaluates to `true`.
+        /// - Parameters:
+        ///   - condition: The condition to evaluate.
+        ///   - transform: The transform to apply to the source `View`.
+        /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+
+// MARK: Mini query sheet view
 extension View {
 	@ViewBuilder
 	func MiniQuerySheetView(_ sharedViewData: SharedViewData) -> some View {
 		if sharedViewData.showMiniQueryView {
 			HStack {
-                Text(sharedViewData.websocket.getLP())
+                Text(sharedViewData.socketio.getLP())
 					.font(.headline)
-				if (sharedViewData.websocket.isLoading) {
-					Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
+				if (sharedViewData.socketio.isLoading) {
+					Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
 						.gaugeStyle(.accessoryCircularCapacity)
 						.tint(.blue)
 						.scaleEffect(0.5)
 						.frame(maxWidth: 200, maxHeight: 50)
 					
 					Button {
-						sharedViewData.websocket.close()
+						sharedViewData.socketio.close()
 					} label: {
 						Image(systemName: "xmark")
 							.contentShape(.rect)
@@ -109,21 +126,6 @@ extension View {
 				}
 			}
 			.padding(.horizontal, 15)
-		}
-	}
-}
-
-extension View {
-		/// Applies the given transform if the given condition evaluates to `true`.
-		/// - Parameters:
-		///   - condition: The condition to evaluate.
-		///   - transform: The transform to apply to the source `View`.
-		/// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
-	@ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
-		if condition {
-			transform(self)
-		} else {
-			self
 		}
 	}
 }
@@ -146,6 +148,7 @@ struct ContentViewModifier: ViewModifier {
 	}
 }
 
+// MARK: Preview
 #Preview {
     ContentView()
         .environment(SharedViewData())
@@ -185,7 +188,7 @@ struct NewCarIntent: AppIntent {
         
         newCar.createdAt = Date.now.ISO8601Format()
         
-        let (safeMessage, safeError) = await saveData(uploadableCarData: newCar, isPost: true, lpOnly: false)
+        let (safeMessage, safeError) = await saveData(uploadableCarData: newCar, isPost: true)
         
         if let safeMessage {
             DDLogVerbose("Upload was successful: \(safeMessage)")

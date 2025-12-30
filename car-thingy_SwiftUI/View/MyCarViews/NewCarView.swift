@@ -166,7 +166,7 @@ struct NewCar: View {
             } else {
 				sharedViewData.clearExistingCar()
                 self.ezLenniCar = sharedViewData.newCar
-                sharedViewData.is_new = true
+                sharedViewData.isNew = true
 				sharedViewData.returnNewCar = Car()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(1)) {
                     focusedField = .newLicensePlate
@@ -227,7 +227,7 @@ struct NewCar: View {
 					}
 				}
                 
-                let (safeMessage, safeError) = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload, lpOnly: false)
+                let (safeMessage, safeError) = await saveData(uploadableCarData: ezLenniCar, isPost: isUpload)
                 sharedViewData.isLoading = false
                 
                 if let safeMessage {

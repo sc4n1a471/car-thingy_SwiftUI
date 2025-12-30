@@ -13,6 +13,7 @@ import CocoaLumberjackSwift
     var cars = [Car]()
     var error: String?
     
+    // MARK: Show variables
 	var showAlertMyCars = false
 	var showAlertNewCar = false
 	var showAlertDetailView = false
@@ -24,12 +25,15 @@ import CocoaLumberjackSwift
     var isNewCarPresented = false
     var isEditCarPresented = false
     
+    // MARK: Car variables
     var newCar: Car = Car()
     var existingCar: Car = Car()
 	var returnNewCar: Car = Car()
 	
 	var websocket: Websocket = Websocket()
-	    
+	
+    var socketio: Socketio
+    
     var region = MKCoordinateRegion(
         center:  CLLocationCoordinate2D(
           latitude: 37.789467,
@@ -40,10 +44,11 @@ import CocoaLumberjackSwift
           longitudeDelta: 0.01
        )
     )
-    var is_new: Bool = true
+    var isNew: Bool = true
     private var oldLicensePlate = ""
     private var yearAsString = ""
 	
+    // MARK: Enums
 	enum HapticType: String {
 		case notification
 		case standard
@@ -58,8 +63,11 @@ import CocoaLumberjackSwift
 		case mapView
 	}
     
-    init() {}
+    init() {
+        socketio = Socketio()
+    }
 	
+    // MARK: Haptic
 	func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
 		print("Haptic")
 		switch type {
@@ -78,6 +86,8 @@ import CocoaLumberjackSwift
 		}
 	}
     
+    
+    // MARK: Clear car object
     func clearNewCar() {
         self.newCar = Car()
     }
@@ -86,6 +96,8 @@ import CocoaLumberjackSwift
         self.existingCar = Car()
     }
     
+    
+    // MARK: Show Alert
 	func showAlert(_ alertLocation: AlertLocations, _ errorMsg: String) {
 		switch alertLocation {
 			case .myCars:
@@ -105,6 +117,7 @@ import CocoaLumberjackSwift
 		self.haptic(type: .error)
     }
 	
+    // MARK: Load view data
 	func loadViewData(_ refresh: Bool = false) async {
 		self.isLoading = true
 		let (safeCars, safeCarError) = await loadCars(refresh)
@@ -119,6 +132,7 @@ import CocoaLumberjackSwift
 		self.isLoading = false
 	}
 	
+    // MARK: Parse date
 	func parseDate(_ unparsedData: String) -> Date {
 		let calendar = Calendar.autoupdatingCurrent
 		if unparsedData.contains("-") {

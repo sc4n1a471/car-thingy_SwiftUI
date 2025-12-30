@@ -40,6 +40,7 @@ struct QueryView: View {
             })
     }
     
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
 		@Bindable var sharedViewDataBindable = sharedViewData
@@ -55,12 +56,14 @@ struct QueryView: View {
                         .focused($lpTextFieldFocused)
                 }
 				
+                // MARK: Request button
 				Button {
 					Task {
                         if requestedLicensePlate != "" {
                             lpTextFieldFocused = false
                             sharedViewData.showMiniQueryView = true
-                            await sharedViewData.websocket.connect(requestedLicensePlate)
+//                            await sharedViewData.websocket.connect(requestedLicensePlate)
+                            sharedViewData.socketio.sendCarRequest(licensePlate: requestedLicensePlate)
                         }
 					}
 				} label: {
@@ -69,10 +72,13 @@ struct QueryView: View {
 				}
 				.buttonStyle(.borderedProminent)
                 
+                // MARK: Test request button
                 Button {
                     Task {
-						sharedViewData.showMiniQueryView = true
-                        await sharedViewData.websocket.connect("test111")
+//						sharedViewData.showMiniQueryView = true
+//                        await sharedViewData.websocket.connect("test111")
+//                        sharedViewData.socketio.sendPing()
+                        sharedViewData.socketio.sendTest()
                     }
                 } label: {
                     Text("Test Request")
@@ -83,6 +89,8 @@ struct QueryView: View {
 				.tint(Color.secondary)
             }
             .padding()
+            
+            // MARK: Toolbar
             .toolbar {
 				ToolbarItem(placement: .topBarLeading, content: {
 					Button(action: {
@@ -129,6 +137,7 @@ struct QueryView: View {
         })
     }
 	
+    // MARK: Change env
 	var changeEnv: some View {
 		Menu(content: {
 			Menu(content: {
@@ -158,11 +167,12 @@ struct QueryView: View {
 	}
 }
 
+// MARK: Preview
 #Preview {
 	QueryView()
 		.environment(SharedViewData())
-		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
-		.previewDisplayName("iPhone 13 Pro")
+//		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
+//		.previewDisplayName("iPhone 13 Pro")
 		//        QueryView()
 		//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
 		//            .previewDisplayName("Mac Catalyst")

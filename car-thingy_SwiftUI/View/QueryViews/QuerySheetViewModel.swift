@@ -63,7 +63,7 @@ extension QuerySheetView {
 				print("Saving car with coordinates... (\(saveCar.latitude), \(saveCar.longitude))")
             }
             
-            let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true, lpOnly: false)
+            let (safeMessage, safeError) = await saveData(uploadableCarData: saveCar, isPost: true)
             
             if let safeMessage {
                 print(safeMessage)
