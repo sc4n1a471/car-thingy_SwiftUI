@@ -39,7 +39,7 @@ struct Car: Codable, Identifiable, Equatable, Hashable {
 	
 	var accidents: [Accident]?
 	var restrictions: [Restriction]?
-	var mileage: [Mileage] = [Mileage()]
+	var mileage: [Mileage] = []
 	var inspections: [Inspection]?
 	
 	var parsedCreatedAt: Date?

@@ -36,7 +36,6 @@
 		57A49F3A2872349B006A2712 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A49F392872349B006A2712 /* Database.swift */; };
 		57A979322878B2980024EAA0 /* NewCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A979312878B2980024EAA0 /* NewCarView.swift */; };
 		57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BA28CE2C2700837E0F /* LocationManager.swift */; };
-		57B343A22AF05E5C0092AB78 /* Websocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B343A12AF05E5C0092AB78 /* Websocket.swift */; };
 		57B343A42AF05EB20092AB78 /* QueryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B343A32AF05EB20092AB78 /* QueryViewModel.swift */; };
 		57B343A62AF065D20092AB78 /* QuerySheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B343A52AF065D20092AB78 /* QuerySheetViewModel.swift */; };
 		57BA6B172A5466F6005C447C /* SpecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BA6B162A5466F6005C447C /* SpecView.swift */; };
@@ -90,7 +89,6 @@
 		57A49F392872349B006A2712 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		57A979312878B2980024EAA0 /* NewCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCarView.swift; sourceTree = "<group>"; };
 		57AFE3BA28CE2C2700837E0F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		57B343A12AF05E5C0092AB78 /* Websocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Websocket.swift; sourceTree = "<group>"; };
 		57B343A32AF05EB20092AB78 /* QueryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryViewModel.swift; sourceTree = "<group>"; };
 		57B343A52AF065D20092AB78 /* QuerySheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuerySheetViewModel.swift; sourceTree = "<group>"; };
 		57BA6B162A5466F6005C447C /* SpecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecView.swift; sourceTree = "<group>"; };
@@ -155,7 +153,6 @@
 				5728DB842EEF2D9B00C90ACE /* SocketIO.swift */,
 				577C65432895958500397961 /* HTTPController.swift */,
 				57AFE3BA28CE2C2700837E0F /* LocationManager.swift */,
-				57B343A12AF05E5C0092AB78 /* Websocket.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -365,7 +362,6 @@
 				57C5F1612B000037005F40CC /* NewCarViewModel.swift in Sources */,
 				57A49F2F2871EC85006A2712 /* DetailView.swift in Sources */,
 				577C65442895958500397961 /* HTTPController.swift in Sources */,
-				57B343A22AF05E5C0092AB78 /* Websocket.swift in Sources */,
 				5771424E2B136E0000CF049B /* DateView.swift in Sources */,
 				575DD0FD2B018797001027A9 /* InspectionsView.swift in Sources */,
 				57C5F1672B001162005F40CC /* MapViewModel.swift in Sources */,
@@ -523,7 +519,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 715;
+				CURRENT_PROJECT_VERSION = 730;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_APP_SANDBOX = YES;
@@ -547,7 +543,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -574,7 +570,7 @@
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 715;
+				CURRENT_PROJECT_VERSION = 730;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_APP_SANDBOX = YES;
@@ -598,7 +594,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

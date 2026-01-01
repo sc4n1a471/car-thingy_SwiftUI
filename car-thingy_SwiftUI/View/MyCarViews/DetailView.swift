@@ -26,6 +26,7 @@ struct DetailView: View {
         GridItem(.flexible(minimum: 100, maximum: 200))
     ]
     
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
@@ -40,7 +41,7 @@ struct DetailView: View {
                         } else {
                             editButton
                         }
-                        if sharedViewData.websocket.isLoading {
+                        if sharedViewData.socketio.isLoading {
                             openQuerySheet
                         } else {
                             queryButton
@@ -68,20 +69,20 @@ struct DetailView: View {
                     SpecView(header: "Status", content: selectedCar.status)
                     SpecView(header: "First registration", content: selectedCar.firstReg)
                     SpecView(header: "First registration in 🇭🇺", content: selectedCar.firstRegHun)
-                    SpecView(header: "Number of owners", content: String(selectedCar.numOfOwners ?? 99))
+                    SpecView(header: "Number of owners", contentInt: selectedCar.numOfOwners)
                 }
                 
                 Section {
-                    SpecView(header: "Year", content: String(selectedCar.year ?? 1970))
-                    SpecView(header: "Engine size", content: String(selectedCar.engineSize ?? 9999), note: "cm3")
-                    SpecView(header: "Performance", content: String(selectedCar.performance ?? 999), note: "HP")
+                    SpecView(header: "Year", contentInt: selectedCar.year)
+                    SpecView(header: "Engine size", contentInt: selectedCar.engineSize, note: "cm3")
+                    SpecView(header: "Performance", contentInt: selectedCar.performance, note: "HP")
                     SpecView(header: "Fuel type", content: selectedCar.fuelType)
                     SpecView(header: "Gearbox", content: selectedCar.gearbox)
                     SpecView(header: "Color", content: selectedCar.color)
                 }
                 
                 Section {
-                    MileageView(onChangeMileageData: sharedViewData.websocket.mileage, mileageData: $selectedCar.mileage)
+                    MileageView(onChangeMileageData: sharedViewData.socketio.car.mileage, mileageData: $selectedCar.mileage)
                 }
                 
                 Section {
@@ -134,21 +135,12 @@ struct DetailView: View {
         }) {
             NewCar(isUpload: false)
         }
-//        .sheet(isPresented: $sharedViewDataBindable.websocket.dataSheetOpened, onDismiss: {
-//            Task {
-//                sharedViewData.websocket.dismissSheet()
-//                await loadSelectedCar()
-//            }
-//        }) {
-//            QuerySheetView()
-//                .presentationDetents([.medium, .large])
-//        }
 		
 		// MARK: Alerts
-        .alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
-            Button("sharedViewData.websocket got it") {
-                sharedViewData.websocket.disableAlert()
-                print("sharedViewData.websocket alert confirmed")
+        .alert(sharedViewData.socketio.error, isPresented: $sharedViewDataBindable.socketio.isAlert, actions: {
+            Button("sharedViewData.socketio got it") {
+                sharedViewData.socketio.disableAlert()
+                print("sharedViewData.socketio alert confirmed")
             }
         })
 		.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertDetailView) {
@@ -174,9 +166,9 @@ struct DetailView: View {
     // MARK: Query sheet button
     var openQuerySheet: some View {
         Button(action: {
-            sharedViewData.websocket.openSheet()
+            sharedViewData.socketio.openSheet()
         }) {
-            Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
+            Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
@@ -203,10 +195,9 @@ struct DetailView: View {
 	// MARK: Query button
     var queryButton: some View {
         Button(action: {
-            Task {
-				sharedViewData.showMiniQueryView = true
-				await sharedViewData.websocket.connect(selectedCar.licensePlate, selectedCar)
-            }
+            sharedViewData.showMiniQueryView = true
+            sharedViewData.socketio.sendCarRequest(selectedCar.licensePlate)
+            sharedViewData.socketio.car.comment = selectedCar.comment
         }, label: {
             Image(systemName: "magnifyingglass")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

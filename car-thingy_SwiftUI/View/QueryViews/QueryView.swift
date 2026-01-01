@@ -23,7 +23,7 @@ struct QueryView: View {
 	@State private var showVersionPopover: Bool = false
 	@State private var verificationCode: String = String()
 	
-	@State private var envPickerSelection: EnvPickerSelections = .prod
+	@State private var envPickerSelection: EnvPickerSelections = .dev
 	
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -62,8 +62,7 @@ struct QueryView: View {
                         if requestedLicensePlate != "" {
                             lpTextFieldFocused = false
                             sharedViewData.showMiniQueryView = true
-//                            await sharedViewData.websocket.connect(requestedLicensePlate)
-                            sharedViewData.socketio.sendCarRequest(licensePlate: requestedLicensePlate)
+                            sharedViewData.socketio.sendCarRequest(requestedLicensePlate)
                         }
 					}
 				} label: {
@@ -75,16 +74,14 @@ struct QueryView: View {
                 // MARK: Test request button
                 Button {
                     Task {
-//						sharedViewData.showMiniQueryView = true
-//                        await sharedViewData.websocket.connect("test111")
-//                        sharedViewData.socketio.sendPing()
+						sharedViewData.showMiniQueryView = true
                         sharedViewData.socketio.sendTest()
                     }
                 } label: {
                     Text("Test Request")
                         .frame(maxWidth: 200, maxHeight: 50)
                 }
-                .disabled(sharedViewData.websocket.isLoading)
+                .disabled(sharedViewData.socketio.isLoading)
 				.buttonStyle(.borderedProminent)
 				.tint(Color.secondary)
             }
@@ -123,22 +120,22 @@ struct QueryView: View {
 				})
 				
 				ToolbarItem(placement: .topBarTrailing, content: {
-					changeEnv
+                    changeEnvSelector
 				})
             }
             .navigationTitle("Car Query")
 			.navigationBarTitleDisplayMode(.large)
         }
-        .alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
-            Button("sharedViewData.websocket got it") {
-                sharedViewData.websocket.disableAlert()
-                print("sharedViewData.websocket alert confirmed")
+        .alert(sharedViewData.socketio.error, isPresented: $sharedViewDataBindable.socketio.isAlert, actions: {
+            Button("sharedViewData.socketio got it") {
+                sharedViewData.socketio.disableAlert()
+                print("sharedViewData.socketio alert confirmed")
             }
         })
     }
 	
     // MARK: Change env
-	var changeEnv: some View {
+	var changeEnvSelector: some View {
 		Menu(content: {
 			Menu(content: {
 				Picker("he", systemImage: "line.3.horizontal.decrease.circle", selection: $envPickerSelection, content: {

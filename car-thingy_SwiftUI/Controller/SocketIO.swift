@@ -24,7 +24,6 @@ import SocketIO
     var error = String()
     var isAlert = false
     var isAlertSheetView = false    // show alert on sheetView only, so it doesn't dismiss the sheet
-    var isQuerySaved = false
     
     var verificationDialogOpen = false
     
@@ -39,10 +38,11 @@ import SocketIO
         case querySheetView
     }
     
+    // MARK: Init
     init() {
         setDev()
         manager = SocketManager(
-            socketURL: URL(string: "http://10.11.12.5:8000")!, 
+            socketURL: URL(string: getURLasString(.query))!,
             config: [.log(true), .extraHeaders(["x-api-key": apiKey])]
         )
         socket = manager.defaultSocket
@@ -58,6 +58,7 @@ import SocketIO
         
         socket.on(clientEvent: .disconnect) {data, ack in
             print("socket disconnected")
+            self.reset()
         }
         
         socket.on("pong") { (data, ack) in
@@ -68,16 +69,27 @@ import SocketIO
         }
         
         socket.on("car_response") { (data, ack) in
-            // TODO: Handle empty data
-            print(data[0])
+            if data.isEmpty {
+                if self.dataSheetOpened {
+                    self.showAlert(.querySheetView, "car_response data was empty")
+                } else {
+                    self.showAlert(.notQuerySheetView, "car_response data was empty")
+                }
+                return
+            }
             let jsonData = String(describing: data[0] as AnyObject)
-            let (safeResponse, safeError) = initWebsocketResponse(dataCuccli: Data(jsonData.utf8))
+            let (safeResponse, safeError) = initQueryResponse(dataCuccli: Data(jsonData.utf8))
             if let safeResponse {
                 if safeResponse.status == "success" {
-//                    await getInspections(car.licensePlate)
-                    self.isSuccess = true
-                    print(self.car)
-                    self.haptic(type: .notification)
+                    // Task is required here because socket.on is synchronous, so to get the inspections asyncly, it needs to be in a Task to get Swift handle it asyncly
+                    Task {
+                        await self.getInspections(self.car.licensePlate)
+                        await MainActor.run {
+                            self.isSuccess = true
+                            self.isLoading = false
+                            self.haptic(type: .notification)
+                       }
+                   }
                 } else if safeResponse.status == "waiting" {
                     self.openCodeDialog()
                 } else {
@@ -89,15 +101,17 @@ import SocketIO
                             )
                         }
                     }
-                    self.percentage = safeResponse.percentage
+                    if safeResponse.percentage != -1 {
+                        self.percentage = safeResponse.percentage
+                    }
                 }
             }
             if let safeError {
                 print("error: \(safeError)")
                 if self.dataSheetOpened {
-//                    showAlert(.querySheetView, safeError)
+                    self.showAlert(.querySheetView, safeError)
                 } else {
-//                    showAlert(.notQuerySheetView, safeError)
+                    self.showAlert(.notQuerySheetView, safeError)
                 }
             }
         }
@@ -111,38 +125,51 @@ import SocketIO
     // MARK: Send test request
     func sendTest() {
         socket.emit("request_license_plate", "test111")
+        self.car.licensePlate = "TEST111"
+        self.isLoading = true
     }
     
     // MARK: Send 2FA code
-    func send2FACode(code: String) {
+    func send2FACode(_ code: String) {
         socket.emit("input_2fa", code)
     }
     
     // MARK: Send car request
-    func sendCarRequest(licensePlate: String) {
+    func sendCarRequest(_ licensePlate: String) {
         self.reset()
+        self.isLoading = true
         car.licensePlate = licensePlate
         socket.emit("request_license_plate", licensePlate)
     }
     
     // MARK: Cancel request
-    func cancelRequest() {
+    func sendCarRequestCancel() {
         socket.emit("stop_request")
+        self.isLoading = false
     }
 
     // MARK: Disconnect
     func disconnect() {
         socket.disconnect()
+        self.isLoading = false
     }
     
     // MARK: Reset variables
     func reset() {
         car = Car()
         messages = []
+        self.isSuccess = false
+        self.areImagesLoaded = false
+        self.isLoading = false
+        print("Query car RESET")
     }
+
     
-    // MARK: Set car values
-    func setValues(_ value: WebsocketResponseType, key: CarDataType = .brand) {
+    /// Set car values as received from server
+    /// - Parameters:
+    ///   - value: Value to set
+    ///   - key: Key to set
+    func setValues(_ value: CarQueryResponseType, key: CarDataType = .brand) {
         switch value {
             case .accidents(let accidents):
                 car.accidents = accidents
@@ -182,9 +209,6 @@ import SocketIO
                     case CarDataType.type_code:
                         car.typeCode = stringValue
                         break
-                    case CarDataType.license_plate:
-                        print("setValues - licenseplate")
-                        break
                     default:
                         break
                 }
@@ -223,10 +247,10 @@ import SocketIO
     
     func dismissCodeDialog(verificationCode: String) {
         self.verificationDialogOpen = false
-        self.send2FACode(code: verificationCode)
+        self.send2FACode(verificationCode)
     }
     
-    // MARK: Set/Clear values
+    // MARK: Set loading
     func setLoading(_ newStatus: Bool) {
         self.isLoading = newStatus
     }
@@ -240,7 +264,8 @@ import SocketIO
         self.dataSheetOpened = false
     }
     
-    // MARK: Get formatted license plate
+    /// Formats the license plate
+    /// - Returns: Formatted license plate like "AA AA-111 or AAA-111"
     func getLP() -> String {
         var formattedLicensePlate = car.licensePlate.uppercased()
         
@@ -255,16 +280,16 @@ import SocketIO
             
             formattedLicensePlate.insert(contentsOf: "-", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: numOfLetters))
             
-                // if it's the new license plate
+            // if it's the new license plate
             if (car.licensePlate.count > 6) {
                 formattedLicensePlate.insert(contentsOf: " ", at: formattedLicensePlate.index(formattedLicensePlate.startIndex, offsetBy: 2))
             }
         }
-        
         return formattedLicensePlate
     }
     
-    // MARK: Inspections
+    /// Downloads the inspections including images from the server
+    /// - Parameter licensePlate: License plate to query the inspections of
     func getInspections(_ licensePlate: String) async {
         let (inspections, error) = await loadQueryInspections(license_plate: licensePlate)
         if let safeInspections = inspections {
@@ -277,14 +302,16 @@ import SocketIO
         }
     }
     
-    // MARK: Restricrions
+    /// Parses the string restrictions into a list of restrictions
+    /// - Parameters:
+    ///   - stringRestrictions: List of string restrictions
+    ///   - licensePlate: License plate of the car
     func parseRestrictions(_ stringRestrictions: [String], _ licensePlate: String) -> [Restriction] {
         var newRestrictions: [Restriction] = []
         for restriction in stringRestrictions {
             newRestrictions.append(Restriction(
                 licensePlate: licensePlate,
                 restriction: restriction,
-//                restrictionDate: Date.now.ISO8601Format(),
                 isActive: true
             ))
         }
@@ -310,7 +337,9 @@ import SocketIO
         self.isAlertSheetView = false
     }
     
-    func close() {
+    // MARK: Cancel
+    func cancelCarRequest() {
+        self.sendCarRequestCancel()
         self.percentage = 0.0
         self.setLoading(false)
     }

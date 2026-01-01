@@ -29,9 +29,7 @@ import CocoaLumberjackSwift
     var newCar: Car = Car()
     var existingCar: Car = Car()
 	var returnNewCar: Car = Car()
-	
-	var websocket: Websocket = Websocket()
-	
+		
     var socketio: Socketio
     
     var region = MKCoordinateRegion(

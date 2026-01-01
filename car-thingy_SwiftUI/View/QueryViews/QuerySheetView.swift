@@ -34,12 +34,13 @@ struct QuerySheetView: View {
         NavigationStack {
             List {
                 if !viewModel.inspectionsOnly {
+                    // MARK: Log section
                     Section {
                         withAnimation {
                             LazyVGrid(columns: sharedViewData.socketio.isLoading ? columns : columns2, content: {
                                 if sharedViewData.socketio.isLoading {
                                     showLogs
-                                    closeConnection
+                                    cancelRequest
                                 } else {
                                     saveCar
                                 }
@@ -49,51 +50,49 @@ struct QuerySheetView: View {
                     .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                     .listRowBackground(Color.clear)
                     
+                    // MARK: Section 1
                     Section {
                         SpecView(header: "Brand", content: sharedViewData.socketio.car.brand)
                         SpecView(header: "Model", content: sharedViewData.socketio.car.model)
                         SpecView(header: "Type Code", content: sharedViewData.socketio.car.typeCode)
                     }
                     
+                    // MARK: Section 2
                     Section {
                         SpecView(header: "Status", content: sharedViewData.socketio.car.status)
                         SpecView(header: "First registration", content: sharedViewData.socketio.car.firstReg)
                         SpecView(header: "First registration in 🇭🇺", content: sharedViewData.socketio.car.firstRegHun)
-                        SpecView(header: "Number of owners", content: String(sharedViewData.socketio.car.numOfOwners ?? 900))
+                        SpecView(header: "Number of owners", contentInt: sharedViewData.socketio.car.numOfOwners)
                     }
                     
+                    // MARK: Section 3
                     Section {
-                        SpecView(header: "Year", content: String(sharedViewData.socketio.car.year ?? 9995))
-                        SpecView(header: "Engine size", content: String(sharedViewData.socketio.car.engineSize ?? 4290), note: "cm3")
-                        SpecView(header: "Performance", content: String(sharedViewData.socketio.car.performance ?? 1000), note: "HP")
+                        SpecView(header: "Year", contentInt: sharedViewData.socketio.car.year)
+                        SpecView(header: "Engine size", contentInt: sharedViewData.socketio.car.engineSize, note: "cm3")
+                        SpecView(header: "Performance", contentInt: sharedViewData.socketio.car.performance, note: "HP")
                         SpecView(header: "Fuel type", content: sharedViewData.socketio.car.fuelType)
                         SpecView(header: "Gearbox", content: sharedViewData.socketio.car.gearbox)
                         SpecView(header: "Color", content: sharedViewData.socketio.car.color)
                     }
                     
+                    // MARK: Section mileage
                     Section {
                         MileageView(onChangeMileageData: sharedViewData.socketio.car.mileage, mileageData: $sharedViewDataBindable.socketio.car.mileage)
                     }
                     
+                    // MARK: Section restrictions
                     Section {
                         SpecView(header: "Restrictions", restrictions: sharedViewData.socketio.car.restrictions)
                     }
                     
+                    // MARK: Section accidents
                     Section {
                         SpecView(header: "Accidents", accidents: sharedViewData.socketio.car.accidents)
                     }
                 }
                 
+                // MARK: Inspections
                 InspectionsView(inspections: sharedViewData.socketio.car.inspections)
-            }
-            // MARK: Toolbar items
-            .toolbar {
-#if os(macOS)
-                ToolbarItem(placement: .navigationBarLeading, content: {
-                    close
-                        .disabled(sharedViewData.socketio.isLoading)
-                })
-#endif
             }
             .navigationTitle(sharedViewData.socketio.getLP())
         }
@@ -104,11 +103,12 @@ struct QuerySheetView: View {
                 print("sharedViewData.socketio alert confirmed")
             }
         })
+        // MARK: 2FA
 		.alert("2FA", isPresented: $sharedViewDataBindable.socketio.verificationDialogOpen) {
 			SecureField(text: $verificationCode) {}
 			
 			Button("Cancel") {
-				sharedViewData.socketio.close()
+				sharedViewData.socketio.cancelCarRequest()
 			}
 			
 			Button("Submit") {
@@ -127,20 +127,10 @@ struct QuerySheetView: View {
         }
     }
     
-    // MARK: Close
-    var close: some View {
-        Button(action: {
-//            presentationMode.wrappedValue.dismiss()
-        }, label: {
-            Text("Close")
-        })
-    }
-    
     // MARK: Close connection
-    var closeConnection: some View {
+    var cancelRequest: some View {
         Button(action: {
-            sharedViewData.socketio.close()
-//			sharedViewData.showMiniQueryView = false
+            sharedViewData.socketio.cancelCarRequest()
         }, label: {
             Image(systemName: "xmark")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -155,7 +145,6 @@ struct QuerySheetView: View {
             Task {
 				if let safeLocationManagerMessage = locationManager.message {
 					sharedViewData.socketio.showAlert(.querySheetView, safeLocationManagerMessage)
-//					sharedViewData.showMiniQueryView = false
 					return
 				}
 				
@@ -164,13 +153,14 @@ struct QuerySheetView: View {
 					sharedViewData.socketio.showAlert(.querySheetView,  "The location data was pointing to Empire State Building, try again...")
 					locationManager = LocationManager()
                 } else {
-                    if await viewModel.saveCar(websocket: sharedViewData.websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
+                    // TODO: Modify saveCar
+                    if await viewModel.saveCar(socketioObject: sharedViewData.socketio, knownCarQuery: knownCarQuery, locationManager: locationManager) {
 						sharedViewData.socketio.isSuccess = false
 						sharedViewData.socketio.areImagesLoaded = false
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
-//				sharedViewData.showMiniQueryView = false
+				sharedViewData.showMiniQueryView = false
             }
         }, label: {
             Image(systemName: "square.and.arrow.down")

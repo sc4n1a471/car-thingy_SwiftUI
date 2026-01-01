@@ -1,18 +1,18 @@
-    //
-    //  WebhookResponse.swift
-    //  NodeJS_Thingy_Cars
-    //
-    //  Created by Martin Terhes on 10/10/23.
-    //
+//
+//  WebhookResponse.swift
+//  NodeJS_Thingy_Cars
+//
+//  Created by Martin Terhes on 10/10/23.
+//
 
 import Foundation
 
 
-struct WebsocketResponse: Decodable {
+struct QueryResponse: Decodable {
     var status: String
     var percentage: Double
     var key: CarDataType?
-    var value: WebsocketResponseType?
+    var value: CarQueryResponseType?
     var errorMessage: String?
     
     enum CodingKeys: String, CodingKey {
@@ -86,7 +86,7 @@ enum CarDataType: String, Codable, CodingKey {
     case fail
 }
 
-enum WebsocketResponseType: Decodable {
+enum CarQueryResponseType: Decodable {
     case accidents([Accident])
     case restrictions([String])
     case mileage([Mileage])

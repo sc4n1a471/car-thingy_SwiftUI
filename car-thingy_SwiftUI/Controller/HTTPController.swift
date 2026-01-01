@@ -25,11 +25,11 @@ func setStatisticsLoaded(_ newStatus: Bool) {
 
 
 // MARK: New Car query
-func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, error: String?) {
-    var decodedData: WebsocketResponse
+func initQueryResponse(dataCuccli: Data) -> (response: QueryResponse?, error: String?) {
+    var decodedData: QueryResponse
     
     do {
-        decodedData = try JSONDecoder().decode(WebsocketResponse.self, from: dataCuccli)
+        decodedData = try JSONDecoder().decode(QueryResponse.self, from: dataCuccli)
         
         if (decodedData.status == "success") {
             print("status (query): \(decodedData)")
@@ -49,7 +49,7 @@ func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, e
         }
         
     } catch {
-		DDLogError("initWebhookResponse error: \(error)")
+		DDLogError("initQueryResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
@@ -69,71 +69,6 @@ func loadQueryInspections(license_plate: String) async -> (inspections: [Inspect
 		return (nil, error.localizedDescription)
 	}
 }
-
-
-func deleteQueryInspectionHelper (
-	request: inout URLRequest,
-	completionHandler: @escaping (_ successMsg: String?, _ errorMsg: String?) -> Void
-) {
-	
-	var successMsg: String?
-	var errorMsg: String?
-	
-	URLSession.shared.dataTask(with: request) { data, response, error in
-		guard error == nil else {
-			DDLogError("Error: error calling DELETE")
-			DDLogError("deleteQueryInspectionHelper error: \(String(describing: error))")
-			errorMsg = "Error calling DELETE \n \(String(describing: error))"
-			completionHandler(nil, errorMsg)
-			return
-		}
-		guard let data = data else {
-			DDLogError("Error: Did not receive data")
-			errorMsg = "Did not receive data in deleteData"
-			completionHandler(nil, errorMsg)
-			return
-		}
-		
-		do {
-			var decodedData: DeleteResponse
-			decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
-			print(decodedData.data as Any)
-			coordinatesLoaded = false
-			setCarsLoaded(false)
-			successMsg = decodedData.data
-		} catch {
-			DDLogError("Error: Trying to convert JSON data to string")
-			DDLogError(String(data: data, encoding: .utf8) ?? "???")
-			DDLogError("Error during decoding in deleteQueryInspectionHelper. Error: \(error)")
-			errorMsg = "Error during decoding in deleteQueryInspectionHelper \n \(error)"
-			completionHandler(nil, errorMsg)
-			return
-		}
-		
-		completionHandler(successMsg, errorMsg)
-	}.resume()
-}
-
-func deleteQueryInspection(licensePlate: String, isQuerySaved: Bool) async throws -> (success: String?, error: String?) {
-	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased() + "?isQuerySaved=\(isQuerySaved)"
-	let urlFormatted = URL(string: url1)
-	var request = URLRequest(url: urlFormatted!)
-	request.httpMethod = "DELETE"
-	request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
-	
-	return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-		deleteQueryInspectionHelper(request: &request) { (deleteSuccess, deleteError) in
-			if let deleteSuccess {
-				continuation.resume(returning: (deleteSuccess, deleteError))
-			}
-			
-			if let deleteError {
-				continuation.resume(returning: (deleteSuccess, deleteError))
-			}
-		}
-	})
-}
-
 
 
 // MARK: Inspections
@@ -367,28 +302,6 @@ func deleteHelper (
         completionHandler(cars, errorMsg)
     }.resume()
 }
-
-//func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?, error: String?) {
-//    
-//    let cars: [Car]? = cars
-//    
-//    let url1 = getURLasString(.cars) + "/" + (cars![offsets.first!].licensePlate).uppercased()
-//    let urlFormatted = URL(string: url1)
-//    var request = URLRequest(url: urlFormatted!)
-//    request.httpMethod = "DELETE"
-//    
-//    return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-//        deleteHelper(request: &request, cars: cars!, offsets: offsets) { (deleteCars, deleteError) in
-//            if let deleteCars {
-//                continuation.resume(returning: (deleteCars, deleteError))
-//            }
-//            if let deleteError {
-//                continuation.resume(returning: (deleteCars, deleteError))
-//            }
-//        }
-//    })
-//}
-
 
 
 // MARK: Map

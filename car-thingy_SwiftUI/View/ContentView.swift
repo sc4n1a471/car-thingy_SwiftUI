@@ -11,10 +11,9 @@ import CocoaLumberjackSwift
 import AppIntents
 
 struct ContentView: View {
-	@State private var expand: Bool = false
 	@Environment(SharedViewData.self) private var sharedViewData
 	@Environment(\.colorScheme) var colorScheme
-	@Namespace var animation
+	@Namespace private var animation
 	
     // MARK: Body
     var body: some View {
@@ -49,16 +48,16 @@ struct ContentView: View {
 			DDLog.add(fileLogger)
 		}
 		.tabBarMinimizeBehavior(.onScrollDown)
-		.tabViewBottomAccessory {
+        .tabViewBottomAccessory(isEnabled: sharedViewData.showMiniQueryView) {
 			MiniQuerySheetView(sharedViewData)
-				.matchedTransitionSource(id: "mini-query-id", in: animation)
+                .matchedTransitionSource(id: "mini-query-id", in: animation)
 				.onTapGesture {
 					sharedViewData.socketio.dataSheetOpened.toggle()
 				}
 		}
 		.fullScreenCover(isPresented: $sharedViewDataBindable.socketio.dataSheetOpened, onDismiss: {
 			Task {
-				sharedViewData.socketio.dismissSheet()
+                sharedViewData.socketio.dismissSheet()
 			}
 		}) {
 			VStack(spacing: 10) {
@@ -104,29 +103,27 @@ extension View {
 extension View {
 	@ViewBuilder
 	func MiniQuerySheetView(_ sharedViewData: SharedViewData) -> some View {
-		if sharedViewData.showMiniQueryView {
-			HStack {
-                Text(sharedViewData.socketio.getLP())
-					.font(.headline)
-				if (sharedViewData.socketio.isLoading) {
-					Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
-						.gaugeStyle(.accessoryCircularCapacity)
-						.tint(.blue)
-						.scaleEffect(0.5)
-						.frame(maxWidth: 200, maxHeight: 50)
-					
-					Button {
-						sharedViewData.socketio.close()
-					} label: {
-						Image(systemName: "xmark")
-							.contentShape(.rect)
-							.foregroundColor(.red)
-					}
-					.padding(.trailing)
-				}
-			}
-			.padding(.horizontal, 15)
-		}
+        HStack {
+            Text(sharedViewData.socketio.getLP())
+                .font(.headline)
+            if (sharedViewData.socketio.isLoading) {
+                Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
+                    .gaugeStyle(.accessoryCircularCapacity)
+                    .tint(.blue)
+                    .scaleEffect(0.5)
+                    .frame(maxWidth: 200, maxHeight: 50)
+                
+                Button {
+                    sharedViewData.socketio.cancelCarRequest()
+                } label: {
+                    Image(systemName: "xmark")
+                        .contentShape(.rect)
+                        .foregroundColor(.red)
+                }
+                .padding(.trailing)
+            }
+        }
+        .padding(.horizontal, 15)
 	}
 }
 

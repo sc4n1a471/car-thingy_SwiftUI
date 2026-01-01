@@ -34,6 +34,7 @@ struct StatisticsView: View {
 		return nil
 	}
 	
+    // MARK: Body
     var body: some View {
 		NavigationStack {
 			VStack {
@@ -112,6 +113,7 @@ struct StatisticsView: View {
 			}
 			.navigationTitle("Statistics")
 			.navigationBarTitleDisplayMode(.large)
+            // MARK: Toolbar
 			.toolbar {
 				ToolbarItemGroup(placement: .topBarLeading, content: {
 					if viewModel.isLoading {
@@ -123,12 +125,14 @@ struct StatisticsView: View {
 				})
 			}
 		}
+        // MARK: Task
 		.task {
 			await viewModel.loadStats()
 			(brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(countCutoffStepper))!
 		}
     }
 	
+    // MARK: Refresh button
 	var refreshButton: some View {
 		Button(action: {
 			Task {
@@ -141,6 +145,7 @@ struct StatisticsView: View {
 	}
 }
 
+// MARK: Preview
 #Preview {
     StatisticsView()
 }

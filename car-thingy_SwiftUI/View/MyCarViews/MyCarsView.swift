@@ -30,6 +30,7 @@ struct MyCarsView: View {
 		}
 	}
 	
+    // MARK: Body
     var body: some View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
@@ -79,6 +80,7 @@ struct MyCarsView: View {
 			.navigationDestination(isPresented: $openDetailViewAfterUpload) {
 				DetailView(selectedCar: sharedViewData.returnNewCar, region: sharedViewData.returnNewCar.getLocation())
 			}
+            // MARK: Toolbar
 			.toolbar {
 				ToolbarItemGroup(placement: .topBarLeading, content: {
 					if sharedViewData.isLoading {
@@ -127,31 +129,10 @@ struct MyCarsView: View {
 				NewCar(isUpload: true)
 			}
 			.animation(.default, value: sharedViewData.cars)
-//			.safeAreaInset(edge: .bottom, content: {
-//				VStack {
-//					Button(action: {
-//						sharedViewData.clearNewCar()
-//						sharedViewData.clearExistingCar()
-//						sharedViewData.isNewCarPresented.toggle()
-//					}, label: {
-//						HStack {
-//							Image(systemName: "plus.circle.fill")
-//								.font(.system(size: 25))
-//							Text("New car")
-//								.font(.system(size: 18))
-//						}
-//					})
-//					.fontWeight(.bold)
-//				}
-//				.frame(alignment: .bottom)
-//				.frame(maxWidth: .infinity, alignment: .leading)
-//				.padding()
-//				.background(.ultraThickMaterial)
-//			})
 		}
     }
     
-	// MARK: Button views
+	// MARK: Plus button
     var plusButton: some View {
         Button (action: {
 			sharedViewData.clearNewCar()
@@ -162,6 +143,7 @@ struct MyCarsView: View {
         })
     }
     
+    // MARK: Refresh button
     var refreshButton: some View {
         Button(action: {
             Task {
@@ -173,6 +155,7 @@ struct MyCarsView: View {
 		.disabled(sharedViewData.isLoading)
     }
 	
+    // MARK: Submenu
 	var submenu: some View {
 		Menu(content: {
 			Link(destination:
@@ -197,6 +180,7 @@ struct MyCarsView: View {
 		})
 	}
     
+    // MARK: SearchCars
     var searchCars: [Car] {
         if searchCar.isEmpty {
             return sharedViewData.cars
@@ -226,7 +210,7 @@ struct MyCarsView: View {
         }
     }
     
-	// MARK: Functions
+	// MARK: GetHeading
     func getHeading(resultCar: Car) -> String {
         if (resultCar.brand != nil) {
             if (resultCar.model == String()) {
@@ -243,6 +227,7 @@ struct MyCarsView: View {
         }
     }
     
+    // MARK: Delete car
     func deleteCar(at offsets: IndexSet) async {
         do {
             // Find the car to delete using the index in the sorted list
@@ -265,6 +250,7 @@ struct MyCarsView: View {
     }
 }
 
+// MARK: Preview
 #Preview {
 	MyCarsView()
 		.environment(SharedViewData())
