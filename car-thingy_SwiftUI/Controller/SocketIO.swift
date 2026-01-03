@@ -40,7 +40,6 @@ import SocketIO
     
     // MARK: Init
     init() {
-        setDev()
         manager = SocketManager(
             socketURL: URL(string: getURLasString(.query))!,
             config: [.log(true), .extraHeaders(["x-api-key": apiKey])]

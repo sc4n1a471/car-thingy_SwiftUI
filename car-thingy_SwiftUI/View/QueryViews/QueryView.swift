@@ -23,7 +23,7 @@ struct QueryView: View {
 	@State private var showVersionPopover: Bool = false
 	@State private var verificationCode: String = String()
 	
-	@State private var envPickerSelection: EnvPickerSelections = .dev
+	@State private var envPickerSelection: EnvPickerSelections = .prod
 	
     let removableCharacters: Set<Character> = ["-"]
     var textBindingLicensePlate: Binding<String> {
@@ -173,4 +173,8 @@ struct QueryView: View {
 		//        QueryView()
 		//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
 		//            .previewDisplayName("Mac Catalyst")
+}
+#Preview {
+    MyCarsView()
+        .environment(SharedViewData())
 }
