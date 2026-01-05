@@ -13,6 +13,9 @@ enum NameParseTypes {
 }
 
 struct Inspection: Codable, Hashable {
+    var id: String {
+        name
+    }
     var licensePlate = String()
     var name: String = String()
 	var imageLocation: String = String()

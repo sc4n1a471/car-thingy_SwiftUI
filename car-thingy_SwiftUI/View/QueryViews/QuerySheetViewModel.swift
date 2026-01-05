@@ -56,7 +56,7 @@ extension QuerySheetView {
                 }
             }
             
-            if !knownCarQuery {
+            if !knownCarQuery && env != "local" && env != "dev" {
                 saveCar.licensePlate = socketioObject.car.licensePlate
 				print(locationManager.lastLocation)
 				saveCar.latitude = locationManager.lastLocation.coordinate.latitude

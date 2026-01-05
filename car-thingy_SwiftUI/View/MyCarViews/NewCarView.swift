@@ -186,10 +186,15 @@ struct NewCar: View {
                     ezLenniCar.latitude = Double(customLatitude) ?? 37.789467
                     ezLenniCar.longitude = Double(customLongitude) ?? -122.416772
                 } else if (selectedMap == MapType.current) {
-					if let safeLocationManagerMessage = locationManager.message {
-						sharedViewData.showAlert(.newCar, safeLocationManagerMessage)
-						return
-					}
+                    if env != "local" && env != "dev" {
+                        if let safeLocationManagerMessage = locationManager.message {
+                            sharedViewData.showAlert(.newCar, safeLocationManagerMessage)
+                            return
+                        }
+                    } else {
+                        ezLenniCar.latitude = 37.789467
+                        ezLenniCar.longitude = -122.416772
+                    }
                         
                     do {
                         DDLogVerbose("AppIntent: Getting location...")

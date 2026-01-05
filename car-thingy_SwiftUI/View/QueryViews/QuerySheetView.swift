@@ -143,10 +143,12 @@ struct QuerySheetView: View {
     var saveCar: some View {
         Button(action: {
             Task {
-				if let safeLocationManagerMessage = locationManager.message {
-					sharedViewData.socketio.showAlert(.querySheetView, safeLocationManagerMessage)
-					return
-				}
+                if env != "local" && env != "dev" {
+                    if let safeLocationManagerMessage = locationManager.message {
+                        sharedViewData.socketio.showAlert(.querySheetView, safeLocationManagerMessage)
+                        return
+                    }
+                }
 				
 				if (locationManager.lastLocation.coordinate.latitude == 40.748443 && locationManager.lastLocation.coordinate.latitude == -73.985650) {
                     DDLogError("Location is Empire State Building")

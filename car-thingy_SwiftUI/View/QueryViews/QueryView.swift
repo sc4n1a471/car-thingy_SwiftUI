@@ -70,6 +70,7 @@ struct QueryView: View {
 						.frame(maxWidth: 200, maxHeight: 50)
 				}
 				.buttonStyle(.borderedProminent)
+                .disabled(sharedViewDataBindable.socketio.isLoading)
                 
                 // MARK: Test request button
                 Button {
@@ -152,6 +153,8 @@ struct QueryView: View {
 					case .local:
 						setLocal()
 					}
+                    sharedViewData.socketio.disconnect()
+                    sharedViewData.socketio = Socketio()
 				})
 			}, label: {
 				Text("Environment")

@@ -47,6 +47,7 @@ import SocketIO
         socket = manager.defaultSocket
         socket.connect()
         setupSocketEvents()
+        self.haptic(.standard)
     }
     
     // MARK: Socket events
@@ -86,7 +87,7 @@ import SocketIO
                         await MainActor.run {
                             self.isSuccess = true
                             self.isLoading = false
-                            self.haptic(type: .notification)
+                            self.haptic(.notification)
                        }
                    }
                 } else if safeResponse.status == "waiting" {
@@ -327,7 +328,7 @@ import SocketIO
                 self.isAlertSheetView = true
         }
         self.isLoading = false
-        self.haptic(type: .error)
+        self.haptic(.error)
     }
     
     func disableAlert() {
@@ -344,7 +345,7 @@ import SocketIO
     }
     
     // MARK: Haptic
-    func haptic(type: HapticType = .standard, intensity: CGFloat = 0.5) {
+    func haptic(_ type: HapticType = .standard, intensity: CGFloat = 0.5) {
         print("Haptic")
         switch type {
             case .standard:
