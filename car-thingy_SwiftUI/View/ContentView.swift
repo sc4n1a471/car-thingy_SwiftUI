@@ -49,7 +49,7 @@ struct ContentView: View {
 		}
 		.tabBarMinimizeBehavior(.onScrollDown)
         .tabViewBottomAccessory(isEnabled: sharedViewData.showMiniQueryView) {
-			MiniQuerySheetView(sharedViewData)
+            MiniQuerySheetView(sharedViewData)
                 .matchedTransitionSource(id: "mini-query-id", in: animation)
 				.onTapGesture {
 					sharedViewData.socketio.dataSheetOpened.toggle()
@@ -100,30 +100,46 @@ extension View {
 }
 
 // MARK: Mini query sheet view
+struct MiniQuerySheetViewContent: View {
+	let sharedViewData: SharedViewData
+	@Environment(\.tabViewBottomAccessoryPlacement) var placement
+	
+	var body: some View {
+		if sharedViewData.socketio.isLoading {
+			HStack(spacing: 12) {
+                Text(sharedViewData.socketio.getLP())
+                    .font(placement == .inline ? .custom("custom small font size", size: 10) : .headline)
+					.frame(maxWidth: .infinity, alignment: .leading)
+				
+				Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
+					.gaugeStyle(.accessoryCircularCapacity)
+					.tint(.blue)
+					.scaleEffect(0.5)
+					.frame(maxWidth: 200, maxHeight: 50)
+				
+				Button {
+					sharedViewData.socketio.cancelCarRequest()
+				} label: {
+					Image(systemName: "xmark")
+						.contentShape(.rect)
+						.foregroundColor(.red)
+				}
+				.frame(maxWidth: .infinity, alignment: .trailing)
+			}
+			.padding(.horizontal, 15)
+		} else {
+			HStack {
+				Text(sharedViewData.socketio.getLP())
+					.font(.headline)
+			}
+		}
+	}
+}
+
 extension View {
 	@ViewBuilder
-	func MiniQuerySheetView(_ sharedViewData: SharedViewData) -> some View {
-        HStack {
-            Text(sharedViewData.socketio.getLP())
-                .font(.headline)
-            if (sharedViewData.socketio.isLoading) {
-                Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
-                    .gaugeStyle(.accessoryCircularCapacity)
-                    .tint(.blue)
-                    .scaleEffect(0.5)
-                    .frame(maxWidth: 200, maxHeight: 50)
-                
-                Button {
-                    sharedViewData.socketio.cancelCarRequest()
-                } label: {
-                    Image(systemName: "xmark")
-                        .contentShape(.rect)
-                        .foregroundColor(.red)
-                }
-                .padding(.trailing)
-            }
-        }
-        .padding(.horizontal, 15)
+    func MiniQuerySheetView(_ sharedViewData: SharedViewData) -> some View {
+		MiniQuerySheetViewContent(sharedViewData: sharedViewData)
 	}
 }
 
