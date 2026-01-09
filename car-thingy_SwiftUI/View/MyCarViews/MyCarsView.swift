@@ -51,7 +51,7 @@ struct MyCarsView: View {
                                         Text(car.getLP())
                                             .font(.headline)
                                         HStack {
-                                            Text(getHeading(resultCar:car))
+                                            Text(getHeading(car))
                                         }
                                     }
                                 })
@@ -60,6 +60,7 @@ struct MyCarsView: View {
                                 in: namespace
                             )
                         }
+                        // MARK: Delete
                         .onDelete { index in
                             Task {
                                 await deleteCar(at: index)
@@ -67,11 +68,13 @@ struct MyCarsView: View {
                         }
                     }
 				} else {
+                    // MARK: Empty list
 					Text("No cars")
 						.font(.title2)
 						.bold()
 				}
 			}
+            // MARK: Load view data
 			.task {
 				await sharedViewData.loadViewData()
 			}
@@ -194,6 +197,11 @@ struct MyCarsView: View {
 					guard let safeComment = car.comment else { return false }
 					return safeComment.lowercased().contains("for testing purposes")
                 }
+            } else if self.searchCar.localizedStandardContains("problematic") {
+                return sharedViewData.cars.filter { car -> Bool in
+                    guard let safeComment = car.comment else { return false }
+                    return safeComment.lowercased().contains("problematic")
+                }
             }
             return sharedViewData.cars.filter { car -> Bool in
 				guard let safeBrand = car.brand else { return car.licensePlate.contains(self.searchCar.uppercased()) }
@@ -211,15 +219,19 @@ struct MyCarsView: View {
     }
     
 	// MARK: GetHeading
-    func getHeading(resultCar: Car) -> String {
+    func getHeading(_ resultCar: Car) -> String {
         if (resultCar.brand != nil) {
             if (resultCar.model == String()) {
                 return resultCar.typeCode ?? "No type_code"
             } else {
-                if (resultCar.model!.contains(resultCar.brand!)) {
-                    return resultCar.model?.replacingOccurrences(of: "\(resultCar.brand!) ", with: "") ?? "No model"
+                if let safeModel = resultCar.model {
+                    if (safeModel.contains(resultCar.brand!)) {
+                        return resultCar.model?.replacingOccurrences(of: "\(resultCar.brand!) ", with: "") ?? "No model"
+                    } else {
+                        return resultCar.model ?? "No model"
+                    }
                 } else {
-                    return resultCar.model ?? "No model"
+                    return "No model"
                 }
             }
         } else {
