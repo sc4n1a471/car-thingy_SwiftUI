@@ -143,24 +143,6 @@ extension View {
 	}
 }
 
-extension View {
-	func contentViewStyle() -> some View {
-		modifier(ContentViewModifier())
-	}
-}
-
-struct ContentViewModifier: ViewModifier {
-	func body(content: Content) -> some View {
-		content
-			.font(.system(size: 25))
-			.foregroundStyle(.white)
-			.padding(20)
-			.background(.blue)
-			.clipShape(.rect(cornerRadius: 20))
-			.frame(maxWidth: .infinity, maxHeight: 100)
-	}
-}
-
 // MARK: Preview
 #Preview {
     ContentView()
