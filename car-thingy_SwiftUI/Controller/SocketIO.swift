@@ -135,6 +135,9 @@ import SocketIO
     }
     
     // MARK: Send car request
+    /// Sends the car query request
+    /// - Parameters:
+    ///     - licensePlate: Requested license plate
     func sendCarRequest(_ licensePlate: String) {
         self.reset()
         self.isLoading = true
@@ -165,6 +168,7 @@ import SocketIO
     }
 
     
+    // MARK: Set values
     /// Set car values as received from server
     /// - Parameters:
     ///   - value: Value to set
