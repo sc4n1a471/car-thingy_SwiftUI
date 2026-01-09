@@ -63,14 +63,6 @@ struct StatisticsView: View {
 							.frame(maxWidth: .infinity)
 							.chartXScale(domain: 0...safeCarStatistics.carCount)
 							
-							Stepper(value: $countCutoffStepper, label: {
-								Text("Brand count cutoff value: \(countCutoffStepper)")
-							})
-							.padding()
-							.onChange(of: countCutoffStepper) { oldValue, newValue in
-								(brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(newValue))!
-							}
-							
 							// MARK: Pie chart
 							Chart(filteredBrandStats, id: \.brand) { item in
 								SectorMark(
@@ -101,6 +93,14 @@ struct StatisticsView: View {
 								}
 							}
 							.animation(.snappy, value: filteredBrandStats)
+                            
+                            Stepper(value: $countCutoffStepper, label: {
+                                Text("Brand count cutoff value: \(countCutoffStepper)")
+                            })
+                            .padding()
+                            .onChange(of: countCutoffStepper) { oldValue, newValue in
+                                (brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(newValue))!
+                            }
 						}
 						.padding(.top)
 					}
@@ -122,7 +122,7 @@ struct StatisticsView: View {
 					} else {
 						refreshButton
 					}
-				})
+                })
 			}
 		}
         // MARK: Task
@@ -140,7 +140,7 @@ struct StatisticsView: View {
 				(brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(countCutoffStepper))!
 			}
 		}, label: {
-			Image(systemName: "arrow.clockwise")
+            Image(systemName: "arrow.clockwise.circle")
 		})
 	}
 }
