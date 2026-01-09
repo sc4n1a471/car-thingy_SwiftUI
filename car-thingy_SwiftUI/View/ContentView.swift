@@ -176,7 +176,7 @@ struct NewCarIntent: AppIntent {
         }
         
         var newCar: Car = Car()
-        newCar.licensePlate = licensePlate
+        newCar.licensePlate = licensePlate.uppercased()
         newCar.latitude = region!.center.latitude
         newCar.longitude = region!.center.longitude
         
