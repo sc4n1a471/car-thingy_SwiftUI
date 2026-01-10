@@ -12,7 +12,7 @@ struct StatisticsView: View {
 	
 	@State private var viewModel = ViewModel()
 	@State private var selectedAngle: Double?
-	@State private var countCutoffStepper: Int = 5
+	@State private var countCutoffStepper: Int = 10
 	@State private var brandRanges: [(brand: String, range: Range<Double>)] = []
 	@State private var filteredBrandStats: [BrandStatistics] = []
 	
@@ -70,7 +70,7 @@ struct StatisticsView: View {
 									innerRadius: .ratio(0.6),
 									angularInset: 1.5
 								)
-								.cornerRadius(5)
+								.cornerRadius(6)
 								.foregroundStyle(by: .value("Brand", item.brand))
 								.opacity(item.brand == selectedItem?.brand ? 0.7 : 1)
 							}
