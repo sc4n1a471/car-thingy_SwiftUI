@@ -40,6 +40,7 @@ struct QueryView: View {
             })
     }
     
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
 		@Bindable var sharedViewDataBindable = sharedViewData
@@ -55,12 +56,13 @@ struct QueryView: View {
                         .focused($lpTextFieldFocused)
                 }
 				
+                // MARK: Request button
 				Button {
 					Task {
                         if requestedLicensePlate != "" {
                             lpTextFieldFocused = false
                             sharedViewData.showMiniQueryView = true
-                            await sharedViewData.websocket.connect(requestedLicensePlate)
+                            sharedViewData.socketio.sendCarRequest(requestedLicensePlate)
                         }
 					}
 				} label: {
@@ -68,21 +70,25 @@ struct QueryView: View {
 						.frame(maxWidth: 200, maxHeight: 50)
 				}
 				.buttonStyle(.borderedProminent)
+                .disabled(sharedViewDataBindable.socketio.isLoading)
                 
+                // MARK: Test request button
                 Button {
                     Task {
 						sharedViewData.showMiniQueryView = true
-                        await sharedViewData.websocket.connect("test111")
+                        sharedViewData.socketio.sendTest()
                     }
                 } label: {
                     Text("Test Request")
                         .frame(maxWidth: 200, maxHeight: 50)
                 }
-                .disabled(sharedViewData.websocket.isLoading)
+                .disabled(sharedViewData.socketio.isLoading)
 				.buttonStyle(.borderedProminent)
 				.tint(Color.secondary)
             }
             .padding()
+            
+            // MARK: Toolbar
             .toolbar {
 				ToolbarItem(placement: .topBarLeading, content: {
 					Button(action: {
@@ -115,21 +121,22 @@ struct QueryView: View {
 				})
 				
 				ToolbarItem(placement: .topBarTrailing, content: {
-					changeEnv
+                    changeEnvSelector
 				})
             }
             .navigationTitle("Car Query")
 			.navigationBarTitleDisplayMode(.large)
         }
-        .alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
-            Button("sharedViewData.websocket got it") {
-                sharedViewData.websocket.disableAlert()
-                print("sharedViewData.websocket alert confirmed")
+        .alert(sharedViewData.socketio.error, isPresented: $sharedViewDataBindable.socketio.isAlert, actions: {
+            Button("sharedViewData.socketio got it") {
+                sharedViewData.socketio.disableAlert()
+                print("sharedViewData.socketio alert confirmed")
             }
         })
     }
 	
-	var changeEnv: some View {
+    // MARK: Change env
+	var changeEnvSelector: some View {
 		Menu(content: {
 			Menu(content: {
 				Picker("he", systemImage: "line.3.horizontal.decrease.circle", selection: $envPickerSelection, content: {
@@ -146,6 +153,8 @@ struct QueryView: View {
 					case .local:
 						setLocal()
 					}
+                    sharedViewData.socketio.disconnect()
+                    sharedViewData.socketio = Socketio()
 				})
 			}, label: {
 				Text("Environment")
@@ -158,12 +167,17 @@ struct QueryView: View {
 	}
 }
 
+// MARK: Preview
 #Preview {
 	QueryView()
 		.environment(SharedViewData())
-		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
-		.previewDisplayName("iPhone 13 Pro")
+//		.previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro"))
+//		.previewDisplayName("iPhone 13 Pro")
 		//        QueryView()
 		//            .previewDevice(PreviewDevice(rawValue: "My Mac (Mac Catalyst)"))
 		//            .previewDisplayName("Mac Catalyst")
+}
+#Preview {
+    MyCarsView()
+        .environment(SharedViewData())
 }

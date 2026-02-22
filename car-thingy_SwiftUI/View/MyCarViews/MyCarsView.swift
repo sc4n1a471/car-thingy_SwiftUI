@@ -30,6 +30,7 @@ struct MyCarsView: View {
 		}
 	}
 	
+    // MARK: Body
     var body: some View {
         // required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
@@ -50,7 +51,7 @@ struct MyCarsView: View {
                                         Text(car.getLP())
                                             .font(.headline)
                                         HStack {
-                                            Text(getHeading(resultCar:car))
+                                            Text(getHeading(car))
                                         }
                                     }
                                 })
@@ -59,6 +60,7 @@ struct MyCarsView: View {
                                 in: namespace
                             )
                         }
+                        // MARK: Delete
                         .onDelete { index in
                             Task {
                                 await deleteCar(at: index)
@@ -66,11 +68,13 @@ struct MyCarsView: View {
                         }
                     }
 				} else {
+                    // MARK: Empty list
 					Text("No cars")
 						.font(.title2)
 						.bold()
 				}
 			}
+            // MARK: Load view data
 			.task {
 				await sharedViewData.loadViewData()
 			}
@@ -79,6 +83,7 @@ struct MyCarsView: View {
 			.navigationDestination(isPresented: $openDetailViewAfterUpload) {
 				DetailView(selectedCar: sharedViewData.returnNewCar, region: sharedViewData.returnNewCar.getLocation())
 			}
+            // MARK: Toolbar
 			.toolbar {
 				ToolbarItemGroup(placement: .topBarLeading, content: {
 					if sharedViewData.isLoading {
@@ -127,31 +132,10 @@ struct MyCarsView: View {
 				NewCar(isUpload: true)
 			}
 			.animation(.default, value: sharedViewData.cars)
-//			.safeAreaInset(edge: .bottom, content: {
-//				VStack {
-//					Button(action: {
-//						sharedViewData.clearNewCar()
-//						sharedViewData.clearExistingCar()
-//						sharedViewData.isNewCarPresented.toggle()
-//					}, label: {
-//						HStack {
-//							Image(systemName: "plus.circle.fill")
-//								.font(.system(size: 25))
-//							Text("New car")
-//								.font(.system(size: 18))
-//						}
-//					})
-//					.fontWeight(.bold)
-//				}
-//				.frame(alignment: .bottom)
-//				.frame(maxWidth: .infinity, alignment: .leading)
-//				.padding()
-//				.background(.ultraThickMaterial)
-//			})
 		}
     }
     
-	// MARK: Button views
+	// MARK: Plus button
     var plusButton: some View {
         Button (action: {
 			sharedViewData.clearNewCar()
@@ -162,6 +146,7 @@ struct MyCarsView: View {
         })
     }
     
+    // MARK: Refresh button
     var refreshButton: some View {
         Button(action: {
             Task {
@@ -173,6 +158,7 @@ struct MyCarsView: View {
 		.disabled(sharedViewData.isLoading)
     }
 	
+    // MARK: Submenu
 	var submenu: some View {
 		Menu(content: {
 			Link(destination:
@@ -197,6 +183,7 @@ struct MyCarsView: View {
 		})
 	}
     
+    // MARK: SearchCars
     var searchCars: [Car] {
         if searchCar.isEmpty {
             return sharedViewData.cars
@@ -209,6 +196,11 @@ struct MyCarsView: View {
 				return sharedViewData.cars.filter { car -> Bool in
 					guard let safeComment = car.comment else { return false }
 					return safeComment.lowercased().contains("for testing purposes")
+                }
+            } else if self.searchCar.localizedStandardContains("problematic") {
+                return sharedViewData.cars.filter { car -> Bool in
+                    guard let safeComment = car.comment else { return false }
+                    return safeComment.lowercased().contains("problematic")
                 }
             }
             return sharedViewData.cars.filter { car -> Bool in
@@ -226,16 +218,20 @@ struct MyCarsView: View {
         }
     }
     
-	// MARK: Functions
-    func getHeading(resultCar: Car) -> String {
+	// MARK: GetHeading
+    func getHeading(_ resultCar: Car) -> String {
         if (resultCar.brand != nil) {
             if (resultCar.model == String()) {
                 return resultCar.typeCode ?? "No type_code"
             } else {
-                if (resultCar.model!.contains(resultCar.brand!)) {
-                    return resultCar.model?.replacingOccurrences(of: "\(resultCar.brand!) ", with: "") ?? "No model"
+                if let safeModel = resultCar.model {
+                    if (safeModel.contains(resultCar.brand!)) {
+                        return resultCar.model?.replacingOccurrences(of: "\(resultCar.brand!) ", with: "") ?? "No model"
+                    } else {
+                        return resultCar.model ?? "No model"
+                    }
                 } else {
-                    return resultCar.model ?? "No model"
+                    return "No model"
                 }
             }
         } else {
@@ -243,6 +239,7 @@ struct MyCarsView: View {
         }
     }
     
+    // MARK: Delete car
     func deleteCar(at offsets: IndexSet) async {
         do {
             // Find the car to delete using the index in the sorted list
@@ -265,6 +262,7 @@ struct MyCarsView: View {
     }
 }
 
+// MARK: Preview
 #Preview {
 	MyCarsView()
 		.environment(SharedViewData())

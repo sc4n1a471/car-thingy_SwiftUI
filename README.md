@@ -4,7 +4,7 @@ Ez lenni repository for autós, rendszámos SwiftUI appcuccli
 This iOS application is part of the car-thingy system. It acts as a client to both [car-thingy_GO](https://github.com/sc4n1a471/car-thingy_GO) and [car-thingy_Python](https://github.com/sc4n1a471/car-thingy_Python).
 What is it good for:
 - CRUD operations on cars
-- Query license plate using car-thingy_Python, connects to it using plain websocket
+- Query license plate using car-thingy_Python, connects to it using Socket.IO
 - When a car is saved, it also saves the coordinates, so there is a map of all of the cars with markers, colored based on known/unknown boolean
 - Shows you stats of the saved cars, currently number of known/unknown cars and saved cars of each brands
 

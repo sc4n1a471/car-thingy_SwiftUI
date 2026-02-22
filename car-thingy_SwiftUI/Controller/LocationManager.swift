@@ -33,8 +33,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     override init() {
         super.init()
         manager.delegate = self
-//        manager.requestWhenInUseAuthorization()
-//		manager.startUpdatingLocation()
     }
     
     //MARK: Asynchronously request the current location

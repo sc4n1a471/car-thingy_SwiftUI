@@ -27,6 +27,7 @@ struct MapDetailView: View {
 		GridItem(.flexible(minimum: 100, maximum: 200))
 	]
     
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
         @Bindable var sharedViewDataBindable = sharedViewData
@@ -47,6 +48,7 @@ struct MapDetailView: View {
 		.padding(.top, 20)
                 
         List {
+            // MARK: Top row
             Section {
                 withAnimation {
                     LazyVGrid(columns: columns, content: {
@@ -56,7 +58,7 @@ struct MapDetailView: View {
                         } else {
                             editButton
                         }
-						if sharedViewData.websocket.isLoading {
+						if sharedViewData.socketio.isLoading {
                             openQuerySheet
                         } else {
                             queryButton
@@ -69,6 +71,7 @@ struct MapDetailView: View {
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
             
+            // MARK: Car details
 			if selectedCar.brand != nil {
 				Section {
 					SpecView(header: "Brand", content: selectedCar.brand)
@@ -80,20 +83,20 @@ struct MapDetailView: View {
 					SpecView(header: "Status", content: selectedCar.status)
 					SpecView(header: "First registration", content: selectedCar.firstReg)
 					SpecView(header: "First registration in 🇭🇺", content: selectedCar.firstRegHun)
-					SpecView(header: "Number of owners", content: String(selectedCar.numOfOwners ?? 99))
+					SpecView(header: "Number of owners", contentInt: selectedCar.numOfOwners)
 				}
 				
 				Section {
-					SpecView(header: "Year", content: String(selectedCar.year ?? 1970))
-					SpecView(header: "Engine size", content: String(selectedCar.engineSize ?? 9999), note: "cm3")
-					SpecView(header: "Performance", content: String(selectedCar.performance ?? 999), note: "HP")
+					SpecView(header: "Year", contentInt: selectedCar.year)
+					SpecView(header: "Engine size", contentInt: selectedCar.engineSize, note: "cm3")
+					SpecView(header: "Performance", contentInt: selectedCar.performance, note: "HP")
 					SpecView(header: "Fuel type", content: selectedCar.fuelType)
 					SpecView(header: "Gearbox", content: selectedCar.gearbox)
 					SpecView(header: "Color", content: selectedCar.color)
 				}
 				
 				Section {
-					MileageView(onChangeMileageData: sharedViewData.websocket.mileage, mileageData: $selectedCar.mileage)
+                    MileageView(onChangeMileageData: sharedViewData.socketio.car.mileage, mileageData: $selectedCar.mileage)
 				}
 				
 				Section {
@@ -125,35 +128,28 @@ struct MapDetailView: View {
         }) {
             NewCar(isUpload: false)
         }
-//        .sheet(isPresented: $websocket.dataSheetOpened, onDismiss: {
-//            Task {
-//                websocket.dismissSheet()
-//                await loadSelectedCar()
-//            }
-//        }) {
-//            QuerySheetView()
-//                .presentationDetents([.medium, .large])
-//        }
+        
+        // MARK: Alerts
         .alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMapView) {
             Button("Got it") {
                 print("alert confirmed")
             }
         }
-		.alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlert, actions: {
-            Button("Websocket got it") {
-				sharedViewData.websocket.disableAlert()
-                print("websocket alert confirmed")
+		.alert(sharedViewData.socketio.error, isPresented: $sharedViewDataBindable.socketio.isAlert, actions: {
+            Button("SocketIO got it") {
+				sharedViewData.socketio.disableAlert()
+                print("SocketIO alert confirmed")
             }
         })
-		.alert("2FA", isPresented: $sharedViewDataBindable.websocket.verificationDialogOpen) {
+		.alert("2FA", isPresented: $sharedViewDataBindable.socketio.verificationDialogOpen) {
 			SecureField(text: $verificationCode) {}
 			
 			Button("Cancel") {
-				sharedViewData.websocket.close()
+                sharedViewData.socketio.cancelCarRequest()
 			}
 			
 			Button("Submit") {
-				sharedViewData.websocket.dismissCodeDialog(verificationCode: verificationCode)
+				sharedViewData.socketio.dismissCodeDialog(verificationCode: verificationCode)
 			}
 		} message: {
 			Text("Pls gimme 2fa code")
@@ -162,6 +158,7 @@ struct MapDetailView: View {
         .scrollContentBackground(.hidden)
     }
     
+    // MARK: Edit button
     var editButton: some View {
         Button (action: {
             sharedViewData.isEditCarPresented.toggle()
@@ -173,20 +170,20 @@ struct MapDetailView: View {
         .disabled(sharedViewData.isLoading)
     }
     
+    // MARK: Quey button
     var queryButton: some View {
         Button(action: {
-            Task {
-				sharedViewData.showMiniQueryView = true
-				await sharedViewData.websocket.connect(selectedCar.licensePlate, selectedCar)
-            }
+            sharedViewData.showMiniQueryView = true
+            sharedViewData.socketio.sendCarRequest(selectedCar.licensePlate)
         }, label: {
             Image(systemName: "magnifyingglass")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         })
         .buttonStyle(.borderedProminent)
-		.disabled(sharedViewData.websocket.isLoading)
+		.disabled(sharedViewData.socketio.isLoading)
     }
     
+    // MARK: Delete button
     var deleteButton: some View {
         Button(action: {
             Task {
@@ -213,11 +210,12 @@ struct MapDetailView: View {
         .disabled(sharedViewData.isLoading)
     }
     
+    // MARK: Open query sheet
     var openQuerySheet: some View {
         Button(action: {
-			sharedViewData.websocket.openSheet()
+			sharedViewData.socketio.openSheet()
         }) {
-			Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
+			Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
@@ -228,6 +226,7 @@ struct MapDetailView: View {
         .tint(.blue)
     }
     
+    // MARK: Load selected car
     private func loadSelectedCar() async {
         sharedViewData.isLoading = true
         let (safeCar, safeCarError) = await loadCar(license_plate: selectedLicensePlate!)
@@ -255,6 +254,7 @@ struct BindingMapDetailView: View {
 	}
 }
 
+// MARK: Preview
 #Preview {
 	BindingMapDetailView()
 }

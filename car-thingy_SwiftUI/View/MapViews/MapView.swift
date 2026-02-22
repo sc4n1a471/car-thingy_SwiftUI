@@ -1,9 +1,9 @@
-    //
-    //  MapView.swift
-    //  car-thingy_SwiftUI
-    //
-    //  Created by Martin Terhes on 11/11/23.
-    //
+//
+//  MapView.swift
+//  car-thingy_SwiftUI
+//
+//  Created by Martin Terhes on 11/11/23.
+//
 
 import SwiftUI
 import MapKit
@@ -13,6 +13,7 @@ struct MapView: View {
     @State private var viewModel = ViewModel()
     @State private var selectedLicensePlate: String?
     
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
 		@Bindable var sharedViewDataBindable = sharedViewData
@@ -23,17 +24,21 @@ struct MapView: View {
                     .tag(coordinateObject.licensePlate)
                     .tint(coordinateObject.brand != nil ? .blue : .red)
             }
-        }.onAppear(perform: {
+        }
+        // MARK: onAppear
+        .onAppear(perform: {
             viewModel.initViewModel(sharedViewData)
             Task {
                 await viewModel.loadMarkers()
             }
         })
+        // MARK: Alert
 		.alert(sharedViewData.error ?? "sharedViewData.error is a nil??", isPresented: $sharedViewDataBindable.showAlertMapView) {
 			Button("Got it") {
 				print("alert confirmed")
 			}
 		}
+        // MARK: Sheet
         .sheet(isPresented: $viewModel.infoSheet, onDismiss: {
             withAnimation(.snappy) {
                 selectedLicensePlate = nil
@@ -45,6 +50,7 @@ struct MapView: View {
 				)
 				.presentationBackgroundInteraction(.enabled)
         })
+        // MARK: onChange
         .onChange(of: selectedLicensePlate) {
             if let selectedLicensePlate {
                 viewModel.infoSheet = true
@@ -58,6 +64,7 @@ struct MapView: View {
     }
 }
 
+// MARK: Preview
 #Preview {
     MapView()
         .environment(SharedViewData())

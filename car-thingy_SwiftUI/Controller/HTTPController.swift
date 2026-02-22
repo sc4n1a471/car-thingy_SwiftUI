@@ -25,11 +25,15 @@ func setStatisticsLoaded(_ newStatus: Bool) {
 
 
 // MARK: New Car query
-func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, error: String?) {
-    var decodedData: WebsocketResponse
+/// Process query response
+/// - Parameters:
+///     - dataCuccli: Data received from server
+/// - Returns: Tuple with QueryResponse object or error message
+func initQueryResponse(dataCuccli: Data) -> (response: QueryResponse?, error: String?) {
+    var decodedData: QueryResponse
     
     do {
-        decodedData = try JSONDecoder().decode(WebsocketResponse.self, from: dataCuccli)
+        decodedData = try JSONDecoder().decode(QueryResponse.self, from: dataCuccli)
         
         if (decodedData.status == "success") {
             print("status (query): \(decodedData)")
@@ -49,11 +53,15 @@ func initWebsocketResponse(dataCuccli: Data) -> (response: WebsocketResponse?, e
         }
         
     } catch {
-		DDLogError("initWebhookResponse error: \(error)")
+		DDLogError("initQueryResponse error: \(error)")
         return (nil, error.localizedDescription)
     }
 }
 
+/// Load query inspections
+/// - Parameters:
+///     - license_plate: License plate of the car to query
+/// - Returns: Tuple with array of Inspection objects or error message
 func loadQueryInspections(license_plate: String) async -> (inspections: [Inspection]?, error: String?) {
 	let url = URL(string: getURLasString(.queryInspections) + "/" + license_plate.uppercased())!
 	
@@ -71,72 +79,11 @@ func loadQueryInspections(license_plate: String) async -> (inspections: [Inspect
 }
 
 
-func deleteQueryInspectionHelper (
-	request: inout URLRequest,
-	completionHandler: @escaping (_ successMsg: String?, _ errorMsg: String?) -> Void
-) {
-	
-	var successMsg: String?
-	var errorMsg: String?
-	
-	URLSession.shared.dataTask(with: request) { data, response, error in
-		guard error == nil else {
-			DDLogError("Error: error calling DELETE")
-			DDLogError("deleteQueryInspectionHelper error: \(String(describing: error))")
-			errorMsg = "Error calling DELETE \n \(String(describing: error))"
-			completionHandler(nil, errorMsg)
-			return
-		}
-		guard let data = data else {
-			DDLogError("Error: Did not receive data")
-			errorMsg = "Did not receive data in deleteData"
-			completionHandler(nil, errorMsg)
-			return
-		}
-		
-		do {
-			var decodedData: DeleteResponse
-			decodedData = try JSONDecoder().decode(DeleteResponse.self, from: data)
-			print(decodedData.data as Any)
-			coordinatesLoaded = false
-			setCarsLoaded(false)
-			successMsg = decodedData.data
-		} catch {
-			DDLogError("Error: Trying to convert JSON data to string")
-			DDLogError(String(data: data, encoding: .utf8) ?? "???")
-			DDLogError("Error during decoding in deleteQueryInspectionHelper. Error: \(error)")
-			errorMsg = "Error during decoding in deleteQueryInspectionHelper \n \(error)"
-			completionHandler(nil, errorMsg)
-			return
-		}
-		
-		completionHandler(successMsg, errorMsg)
-	}.resume()
-}
-
-func deleteQueryInspection(licensePlate: String, isQuerySaved: Bool) async throws -> (success: String?, error: String?) {
-	let url1 = getURLasString(.queryInspections) + "/" + licensePlate.uppercased() + "?isQuerySaved=\(isQuerySaved)"
-	let urlFormatted = URL(string: url1)
-	var request = URLRequest(url: urlFormatted!)
-	request.httpMethod = "DELETE"
-	request.addValue(apiKey, forHTTPHeaderField: "x-api-key")
-	
-	return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-		deleteQueryInspectionHelper(request: &request) { (deleteSuccess, deleteError) in
-			if let deleteSuccess {
-				continuation.resume(returning: (deleteSuccess, deleteError))
-			}
-			
-			if let deleteError {
-				continuation.resume(returning: (deleteSuccess, deleteError))
-			}
-		}
-	})
-}
-
-
-
 // MARK: Inspections
+/// Load inspections
+/// - Parameters:
+///     - license_plate: License plate of the car to load inspections for
+/// - Returns: Tuple with array of Inspection objects or error message
 func loadInspections(license_plate: String) async -> (inspections: [Inspection]?, error: String?) {
     let url = URL(string: getURLasString(.inspections) + "/" + license_plate.uppercased())!
     
@@ -153,6 +100,10 @@ func loadInspections(license_plate: String) async -> (inspections: [Inspection]?
     }
 }
 
+/// Process inspections response
+/// - Parameters:
+///     - dataCuccli: Data received from server
+/// - Returns: Tuple with array of Inspection objects or error message
 func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: String?) {
     var decodedInspections: InspectionResponse
     
@@ -176,6 +127,10 @@ func initInspections(dataCuccli: Data) -> (inspections: [Inspection]?, error: St
 
 
 // MARK: MyCars
+/// Load cars
+/// - Parameters:
+///     - refresh: Bool indicating whether to force refresh from server
+/// - Returns: Tuple with array of Car objects or error message
 func loadCars(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
     if !carsLoaded || refresh {
         let url = getURL(.cars)
@@ -197,6 +152,10 @@ func loadCars(_ refresh: Bool = false) async -> (cars: [Car]?, error: String?) {
     return (nil,nil)
 }
 
+/// Load single car
+/// - Parameters:
+///     - license_plate: License plate of the car to load
+/// - Returns: Tuple with array of Car objects or error message
 func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
     let url = URL(string: getURLasString(.cars) + "/" + license_plate.uppercased())!
     
@@ -213,6 +172,11 @@ func loadCar(license_plate: String) async -> (cars: [Car]?, error: String?) {
     }
 }
 
+/// Process car(s) response
+/// - Parameters:
+///     - dataCuccli: Data received from server
+///     - onlyOne: Bool indicating whether only one car is expected
+/// - Returns: Tuple with array of Car objects or error message
 func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: String?) {
     var decodedData: CarResponse
     
@@ -245,7 +209,13 @@ func initData(dataCuccli: Data, onlyOne: Bool = false) -> (cars: [Car]?, error: 
     }
 }
 
-func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -> (response: String?, error: String?) {
+// MARK: Save Car
+/// Save car data
+/// - Parameters:
+///     - uploadableCarData: Car object to upload
+///     - isPost: Bool indicating whether to use POST (true) or PUT (false), create vs update
+/// - Returns: Tuple with response string or error message
+func saveData(uploadableCarData: Car, isPost: Bool) async -> (response: String?, error: String?) {
     uploadableCarData.toString()
     
     guard let encoded = try? JSONEncoder().encode(uploadableCarData) else {
@@ -253,9 +223,7 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
         return (nil, "Failed to encode car")
     }
     
-    var url: URL
-    url = lpOnly ? getURL(.licensePlate) : getURL(.cars)
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: getURL(.cars))
     
     request.httpMethod = isPost ? "POST" : "PUT"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -273,6 +241,11 @@ func saveData(uploadableCarData: Car, isPost: Bool, lpOnly: Bool = true) async -
     }
 }
 
+/// Update license plate of a car
+/// - Parameters:
+///     - newCarObject: Car object with new license plate
+///     - oldLicensePlate: Old license plate string
+/// - Returns: Tuple with response string or error message
 func updateLicensePlate(newCarObject: Car, oldLicensePlate: String) async -> (response: String?, error: String?) {
 	guard let encoded = try? JSONEncoder().encode(newCarObject) else {
 		DDLogError("Failed to encode license plate object")
@@ -297,6 +270,10 @@ func updateLicensePlate(newCarObject: Car, oldLicensePlate: String) async -> (re
 	}
 }
 
+/// Process save response
+/// - Parameters:
+///     - dataCuccli: Data received from server
+/// - Returns: Tuple with response string or error message
 func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
     var decodedData: GoResponse
     
@@ -323,7 +300,12 @@ func initSaveResponse(dataCuccli: Data) -> (response: String?, error: String?) {
     }
 }
 
-// Used for deleting car from list
+/// Used for deleting car from list
+/// - Parameters:
+///     - request: URLRequest object for DELETE request
+///     - cars: Array of Car objects
+///     - offsets: IndexSet of offsets to delete
+///     - completionHandler: Completion handler with updated array of Car objects or error message
 func deleteHelper (
     request: inout URLRequest,
     cars: [Car],
@@ -369,28 +351,6 @@ func deleteHelper (
         completionHandler(cars, errorMsg)
     }.resume()
 }
-
-//func deleteData(at offsets: IndexSet, cars: [Car]) async throws -> (cars: [Car]?, error: String?) {
-//    
-//    let cars: [Car]? = cars
-//    
-//    let url1 = getURLasString(.cars) + "/" + (cars![offsets.first!].licensePlate).uppercased()
-//    let urlFormatted = URL(string: url1)
-//    var request = URLRequest(url: urlFormatted!)
-//    request.httpMethod = "DELETE"
-//    
-//    return try await withCheckedThrowingContinuation ({ (continuation: CheckedContinuation) in
-//        deleteHelper(request: &request, cars: cars!, offsets: offsets) { (deleteCars, deleteError) in
-//            if let deleteCars {
-//                continuation.resume(returning: (deleteCars, deleteError))
-//            }
-//            if let deleteError {
-//                continuation.resume(returning: (deleteCars, deleteError))
-//            }
-//        }
-//    })
-//}
-
 
 
 // MARK: Map
@@ -460,6 +420,10 @@ func deleteCar(licensePlate: String) async throws -> (success: String?, error: S
 
 
 // MARK: Statistics page
+/// Load statistics
+/// - Parameters:
+///     - refresh: Bool indicating whether to force refresh from server
+/// - Returns: Tuple with Statistics object or error message
 func loadStatistics(_ refresh: Bool = false) async -> (success: Statistics?, error: String?) {
 	if !statisticsLoaded || refresh {
 		let url = getURL(.statistics)
@@ -481,6 +445,10 @@ func loadStatistics(_ refresh: Bool = false) async -> (success: Statistics?, err
 	return (nil,nil)
 }
 
+/// Process statistics response
+/// - Parameters:
+///     - dataCuccli: Data received from server
+/// - Returns: Tuple with Statistics object or error message
 func initStats(dataCuccli: Data) -> (success: Statistics?, error: String?) {
 	var decodedResponse: StatisticsResponse
 	

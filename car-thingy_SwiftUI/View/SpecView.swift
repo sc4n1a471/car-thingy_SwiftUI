@@ -12,18 +12,27 @@ struct SpecView: View {
 
     var header: String
     var content: String?
+    var contentInt: Int?
     var note: String?
-    var contents: [String]?
     var accidents: [Accident]?
     var restrictions: [Restriction]?
 	var isDate: Bool = false
     private var showElement: Bool
     
-	init(header: String, content: String? = nil, note: String? = nil, contents: [String]? = nil, accidents: [Accident]? = nil, restrictions: [Restriction]? = nil) {
+    /// SpecView is used for showing individual data of a car
+    ///
+    /// - Parameters:
+    ///   - header: String as header of the element
+    ///   - content: String content to be shown (for Int, use contentInt)
+    ///   - contentInt: Int content to be shown (for str, use regular content)
+    ///   - note: Note at the end of the line, used mostly for unit of measurment like HP or cm3
+    ///   - accidents: Array of accidents shown in custom view
+    ///   - restrictions: Array of restrictions shown in custom view
+    init(header: String, content: String? = nil, contentInt: Int? = nil, note: String? = nil, accidents: [Accident]? = nil, restrictions: [Restriction]? = nil) {
         self.header = header
         self.content = content
+        self.contentInt = contentInt
         self.note = note
-        self.contents = contents
         self.accidents = accidents
         self.restrictions = restrictions
 		
@@ -44,6 +53,10 @@ struct SpecView: View {
                 return
             }
         }
+        
+        if let safeContentInt = self.contentInt {
+            self.content = String(safeContentInt)
+        }
 		
 		if self.content == "" {
 			showElement = false
@@ -55,10 +68,6 @@ struct SpecView: View {
             return
         }
         
-        if self.contents != nil {
-            showElement = true
-            return
-        }
         showElement = false
     }
     
@@ -66,24 +75,13 @@ struct SpecView: View {
         if showElement {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
+                    // MARK: Header
                     Text(header)
                         .font(.footnote)
                         .foregroundColor(Color.gray)
                     HStack {
-                        if let safeContets = self.contents {
-                            VStack {
-                                ForEach(safeContets, id: \.self) { item in
-                                    HStack {
-                                        Text(item)
-                                            .font(.system(size: 22)).bold()
-                                        Text(note ?? "")
-                                            .font(.body.bold())
-                                            .foregroundColor(Color.gray)
-                                            .padding(.top, 2)
-                                    }
-                                }
-                            }
-                        } else if let safeContent = self.content {
+                        // MARK: Content
+                        if let safeContent = self.content {
 							if isDate {
 								Text(sharedViewData.parseDate(safeContent).formatted(
 									Date.FormatStyle()
@@ -104,6 +102,7 @@ struct SpecView: View {
 									.foregroundColor(Color.gray)
 									.padding(.top, 2)
 							}
+                        // MARK: Accident
                         } else if let safeAccidents = self.accidents {
                             VStack {
 								ForEach(Array(safeAccidents.enumerated()), id: \.offset) { index, accident in
@@ -128,6 +127,7 @@ struct SpecView: View {
 									}
                                 }
                             }
+                        // MARK: Restriction
                         } else if let safeRestrictions = self.restrictions {
                             VStack {
 								ForEach(Array(safeRestrictions.enumerated()), id: \.offset) { index, item in
@@ -146,7 +146,6 @@ struct SpecView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .animation(.default, value: content)
-                .animation(.default, value: contents)
                 .animation(.default, value: accidents)
             }
         }
@@ -161,6 +160,7 @@ extension String {
 	}
 }
 
+// MARK: Preview
 #Preview {
 //	SpecView(header: "Performance", content: "320", note: "HP")
 //	SpecView(header: "Restrictions", restrictions: [

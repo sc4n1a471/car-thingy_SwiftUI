@@ -39,12 +39,13 @@ struct Car: Codable, Identifiable, Equatable, Hashable {
 	
 	var accidents: [Accident]?
 	var restrictions: [Restriction]?
-	var mileage: [Mileage] = [Mileage()]
+	var mileage: [Mileage] = []
 	var inspections: [Inspection]?
 	
 	var parsedCreatedAt: Date?
 	var parsedUpdatedAt: Date?
 	
+    // MARK: getDate
 	mutating func getDate(_ dateType: DateType) -> Date? {
 		switch dateType {
 			case .createdAt:
@@ -91,6 +92,7 @@ struct Car: Codable, Identifiable, Equatable, Hashable {
 		return nil
 	}
 	
+    // MARK: Get license plate
     func getLP() -> String {
         var formattedLicensePlate = self.licensePlate.uppercased()
         
@@ -114,6 +116,7 @@ struct Car: Codable, Identifiable, Equatable, Hashable {
         return formattedLicensePlate
     }
     
+    // MARK: Get location
     func getLocation() -> MKCoordinateRegion {
         return MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude),
@@ -121,6 +124,7 @@ struct Car: Codable, Identifiable, Equatable, Hashable {
         )
     }
     
+    // MARK: toString debug
     func toString() {
         print(self.licensePlate)
         print(self.accidents as Any)

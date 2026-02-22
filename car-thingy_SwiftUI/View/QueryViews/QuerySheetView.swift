@@ -26,6 +26,7 @@ struct QuerySheetView: View {
         GridItem(.flexible(minimum: 100, maximum: 400))
     ]
     
+    // MARK: Body
     var body: some View {
 		// required because can't use environment as binding
 		@Bindable var sharedViewDataBindable = sharedViewData
@@ -33,12 +34,13 @@ struct QuerySheetView: View {
         NavigationStack {
             List {
                 if !viewModel.inspectionsOnly {
+                    // MARK: Log section
                     Section {
                         withAnimation {
-                            LazyVGrid(columns: sharedViewData.websocket.isLoading ? columns : columns2, content: {
-                                if sharedViewData.websocket.isLoading {
+                            LazyVGrid(columns: sharedViewData.socketio.isLoading ? columns : columns2, content: {
+                                if sharedViewData.socketio.isLoading {
                                     showLogs
-                                    closeConnection
+                                    cancelRequest
                                 } else {
                                     saveCar
                                 }
@@ -48,73 +50,74 @@ struct QuerySheetView: View {
                     .listRowInsets(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                     .listRowBackground(Color.clear)
                     
+                    // MARK: Section 1
                     Section {
-                        SpecView(header: "Brand", content: sharedViewData.websocket.brand)
-                        SpecView(header: "Model", content: sharedViewData.websocket.model)
-                        SpecView(header: "Type Code", content: sharedViewData.websocket.typeCode)
+                        SpecView(header: "Brand", content: sharedViewData.socketio.car.brand)
+                        SpecView(header: "Model", content: sharedViewData.socketio.car.model)
+                        SpecView(header: "Type Code", content: sharedViewData.socketio.car.typeCode)
                     }
                     
+                    // MARK: Section 2
                     Section {
-                        SpecView(header: "Status", content: sharedViewData.websocket.status)
-						SpecView(header: "First registration", content: sharedViewData.websocket.firstReg)
-						SpecView(header: "First registration in 🇭🇺", content: sharedViewData.websocket.firstRegHun)
-                        SpecView(header: "Number of owners", content: String(sharedViewData.websocket.numOfOwners))
+                        SpecView(header: "Status", content: sharedViewData.socketio.car.status)
+                        SpecView(header: "First registration", content: sharedViewData.socketio.car.firstReg)
+                        SpecView(header: "First registration in 🇭🇺", content: sharedViewData.socketio.car.firstRegHun)
+                        SpecView(header: "Number of owners", contentInt: sharedViewData.socketio.car.numOfOwners)
                     }
                     
+                    // MARK: Section 3
                     Section {
-                        SpecView(header: "Year", content: String(sharedViewData.websocket.year))
-                        SpecView(header: "Engine size", content: String(sharedViewData.websocket.engineSize), note: "cm3")
-                        SpecView(header: "Performance", content: String(sharedViewData.websocket.performance), note: "HP")
-                        SpecView(header: "Fuel type", content: String(sharedViewData.websocket.fuelType))
-                        SpecView(header: "Gearbox", content: String(sharedViewData.websocket.gearbox))
-                        SpecView(header: "Color", content: String(sharedViewData.websocket.color))
+                        SpecView(header: "Year", contentInt: sharedViewData.socketio.car.year)
+                        SpecView(header: "Engine size", contentInt: sharedViewData.socketio.car.engineSize, note: "cm3")
+                        SpecView(header: "Performance", contentInt: sharedViewData.socketio.car.performance, note: "HP")
+                        SpecView(header: "Fuel type", content: sharedViewData.socketio.car.fuelType)
+                        SpecView(header: "Gearbox", content: sharedViewData.socketio.car.gearbox)
+                        SpecView(header: "Color", content: sharedViewData.socketio.car.color)
                     }
                     
+                    // MARK: Section mileage
                     Section {
-                        MileageView(onChangeMileageData: sharedViewData.websocket.mileage, mileageData: $sharedViewDataBindable.websocket.mileage)
+                        MileageView(onChangeMileageData: sharedViewData.socketio.car.mileage, mileageData: $sharedViewDataBindable.socketio.car.mileage)
                     }
                     
+                    // MARK: Section restrictions
                     Section {
-                        SpecView(header: "Restrictions", restrictions: sharedViewData.websocket.restrictions)
+                        SpecView(header: "Restrictions", restrictions: sharedViewData.socketio.car.restrictions)
                     }
                     
+                    // MARK: Section accidents
                     Section {
-                        SpecView(header: "Accidents", accidents: sharedViewData.websocket.accidents)
+                        SpecView(header: "Accidents", accidents: sharedViewData.socketio.car.accidents)
                     }
                 }
                 
-                InspectionsView(inspections: sharedViewData.websocket.inspections)
+                // MARK: Inspections
+                InspectionsView(inspections: sharedViewData.socketio.car.inspections)
             }
-            // MARK: Toolbar items
-            .toolbar {
-#if os(macOS)
-                ToolbarItem(placement: .navigationBarLeading, content: {
-                    close
-                        .disabled(sharedViewData.websocket.isLoading)
-                })
-#endif
-            }
-            .navigationTitle(sharedViewData.websocket.getLP())
+            .navigationTitle(sharedViewData.socketio.getLP())
         }
-		.alert(sharedViewData.websocket.error, isPresented: $sharedViewDataBindable.websocket.isAlertSheetView, actions: {
-            Button("sharedViewData.websocket got it") {
-                sharedViewData.websocket.disableAlert()
-                print("sharedViewData.websocket alert confirmed")
+        // MARK: Alerts
+		.alert(sharedViewData.socketio.error, isPresented: $sharedViewDataBindable.socketio.isAlertSheetView, actions: {
+            Button("sharedViewData.socketio got it") {
+                sharedViewData.socketio.disableAlert()
+                print("sharedViewData.socketio alert confirmed")
             }
         })
-		.alert("2FA", isPresented: $sharedViewDataBindable.websocket.verificationDialogOpen) {
+        // MARK: 2FA
+		.alert("2FA", isPresented: $sharedViewDataBindable.socketio.verificationDialogOpen) {
 			SecureField(text: $verificationCode) {}
 			
 			Button("Cancel") {
-				sharedViewData.websocket.close()
+				sharedViewData.socketio.cancelCarRequest()
 			}
 			
 			Button("Submit") {
-				sharedViewData.websocket.dismissCodeDialog(verificationCode: verificationCode)
+				sharedViewData.socketio.dismissCodeDialog(verificationCode: verificationCode)
 			}
 		} message: {
 			Text("Pls gimme 2fa code")
 		}
+        // MARK: OnAppear
         .onAppear {
             sharedViewData.haptic(type: .standard)
 			Task {
@@ -124,18 +127,10 @@ struct QuerySheetView: View {
         }
     }
     
-    var close: some View {
+    // MARK: Close connection
+    var cancelRequest: some View {
         Button(action: {
-//            presentationMode.wrappedValue.dismiss()
-        }, label: {
-            Text("Close")
-        })
-    }
-    
-    var closeConnection: some View {
-        Button(action: {
-            sharedViewData.websocket.close()
-//			sharedViewData.showMiniQueryView = false
+            sharedViewData.socketio.cancelCarRequest()
         }, label: {
             Image(systemName: "xmark")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -144,27 +139,30 @@ struct QuerySheetView: View {
         .tint(.red)
     }
     
+    // MARK: Save car
     var saveCar: some View {
         Button(action: {
             Task {
-				if let safeLocationManagerMessage = locationManager.message {
-					sharedViewData.websocket.showAlert(.querySheetView, safeLocationManagerMessage)
-//					sharedViewData.showMiniQueryView = false
-					return
-				}
+                if env != "local" && env != "dev" {
+                    if let safeLocationManagerMessage = locationManager.message {
+                        sharedViewData.socketio.showAlert(.querySheetView, safeLocationManagerMessage)
+                        return
+                    }
+                }
 				
 				if (locationManager.lastLocation.coordinate.latitude == 40.748443 && locationManager.lastLocation.coordinate.latitude == -73.985650) {
                     DDLogError("Location is Empire State Building")
-					sharedViewData.websocket.showAlert(.querySheetView,  "The location data was pointing to Empire State Building, try again...")
+					sharedViewData.socketio.showAlert(.querySheetView,  "The location data was pointing to Empire State Building, try again...")
 					locationManager = LocationManager()
                 } else {
-                    if await viewModel.saveCar(websocket: sharedViewData.websocket, knownCarQuery: knownCarQuery, locationManager: locationManager) {
-						sharedViewData.websocket.isSuccess = false
-						sharedViewData.websocket.areImagesLoaded = false
+                    // TODO: Modify saveCar
+                    if await viewModel.saveCar(socketioObject: sharedViewData.socketio, knownCarQuery: knownCarQuery, locationManager: locationManager) {
+						sharedViewData.socketio.isSuccess = false
+						sharedViewData.socketio.areImagesLoaded = false
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
-//				sharedViewData.showMiniQueryView = false
+				sharedViewData.showMiniQueryView = false
             }
         }, label: {
             Image(systemName: "square.and.arrow.down")
@@ -173,21 +171,22 @@ struct QuerySheetView: View {
         })
         .buttonStyle(.bordered)
         .tint(.green)
-		.disabled(!sharedViewData.websocket.areImagesLoaded)
+		.disabled(!sharedViewData.socketio.areImagesLoaded)
     }
     
+    // MARK: Show Logs
     var showLogs: some View {
         Button(action: {
             viewModel.setPopover(true)
         }) {
-            Gauge(value: sharedViewData.websocket.percentage, in: 0...100) {}
+            Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
                 .tint(.blue)
                 .scaleEffect(0.5)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         }.popover(isPresented: $viewModel.showingPopover) {
-            ForEach(sharedViewData.websocket.messages, id: \.self) { message in
+            ForEach(sharedViewData.socketio.messages, id: \.self) { message in
                 Text(message)
             }
             .presentationCompactAdaptation((.popover))
@@ -210,6 +209,7 @@ struct QuerySheetView: View {
     }
 }
 
+// MARK: Previews
 #Preview {
     QuerySheetView()
 		.environment(SharedViewData())

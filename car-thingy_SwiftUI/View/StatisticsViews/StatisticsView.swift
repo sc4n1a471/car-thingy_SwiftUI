@@ -12,7 +12,7 @@ struct StatisticsView: View {
 	
 	@State private var viewModel = ViewModel()
 	@State private var selectedAngle: Double?
-	@State private var countCutoffStepper: Int = 5
+	@State private var countCutoffStepper: Int = 10
 	@State private var brandRanges: [(brand: String, range: Range<Double>)] = []
 	@State private var filteredBrandStats: [BrandStatistics] = []
 	
@@ -34,6 +34,7 @@ struct StatisticsView: View {
 		return nil
 	}
 	
+    // MARK: Body
     var body: some View {
 		NavigationStack {
 			VStack {
@@ -62,14 +63,6 @@ struct StatisticsView: View {
 							.frame(maxWidth: .infinity)
 							.chartXScale(domain: 0...safeCarStatistics.carCount)
 							
-							Stepper(value: $countCutoffStepper, label: {
-								Text("Brand count cutoff value: \(countCutoffStepper)")
-							})
-							.padding()
-							.onChange(of: countCutoffStepper) { oldValue, newValue in
-								(brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(newValue))!
-							}
-							
 							// MARK: Pie chart
 							Chart(filteredBrandStats, id: \.brand) { item in
 								SectorMark(
@@ -77,7 +70,7 @@ struct StatisticsView: View {
 									innerRadius: .ratio(0.6),
 									angularInset: 1.5
 								)
-								.cornerRadius(5)
+								.cornerRadius(6)
 								.foregroundStyle(by: .value("Brand", item.brand))
 								.opacity(item.brand == selectedItem?.brand ? 0.7 : 1)
 							}
@@ -100,6 +93,14 @@ struct StatisticsView: View {
 								}
 							}
 							.animation(.snappy, value: filteredBrandStats)
+                            
+                            Stepper(value: $countCutoffStepper, label: {
+                                Text("Brand count cutoff value: \(countCutoffStepper)")
+                            })
+                            .padding()
+                            .onChange(of: countCutoffStepper) { oldValue, newValue in
+                                (brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(newValue))!
+                            }
 						}
 						.padding(.top)
 					}
@@ -112,6 +113,7 @@ struct StatisticsView: View {
 			}
 			.navigationTitle("Statistics")
 			.navigationBarTitleDisplayMode(.large)
+            // MARK: Toolbar
 			.toolbar {
 				ToolbarItemGroup(placement: .topBarLeading, content: {
 					if viewModel.isLoading {
@@ -120,15 +122,17 @@ struct StatisticsView: View {
 					} else {
 						refreshButton
 					}
-				})
+                })
 			}
 		}
+        // MARK: Task
 		.task {
 			await viewModel.loadStats()
 			(brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(countCutoffStepper))!
 		}
     }
 	
+    // MARK: Refresh button
 	var refreshButton: some View {
 		Button(action: {
 			Task {
@@ -136,11 +140,12 @@ struct StatisticsView: View {
 				(brandRanges, filteredBrandStats) = (viewModel.statistics?.calculateRangesFilterBrandStats(countCutoffStepper))!
 			}
 		}, label: {
-			Image(systemName: "arrow.clockwise")
+            Image(systemName: "arrow.clockwise.circle")
 		})
 	}
 }
 
+// MARK: Preview
 #Preview {
     StatisticsView()
 }

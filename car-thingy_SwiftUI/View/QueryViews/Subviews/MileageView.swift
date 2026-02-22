@@ -21,32 +21,30 @@ struct MileageView: View {
     var body: some View {
         if !mileageData.isEmpty {
             VStack(spacing: 15) {
-				HStack {
-					VStack(alignment: .leading, spacing: 6) {
-						Text("Mileage")
-							.font(.footnote)
-							.foregroundColor(Color.gray)
-						
-						HStack {
-							Text("\(mileageData.last?.mileage ?? 0)")
-								.font(.system(size: 25)).bold()
-							Text("km")
-								.font(.body.bold())
-								.foregroundColor(Color.gray)
-								.padding(.top, 2)
-						}
-						
-						withAnimation {
-							Text("\(calculateAvgMileage(mileageData)) km / year")
-								.font(.footnote)
-								.foregroundColor(Color.gray)
-								.animation(.easeIn)
-						}
-					}
-					.frame(maxWidth: .infinity, alignment: .leading)
-				}
-				.frame(maxHeight: 75)
-				.opacity(hideLabels ? 0 : 1)
+                HStack {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Mileage")
+                            .font(.footnote)
+                            .foregroundColor(Color.gray)
+                        
+                        HStack {
+                            Text("\(mileageData.last?.mileage ?? 0)")
+                                .font(.system(size: 25)).bold()
+                            Text("km")
+                                .font(.body.bold())
+                                .foregroundColor(Color.gray)
+                                .padding(.top, 2)
+                        }
+                        
+                        
+                        Text("\(calculateAvgMileage(mileageData)) km / year")
+                            .font(.footnote)
+                            .foregroundColor(Color.gray)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxHeight: 75)
+                .opacity(hideLabels ? 0 : 1)
                 
                 Chart {
                     ForEach(parsedMileageData, id: \.id) { data in
@@ -66,11 +64,6 @@ struct MileageView: View {
                         )
                         .interpolationMethod(.catmullRom)
                         .foregroundStyle(Color.blue.opacity(0.1).gradient)
-                        
-                        if let currentActiveMileage, currentActiveMileage.id == data.id {
-                            RuleMark(x: .value("Date", currentActiveMileage.getDate(true)))
-                                .foregroundStyle(Color.gray.opacity(0.3))
-                        }
                     }
                     
                     ForEach(mileageData, id: \.id) { data in
@@ -80,11 +73,23 @@ struct MileageView: View {
                         )
                         .opacity(0.2)
                     }
+                    
+                    if let currentActiveMileage {
+                        RuleMark(x: .value("Date", currentActiveMileage.getDate()))
+                            .foregroundStyle(Color.gray.opacity(0.3))
+                            .offset(yStart: -16)
+                            .zIndex(-1)
+                            .annotation(
+                                position: .top,
+                                overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                                chartPopup
+                            }
+                    }
                 }
                 .frame(height: 250)
                 .onAppear {
                     parsedMileageData = parseMileageData(mileageData)
-                        // MARK: Animating chart
+                    // MARK: Animating chart
                     for (index, _) in parsedMileageData.enumerated() {
                         DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
                             withAnimation(
@@ -110,15 +115,15 @@ struct MileageView: View {
                     }
                 }
                 .chartOverlay { proxy in
-                        // MARK: Getting data on drag
-                        // https://developer.apple.com/documentation/charts/chartproxy
+                    // MARK: Getting data on drag
+                    // https://developer.apple.com/documentation/charts/chartproxy
                     GeometryReader { geometry in
                         Rectangle().fill(.clear).contentShape(Rectangle())
                             .gesture(
                                 DragGesture()
                                     .onChanged { value in
                                         let location = value.location
-                                            // Get the x (date) and y (mileage) value from the location.
+                                        // Get the x (date) and y (mileage) value from the location.
                                         if let date: Date = proxy.value(atX: location.x) {
                                             let calendar = Calendar.current
                                             let components = calendar.dateComponents([.year, .month], from: date)
@@ -132,9 +137,7 @@ struct MileageView: View {
                                                     }
                                                 }
                                                 self.currentActiveMileage = currentMileageData
-                                                withAnimation {
-                                                    self.hideLabels = true
-                                                }
+                                                self.hideLabels = true
                                                 
                                                 if firstHaptic {
 													sharedViewData.haptic()
@@ -145,72 +148,50 @@ struct MileageView: View {
                                     }
                                     .onEnded { value in
                                         self.currentActiveMileage = nil
-                                        withAnimation {
-                                            self.hideLabels = false
-                                        }
+                                        self.hideLabels = false
                                         firstHaptic = true
                                     }
                             )
                     }
                 }
-                .chartBackground { proxy in
-                    ZStack(alignment: .topLeading) {
-                        GeometryReader { geo in
-                            if let currentActiveMileage {
-                                    // Find date span for the selected interval
-                                let dateInterval = Calendar.current.dateInterval(of: .day, for: currentActiveMileage.getDate())!
-                                    // Map date to chart X position
-                                let startPositionX = proxy.position(forX: dateInterval.start) ?? 0
-                                    // Offset the chart X position by chart frame
-								let midStartPositionX = startPositionX + geo[proxy.plotFrame!].origin.x
-								let lineHeight = geo[proxy.plotFrame!].maxY
-                                let boxWidth: CGFloat = 150
-                                let boxOffset = max(0, min(geo.size.width - boxWidth, midStartPositionX - boxWidth / 2))
-                                
-                                    // Draw the scan line
-                                    //                            Rectangle()
-                                    //                                .fill(.quaternary)
-                                    //                                .frame(width: 2, height: lineHeight)
-                                    //                                .position(x: midStartPositionX, y: lineHeight / 2)
-                                
-                                    // Draw the data info box
-                                VStack(alignment: .leading) {
-                                    Text("CURRENT")
-                                        .font(.system(size: 14).bold())
-                                        .foregroundStyle(.secondary)
-                                    HStack {
-                                        Text("\(currentActiveMileage.mileage)")
-                                            .font(.system(size: 25)).bold()
-                                        Text("km")
-                                            .font(.body.bold())
-                                            .foregroundColor(Color.gray)
-                                    }
-                                    
-                                    Text("\(currentActiveMileage.getDate(), format: .dateTime.year().month().day())")
-                                        .font(.system(size: 14).bold())
-                                        .foregroundStyle(.secondary)
-                                }
-                                .frame(width: boxWidth, height: 75, alignment: .leading)
-                                .background { // some styling
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(.background)
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(.quaternary.opacity(0.3))
-                                    }
-                                    .padding([.leading, .trailing], -8)
-                                    .padding([.top, .bottom], -4)
-                                }
-                                .offset(x: boxOffset, y: -95)
-                                .padding(5)
-                            }
-                        }
-                    }
-                }
             }
         }
     }
+        
+    // MARK: Chart popup
+    /// Chart popup that is displayed when a data point is selected on the chart
+    var chartPopup: some View {
+        VStack(alignment: .leading) {
+            Text("CURRENT")
+                .font(.system(size: 14).bold())
+                .foregroundStyle(.secondary)
+                .padding(.top, 4)
+            HStack {
+                /// currentActiveMileage should be safe to unwrap because this view is only rendered when the currentActiveMileage is not nil
+                Text("\(currentActiveMileage!.mileage)")
+                    .font(.system(size: 25)).bold()
+                Text("km")
+                    .font(.body.bold())
+                    .foregroundColor(Color.gray)
+            }
+
+            Text("\(currentActiveMileage!.getDate(), format: .dateTime.year().month().day())")
+                .font(.system(size: 14).bold())
+                .foregroundStyle(.secondary)
+        }
+        .background { // some styling
+            ZStack {
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(.background)
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(.quaternary.opacity(0.3))
+            }
+            .padding([.leading, .trailing], -8)
+            .padding([.top, .bottom], -8)
+        }
+    }
     
+    // MARK: Avg Mileage
     func calculateAvgMileage(_ mileageData: [Mileage]) -> Int {
         if let firstData = mileageData.first, let lastData = mileageData.last {
             let mileageDelta = lastData.mileage - firstData.mileage
@@ -225,6 +206,8 @@ struct MileageView: View {
         return 0
     }
     
+    // MARK: Parse mileage
+    /// Only displays the first selectable data point in a year to not mess up the drag thingy
     func parseMileageData(_ mileageData: [Mileage]) -> [Mileage] {
         var parsedMileageData: [Mileage] = []
 		
@@ -249,6 +232,8 @@ struct MileageView: View {
     }
 }
 
+
+// MARK: Previews
 /// https://developer.apple.com/forums/thread/118589
 struct BindingViewPreview: View {
     @State var mileage: [Mileage] = testCar.mileage!
@@ -257,6 +242,14 @@ struct BindingViewPreview: View {
         MileageView(onChangeMileageData: testCar.mileage!, mileageData: $mileage)
 			.environment(SharedViewData())
     }
+}
+
+#Preview {
+    DetailView(
+        selectedCar: previewCar,
+        region: previewCar.getLocation()
+    )
+        .environment(SharedViewData())
 }
 
 #Preview {
