@@ -217,7 +217,7 @@ struct MapDetailView: View {
         }) {
 			Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
-                .tint(.blue)
+                .tint(sharedViewData.socketio.connectionStatus.color)
                 .scaleEffect(0.5)
                 .frame(width: 25, height: 25)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

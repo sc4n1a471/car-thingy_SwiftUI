@@ -14,6 +14,7 @@ struct ContentView: View {
 	@Environment(SharedViewData.self) private var sharedViewData
 	@Environment(\.colorScheme) var colorScheme
 	@Namespace private var animation
+    @State private var isPresented = false
 	
     // MARK: Body
     var body: some View {
@@ -53,11 +54,13 @@ struct ContentView: View {
                 .matchedTransitionSource(id: "mini-query-id", in: animation)
 				.onTapGesture {
 					sharedViewData.socketio.dataSheetOpened.toggle()
+                    isPresented = true
 				}
 		}
-		.fullScreenCover(isPresented: $sharedViewDataBindable.socketio.dataSheetOpened, onDismiss: {
+        .fullScreenCover(isPresented: $isPresented, onDismiss: {
 			Task {
                 sharedViewData.socketio.dismissSheet()
+                isPresented = false
 			}
 		}) {
 			VStack(spacing: 10) {
@@ -113,7 +116,7 @@ struct MiniQuerySheetViewContent: View {
 				
 				Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
 					.gaugeStyle(.accessoryCircularCapacity)
-					.tint(.blue)
+                    .tint(sharedViewData.socketio.connectionStatus.color)
 					.scaleEffect(0.5)
 					.frame(maxWidth: 200, maxHeight: 50)
 				

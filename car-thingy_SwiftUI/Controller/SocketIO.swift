@@ -8,7 +8,22 @@
 import Foundation
 import UIKit
 import SocketIO
+import SwiftUI
 
+// MARK: ConnectionStatus class
+@Observable
+class SocketIOConnectionStatus {
+    enum ConnectionStatus {
+        case notConnected
+        case connecting
+        case connected
+    }
+    
+    var isConnected: ConnectionStatus = .notConnected
+    var color: Color = .gray    
+}
+
+// MARK: SocketIO class
 @Observable class Socketio {
     var manager: SocketManager!
     var socket: SocketIOClient!
@@ -25,6 +40,8 @@ import SocketIO
     var isAlert = false
     var isAlertSheetView = false    // show alert on sheetView only, so it doesn't dismiss the sheet
     
+    var connectionStatus: SocketIOConnectionStatus = SocketIOConnectionStatus()
+    
     var verificationDialogOpen = false
     
     enum HapticType: String {
@@ -40,25 +57,35 @@ import SocketIO
     
     // MARK: Init
     init() {
+        print("initing")
         manager = SocketManager(
             socketURL: URL(string: getURLasString(.query))!,
             config: [.log(true), .extraHeaders(["x-api-key": apiKey])]
         )
         socket = manager.defaultSocket
         socket.connect()
+        print("connecting (\(socket.status)...")
+        connectionStatus.color = .yellow
+        connectionStatus.isConnected = .connecting
+        print(socket.status)
         setupSocketEvents()
         self.haptic(.standard)
+        print("inited")
     }
     
     // MARK: Socket events
     func setupSocketEvents() {
         socket.on(clientEvent: .connect) {data, ack in
-            print("socket connected")
+            print("socket connected (\(self.socket.status))")
+            self.connectionStatus.color = .green
+            self.connectionStatus.isConnected = .connected
         }
         
         socket.on(clientEvent: .disconnect) {data, ack in
-            print("socket disconnected")
+            print("socket disconnected (\(self.socket.status))")
             self.reset()
+            self.connectionStatus.color = .gray
+            self.connectionStatus.isConnected = .notConnected
         }
         
         socket.on("pong") { (data, ack) in
@@ -88,6 +115,7 @@ import SocketIO
                             self.isSuccess = true
                             self.isLoading = false
                             self.haptic(.notification)
+                            self.connectionStatus.color = .green
                        }
                    }
                 } else if safeResponse.status == "waiting" {
@@ -113,6 +141,7 @@ import SocketIO
                 } else {
                     self.showAlert(.notQuerySheetView, safeError)
                 }
+                self.connectionStatus.color = .green
             }
         }
     }
@@ -124,9 +153,17 @@ import SocketIO
     
     // MARK: Send test request
     func sendTest() {
-        socket.emit("request_license_plate", "test111")
-        self.car.licensePlate = "TEST111"
-        self.isLoading = true
+        print("sending car request...")
+        switch self.connectionStatus.isConnected {
+            case .connected:
+                self.car.licensePlate = "TEST111"
+                self.isLoading = true
+                print("sent car request")
+                socket.emit("request_license_plate", "test111")
+                self.connectionStatus.color = .blue
+            default:
+                print("not connected yet (socket.status: \(self.socket.status), isConnected: \(self.connectionStatus.isConnected))")
+        }
     }
     
     // MARK: Send 2FA code
@@ -139,10 +176,18 @@ import SocketIO
     /// - Parameters:
     ///     - licensePlate: Requested license plate
     func sendCarRequest(_ licensePlate: String) {
-        self.reset()
-        self.isLoading = true
-        car.licensePlate = licensePlate
-        socket.emit("request_license_plate", licensePlate)
+        print("sending car request...")
+        switch self.connectionStatus.isConnected {
+            case .connected:
+                self.reset()
+                self.isLoading = true
+                car.licensePlate = licensePlate
+                socket.emit("request_license_plate", licensePlate)
+                print("sent car request")
+                self.connectionStatus.color = .blue
+            default:
+                print("not connected yet (socket.status: \(self.socket.status), isConnected: \(self.connectionStatus.isConnected))")
+        }
     }
     
     // MARK: Cancel request
@@ -155,6 +200,7 @@ import SocketIO
     func disconnect() {
         socket.disconnect()
         self.isLoading = false
+        self.connectionStatus.color = .green
     }
     
     // MARK: Reset variables
@@ -164,6 +210,7 @@ import SocketIO
         self.isSuccess = false
         self.areImagesLoaded = false
         self.isLoading = false
+        self.connectionStatus.color = .green
         print("Query car RESET")
     }
 
@@ -346,6 +393,7 @@ import SocketIO
         self.sendCarRequestCancel()
         self.percentage = 0.0
         self.setLoading(false)
+        self.connectionStatus.color = .green
     }
     
     // MARK: Haptic

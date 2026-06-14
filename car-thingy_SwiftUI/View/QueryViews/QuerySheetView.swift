@@ -105,7 +105,8 @@ struct QuerySheetView: View {
         })
         // MARK: 2FA
 		.alert("2FA", isPresented: $sharedViewDataBindable.socketio.verificationDialogOpen) {
-			SecureField(text: $verificationCode) {}
+            SecureField(text: $verificationCode) {}
+                .textContentType(.oneTimeCode)
 			
 			Button("Cancel") {
 				sharedViewData.socketio.cancelCarRequest()
@@ -181,7 +182,7 @@ struct QuerySheetView: View {
         }) {
             Gauge(value: sharedViewData.socketio.percentage, in: 0...100) {}
                 .gaugeStyle(.accessoryCircularCapacity)
-                .tint(.blue)
+                .tint(sharedViewData.socketio.connectionStatus.color)
                 .scaleEffect(0.5)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             

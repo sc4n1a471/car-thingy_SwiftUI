@@ -95,7 +95,7 @@ struct QueryView: View {
 						showVersionPopover = true
 					}) {
 						Image(systemName: "info.circle")
-							.foregroundStyle(.gray)
+                            .foregroundStyle(.gray)
 					}.popover(isPresented: $showVersionPopover) {
 						VStack {
 							Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "???")")
@@ -164,6 +164,7 @@ struct QueryView: View {
 		}, label: {
 			Image(systemName: "ellipsis.circle")
 		})
+        .foregroundStyle(sharedViewData.socketio.connectionStatus.color)
 	}
 }
 
