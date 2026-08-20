@@ -1,0 +1,102 @@
+{
+  "fill" : {
+    "automatic-gradient" : "display-p3:0.96406,0.96222,0.96611,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "H 3.png",
+          "name" : "H 3",
+          "position" : {
+            "scale" : 2,
+            "translation-in-points" : [
+              -281.4557549117055,
+              200.8044414426838
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "blur-material" : 1,
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "european-union-round-flag-eu-flag-yellow-stars-on-blue-circle-european-union-flag-push-button-png.png.png",
+          "name" : "european-union-round-flag-eu-flag-yellow-stars-on-blue-circle-european-union-flag-push-button-png.png",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -281.4557549117055,
+              -215.39745710801753
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "solid" : "display-p3:0.11765,0.16471,0.58431,1.00000"
+          },
+          "glass" : true,
+          "image-name" : "rectangle.png",
+          "name" : "rectangle",
+          "position" : {
+            "scale" : 2,
+            "translation-in-points" : [
+              -522.0176860338172,
+              -98.22187964746126
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "A.png",
+          "name" : "A",
+          "position" : {
+            "scale" : 4,
+            "translation-in-points" : [
+              212,
+              4
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

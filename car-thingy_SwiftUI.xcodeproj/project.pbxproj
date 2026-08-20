@@ -38,6 +38,7 @@
 		57AFE3BB28CE2C2700837E0F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AFE3BA28CE2C2700837E0F /* LocationManager.swift */; };
 		57B343A42AF05EB20092AB78 /* QueryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B343A32AF05EB20092AB78 /* QueryViewModel.swift */; };
 		57B343A62AF065D20092AB78 /* QuerySheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B343A52AF065D20092AB78 /* QuerySheetViewModel.swift */; };
+		57B87C2F3037845800664B22 /* car-thingy_SwiftUI.icon in Resources */ = {isa = PBXBuildFile; fileRef = 57B87C2E3037845800664B22 /* car-thingy_SwiftUI.icon */; };
 		57BA6B172A5466F6005C447C /* SpecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BA6B162A5466F6005C447C /* SpecView.swift */; };
 		57BD24742A4EE6A6000508A3 /* InspectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24732A4EE6A6000508A3 /* InspectionView.swift */; };
 		57BD24762A4EF455000508A3 /* TestCar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BD24752A4EF455000508A3 /* TestCar.swift */; };
@@ -91,6 +92,7 @@
 		57AFE3BA28CE2C2700837E0F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		57B343A32AF05EB20092AB78 /* QueryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryViewModel.swift; sourceTree = "<group>"; };
 		57B343A52AF065D20092AB78 /* QuerySheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuerySheetViewModel.swift; sourceTree = "<group>"; };
+		57B87C2E3037845800664B22 /* car-thingy_SwiftUI.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "car-thingy_SwiftUI.icon"; sourceTree = "<group>"; };
 		57BA6B162A5466F6005C447C /* SpecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecView.swift; sourceTree = "<group>"; };
 		57BD24732A4EE6A6000508A3 /* InspectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionView.swift; sourceTree = "<group>"; };
 		57BD24752A4EF455000508A3 /* TestCar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCar.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 				5795FA98286E1289007E60DF /* Assets.xcassets */,
 				5795FA9A286E1289007E60DF /* Preview Content */,
 				57A49F392872349B006A2712 /* Database.swift */,
+				57B87C2E3037845800664B22 /* car-thingy_SwiftUI.icon */,
 			);
 			path = "car-thingy_SwiftUI";
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57B87C2F3037845800664B22 /* car-thingy_SwiftUI.icon in Resources */,
 				5795FA9C286E1289007E60DF /* Preview Assets.xcassets in Resources */,
 				5795FA99286E1289007E60DF /* Assets.xcassets in Resources */,
 			);
@@ -514,12 +518,13 @@
 		5795FAA0286E1289007E60DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "car-thingy_SwiftUI";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 844;
+				CURRENT_PROJECT_VERSION = 860;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_APP_SANDBOX = YES;
@@ -548,7 +553,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 9.1.0;
+				MARKETING_VERSION = 9.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.car-thingy-SwiftUI";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "com.sc4n1a.car-thingy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -565,12 +570,13 @@
 		5795FAA1286E1289007E60DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "car-thingy_SwiftUI";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "car-thingy_SwiftUI/car-thingy_SwiftUI.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 844;
+				CURRENT_PROJECT_VERSION = 860;
 				DEVELOPMENT_ASSET_PATHS = "\"car-thingy_SwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 5PACNS2J38;
 				ENABLE_APP_SANDBOX = YES;
@@ -599,7 +605,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 9.1.0;
+				MARKETING_VERSION = 9.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sc4n1a.car-thingy-SwiftUI";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "com.sc4n1a.car-thingy";
 				PRODUCT_NAME = "$(TARGET_NAME)";

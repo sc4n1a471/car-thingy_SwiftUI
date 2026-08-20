@@ -11,6 +11,7 @@ import MapKit
 struct MapDetailView: View {
     @Environment(SharedViewData.self) private var sharedViewData
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     @State private var selectedCar: Car = Car()
     @Binding var selectedLicensePlate: String?
@@ -43,9 +44,14 @@ struct MapDetailView: View {
 				.frame(maxWidth: .infinity, alignment: .trailing)
 				.padding(.trailing, 20)
 				.font(.system(size: 17))
-				.presentationBackground(.ultraThinMaterial)
 		})
 		.padding(.top, 20)
+//		.background(
+//			horizontalSizeClass == .regular ? 
+//				Color(uiColor: .systemGroupedBackground) : 
+//				Color.clear
+//		)
+        .background(.clear)
                 
         List {
             // MARK: Top row
@@ -154,8 +160,9 @@ struct MapDetailView: View {
 		} message: {
 			Text("Pls gimme 2fa code")
 		}
-        .background(.clear)
-        .scrollContentBackground(.hidden)
+//        .background(.clear)
+//        .scrollContentBackground(.hidden)
+//        .presentationBackground(Color(.clear))
     }
     
     // MARK: Edit button
@@ -228,6 +235,7 @@ struct MapDetailView: View {
     
     // MARK: Load selected car
     private func loadSelectedCar() async {
+//        selectedCar = previewCar
         sharedViewData.isLoading = true
         let (safeCar, safeCarError) = await loadCar(license_plate: selectedLicensePlate!)
         if let safeCar {
@@ -246,7 +254,7 @@ struct MapDetailView: View {
 
 	/// https://developer.apple.com/forums/thread/118589
 struct BindingMapDetailView: View {
-	@State var selectedLicensePlate: String? = "AAMA490"
+	@State var selectedLicensePlate: String? = "RRZ538"
 	
 	var body: some View {
 		MapDetailView(selectedLicensePlate: $selectedLicensePlate)
@@ -257,4 +265,9 @@ struct BindingMapDetailView: View {
 // MARK: Preview
 #Preview {
 	BindingMapDetailView()
+}
+
+#Preview {
+    MapView()
+        .environment(SharedViewData())
 }
